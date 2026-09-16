@@ -13,9 +13,13 @@ var ConfiguracionService = {
    * @returns {object}
    */
   obtener: function () {
+    var brand = (window.empresaBrand && typeof window.empresaBrand.getBrandData === 'function')
+      ? window.empresaBrand.getBrandData()
+      : null;
+
     return {
       nombreSistema: 'Portal de Nómina',
-      empresa:       'Óptica Visión de Águila',
+      empresa:       brand ? brand.nombre : '',
       version:       'v5.0'
     };
   },

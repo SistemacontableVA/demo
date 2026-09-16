@@ -53,14 +53,16 @@ var AtencionMunicipioService = (function () {
         .map(function (k) { return encodeURIComponent(k) + '=' + encodeURIComponent(params[k]); })
         .join('&');
 
-      var url = base + '?' + qs + '&spreadsheetId=' + encodeURIComponent(_getSheetId()) + '&callback=' + cbName;
+      var url = base + '?' + qs + '&spreadsheetId=' + encodeURIComponent(_getSheetId()) + '&callback=' + cbName + '&_amCache=' + Date.now();
 
       script = document.createElement('script');
+      script.async = true;
+      script.charset = 'utf-8';
       script.src = url;
       script.onerror = function () {
         clearTimeout(timer);
         _clean(script, cbName);
-        reject(new Error('No se pudo conectar con el servidor de municipios.'));
+        reject(new Error('No se pudo cargar el servidor de municipios. Revisa la conexión móvil o intenta nuevamente.'));
       };
 
       // Pequeño defer para garantizar que window[cbName] esté registrado

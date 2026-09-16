@@ -1,14 +1,14 @@
 (function () {
   const DEFAULT_BRAND = {
     empresa: {
-      nombre: 'Óptica Visión de Águila C.A.',
-      nombreCorto: 'Visión de Águila'
+      nombre: 'Empresa no configurada',
+      nombreCorto: 'Empresa no configurada'
     },
     contacto: {
-      email: 'OPTICAVISIONDEAGUILA@GMAIL.COM',
-      telefonoGeneral: '+58-0412-7552868',
-      telefonoSecundario: '+58-0424-6592968',
-      direccion: 'SECTOR HATICO 2 AV PRINCIPAL CALLE 127 CASA 25 – 80 MARACAIBO EDO. ZULIA'
+      email: '',
+      telefonoGeneral: '',
+      telefonoSecundario: '',
+      direccion: ''
     },
     branding: {
       logoUrlLocal: 'assets/images/logomenu.png',
@@ -68,7 +68,7 @@
     });
 
     document.querySelectorAll('[data-empresa-telefonos-principal]').forEach(function (el) {
-      el.textContent = el.dataset.empresaTelefonosPrincipal || el.textContent || '+58-0412-7552868';
+      el.textContent = el.dataset.empresaTelefonosPrincipal || el.textContent || '';
     });
 
     if (document.title) {

@@ -1,5 +1,5 @@
 <!doctype html><html lang="es"><head><meta charset="utf-8">
-<title>Hoja de Convenio - Óptica Visión de Águila</title>
+<title>Hoja de Convenio</title>
 <style>
 @page{size:Letter;margin:0}*{box-sizing:border-box}html,body{margin:0;background:#dfe7e9;font-family:Inter,"Segoe UI",Arial,sans-serif;color:#17242A;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 .page{width:8.5in;height:11in;margin:0 auto;position:relative;overflow:hidden;background:#fff;padding:.18in .54in .78in}
@@ -22,7 +22,7 @@
 .footer-right{text-align:left}
 @media screen{.page{margin-top:20px;box-shadow:0 15px 45px #0002}}@media print{html,body{background:#fff}.page{margin:0;box-shadow:none}}
 </style></head><body><main class="page"><div class="top"></div>
-<header class="header"><div class="brand"><img class="logo" data-empresa-logo="../../../assets/images/logomenu.png" data-empresa-nombre="Óptica Visión de Águila" alt="" /></div>
+<header class="header"><div class="brand"><img class="logo" data-empresa-logo="../../../assets/images/logomenu.png" data-empresa-nombre="" alt="" /></div>
 <div class="meta">
 <div class="mr"><div class="mi">S</div><div><span class="label">Sres.</span><span class="value">{{sres}}</span></div></div>
 <div class="mr"><div class="mi">F</div><div><span class="label">Fecha</span><span class="value">{{fecha}}</span></div></div>
@@ -40,7 +40,7 @@
 <p>De antemano gracias por la atención prestada.</p></section>
 <section class="signature-wrap" style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:.27in">
 <div class="signature-card">
-  <div class="signature-head">Coordinador(a) Visión de Águila</div>
+  <div class="signature-head">Coordinador(a)</div>
   <div class="signature-body" style="padding-top:12px">
     <div class="sig-line" style="min-height:30px;margin-bottom:9px"><b>Nombre:</b><span class="sig-value">{{nombre_coordinador}}</span></div>
     <div class="sig-line" style="min-height:30px;margin-bottom:9px"><b>Teléfono:</b><span class="sig-value">{{telefono_coordinador}}</span></div>
@@ -108,7 +108,7 @@
       logoElements.forEach(el => {
         const fallback = el.dataset.empresaLogo || '../../../assets/images/logomenu.png';
         el.setAttribute('src', fallback);
-        const altText = el.dataset.empresaNombre || 'Óptica Visión de Águila';
+        const altText = el.dataset.empresaNombre || 'Empresa no configurada';
         el.setAttribute('alt', altText);
       });
     }
@@ -116,7 +116,7 @@
 
   async function cargarContactoDesdeConfig() {
     try {
-      const response = await fetch('/empresa-config.json', { cache: 'no-store' });
+      const response = await fetch('empresa-config.json', { cache: 'no-store' });
       if (!response.ok) throw new Error('No se pudo cargar empresa-config.json');
 
       const config = await response.json();

@@ -54,7 +54,7 @@ html,body{margin:0;background:#dfe7e9;font-family:Inter,"Segoe UI",Arial,sans-se
   font-weight:700;
 }
 </style></head><body><main class="page"><div class="top"></div>
-<header class="header"><div class="brand"><img class="logo" data-empresa-logo="../../../assets/images/logomenu.png" data-empresa-nombre="Óptica Visión de Águila" alt="" /></div>
+<header class="header"><div class="brand"><img class="logo" data-empresa-logo="../../../assets/images/logomenu.png" data-empresa-nombre="" alt="" /></div>
 <div class="meta">
 <div class="mr"><div class="mi"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 9h16M8 13h2M14 13h2"/></svg></div><div><span class="ml">Fecha de Informe</span><span class="mv">{{FECHA_INFORME}}</span></div></div>
 <div class="mr"><div class="mi"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3"/><path d="M5.5 20c.8-4 3-6 6.5-6s5.7 2 6.5 6"/></svg></div><div><span class="ml">Señores</span><span class="mv">{{NOMBRE_INSTITUCION}}</span></div></div>
@@ -139,7 +139,7 @@ html,body{margin:0;background:#dfe7e9;font-family:Inter,"Segoe UI",Arial,sans-se
       logoElements.forEach(el => {
         const fallback = el.dataset.empresaLogo || 'assets/images/logomenu.png';
         el.setAttribute('src', fallback);
-        const altText = el.dataset.empresaNombre || 'Óptica Visión de Águila';
+        const altText = el.dataset.empresaNombre || 'Empresa no configurada';
         el.setAttribute('alt', altText);
       });
     }
@@ -153,7 +153,7 @@ html,body{margin:0;background:#dfe7e9;font-family:Inter,"Segoe UI",Arial,sans-se
 
   async function cargarContactoDesdeConfig() {
     try {
-      const response = await fetch('/empresa-config.json', { cache: 'no-store' });
+      const response = await fetch('empresa-config.json', { cache: 'no-store' });
       if (!response.ok) throw new Error('No se pudo cargar empresa-config.json');
       const config = await response.json();
       const empresa = config.empresa || {};

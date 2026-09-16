@@ -834,7 +834,7 @@
 
         <!-- COL 1: Logo -->
         <div class="logo-panel">
-          <img class="logo" data-empresa-logo="../../../assets/images/logomenu.png" data-empresa-nombre="Óptica Visión de Águila" alt="" />
+          <img class="logo" data-empresa-logo="../../../assets/images/logomenu.png" data-empresa-nombre="" alt="" />
         </div>
 
         <!-- COL 2: Títulos -->
@@ -1272,7 +1272,7 @@
       logoElements.forEach(el => {
         const fallback = el.dataset.empresaLogo || '../../../assets/images/logomenu.png';
         el.setAttribute('src', fallback);
-        const altText = el.dataset.empresaNombre || 'Óptica Visión de Águila';
+        const altText = el.dataset.empresaNombre || 'Empresa no configurada';
         el.setAttribute('alt', altText);
       });
     }
@@ -1280,7 +1280,7 @@
 
   async function cargarContactoDesdeConfig() {
     try {
-      const response = await fetch('/empresa-config.json', { cache: 'no-store' });
+      const response = await fetch('empresa-config.json', { cache: 'no-store' });
       if (!response.ok) throw new Error('No se pudo cargar empresa-config.json');
 
       const config = await response.json();

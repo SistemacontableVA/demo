@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Permiso Policial - Óptica Visión de Águila</title>
+<title>Permiso Policial</title>
 <style>
 @page{size:Letter;margin:0}
 *{box-sizing:border-box}
@@ -54,7 +54,7 @@ html,body{margin:0;background:#e4eaec;font-family:Inter,"Segoe UI",Arial,sans-se
 <div class="top"></div>
 
 <header class="header">
-<div class="brand"><img class="logo" data-empresa-logo="../../../assets/images/logomenu.png" data-empresa-nombre="Óptica Visión de Águila" alt="" /></div>
+<div class="brand"><img class="logo" data-empresa-logo="../../../assets/images/logomenu.png" data-empresa-nombre="" alt="" /></div>
 <div class="meta">
 <div class="mr"><div class="mi">F</div><div><span class="label">Fecha de Solicitud</span><span class="value">{{Fsolicitud}}</span></div></div>
 <div class="mr"><div class="mi">S</div><div><span class="label">Señores</span><span class="value">{{Senores}}</span></div></div>
@@ -78,7 +78,7 @@ html,body{margin:0;background:#e4eaec;font-family:Inter,"Segoe UI",Arial,sans-se
 </div>
 
 <section class="signatures">
-<div class="card"><div class="card-head">Coordinador(a) Visión de Águila</div><div class="card-body">
+<div class="card"><div class="card-head">Coordinador(a)</div><div class="card-body">
 <div class="sig"><b>Firma:</b><span class="line"></span></div>
 <div class="sig"><b>Teléfono:</b><span class="line"></span></div>
 </div></div>
@@ -105,7 +105,7 @@ html,body{margin:0;background:#e4eaec;font-family:Inter,"Segoe UI",Arial,sans-se
       logoElements.forEach(el => {
         const fallback = el.dataset.empresaLogo || 'assets/images/logomenu.png';
         el.setAttribute('src', fallback);
-        const altText = el.dataset.empresaNombre || 'Óptica Visión de Águila';
+        const altText = el.dataset.empresaNombre || 'Empresa no configurada';
         el.setAttribute('alt', altText);
       });
     }
@@ -119,7 +119,7 @@ html,body{margin:0;background:#e4eaec;font-family:Inter,"Segoe UI",Arial,sans-se
 
   async function cargarContactoDesdeConfig() {
     try {
-      const response = await fetch('/empresa-config.json', { cache: 'no-store' });
+      const response = await fetch('empresa-config.json', { cache: 'no-store' });
       if (!response.ok) throw new Error('No se pudo cargar empresa-config.json');
       const config = await response.json();
       const empresa = config.empresa || {};

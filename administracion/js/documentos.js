@@ -1312,7 +1312,7 @@ function _ppBuildSegundaPagina(promotoresPag2, offset, footerHtml, conFirmas) {
 
   var firmasHTML = conFirmas ?
     '<section class="signatures">' +
-      '<div class="card"><div class="card-head">Coordinador(a) Visión de Águila</div><div class="card-body">' +
+      '<div class="card"><div class="card-head">Coordinador(a)</div><div class="card-body">' +
         '<div class="sig"><b>Firma:</b><span class="line"></span></div>' +
         '<div class="sig"><b>Teléfono:</b><span class="line"></span></div>' +
       '</div></div>' +
@@ -1422,7 +1422,7 @@ function _enviarPermisoPolicial() {
       // En página 1: firmas solo si NO hay segunda página
       var firmasPag1 = hayPag2 ? '' :
         '<section class="signatures">' +
-          '<div class="card"><div class="card-head">Coordinador(a) Visión de Águila</div><div class="card-body">' +
+          '<div class="card"><div class="card-head">Coordinador(a)</div><div class="card-body">' +
             '<div class="sig"><b>Firma:</b><span class="line"></span></div>' +
             '<div class="sig"><b>Teléfono:</b><span class="line"></span></div>' +
           '</div></div>' +

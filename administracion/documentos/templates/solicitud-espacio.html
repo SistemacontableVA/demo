@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Solicitud de Espacio - Óptica Visión de Águila</title>
+<title>Solicitud de Espacio</title>
 
 <style>
   @page {
@@ -472,7 +472,7 @@
 
   <header class="header">
     <div class="brand">
-      <img class="logo" data-empresa-logo="../../../assets/images/logomenu.png" data-empresa-nombre="Óptica Visión de Águila" alt="" />
+      <img class="logo" data-empresa-logo="../../../assets/images/logomenu.png" data-empresa-nombre="" alt="" />
          </div>
 
     <div class="request-meta">
@@ -551,7 +551,7 @@
 
   <section class="signatures">
     <div class="signature-card">
-      <div class="card-title">Coordinador(a) Visión de Águila</div>
+      <div class="card-title">Coordinador(a)</div>
       <div class="signature-fields">
         <div class="field-line"><strong>Firma:</strong><span class="line"></span></div>
         <div class="field-line"><strong>Teléfono:</strong><span class="line"></span></div>
@@ -617,7 +617,7 @@
       logoElements.forEach(el => {
         const fallback = el.dataset.empresaLogo || 'assets/images/logomenu.png';
         el.setAttribute('src', fallback);
-        const altText = el.dataset.empresaNombre || 'Óptica Visión de Águila';
+        const altText = el.dataset.empresaNombre || 'Empresa no configurada';
         el.setAttribute('alt', altText);
       });
     }
@@ -631,7 +631,7 @@
 
   async function cargarContactoDesdeConfig() {
     try {
-      const response = await fetch('/empresa-config.json', { cache: 'no-store' });
+      const response = await fetch('empresa-config.json', { cache: 'no-store' });
       if (!response.ok) throw new Error('No se pudo cargar empresa-config.json');
       const config = await response.json();
       const empresa = config.empresa || {};

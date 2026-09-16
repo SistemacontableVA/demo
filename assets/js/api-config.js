@@ -317,9 +317,9 @@ var ApiConfig = {
 
     descripcion: 'API para gestión del libro de control de municipios y jornadas de atención',
 
-    publicada: 'Pendiente',
+    publicada: '2026-09-16',
 
-    estado: '⏳ PENDIENTE — publicar Apps Script del libro de control y reemplazar baseUrl',
+    estado: '✅ ACTIVA — Web App publicado con JSONP',
 
     responsable: 'documentacion/Proyecto Whatsapp/5. Apps Script Control Municipios.txt',
 

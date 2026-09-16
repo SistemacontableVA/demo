@@ -455,7 +455,7 @@
     <div class="nomina-consulta-row text-center">
       <div class="nomina-consulta-brand">
         <img
-          src="assets/images/logomenu.png" data-empresa-logo="assets/images/logomenu.png" data-empresa-nombre="Óptica Visión de Águila"
+          src="assets/images/logomenu.png" data-empresa-logo="assets/images/logomenu.png" data-empresa-nombre=""
           class="mx-auto lg:mx-0"
           alt="">
         <div class="text-center lg:text-left">
