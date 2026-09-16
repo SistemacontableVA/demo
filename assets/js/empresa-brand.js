@@ -81,7 +81,7 @@
 
   async function cargarBrandDesdeConfig() {
     try {
-      const response = await fetch('/empresa-config.json', { cache: 'no-store' });
+      const response = await fetch('empresa-config.json', { cache: 'no-store' });
       if (!response.ok) {
         throw new Error('No se pudo cargar empresa-config.json');
       }

@@ -22,10 +22,7 @@ Subida
 documentacion/
 backend/
 
-# ⚠️ SEGURIDAD: Configuración de APIs (URLs de Google Apps Script)
-# api-config.js es configuración interna; auth.js sí debe publicarse porque
-# el navegador lo carga para validar la licencia y autenticar el acceso.
-assets/js/api-config.js
+# Configuración de APIs cargada por los módulos del navegador.
 
 # Variables de entorno y secretos
 .env
