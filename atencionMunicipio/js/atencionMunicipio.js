@@ -19,6 +19,7 @@ var _amEditandoId    = null;     // null = crear nuevo
 var _amInmersivo     = false;
 var _amModoVisor     = 'ver';    // 'ver' | 'editar'
 var _amMunicipioVisor = null;    // municipio activo en el visor
+var _amZoomMovil     = 1;
 
 // ══════════════════════════════════════════════════════════════
 // PUNTO DE ENTRADA
@@ -30,6 +31,7 @@ function renderAtencionMunicipio() {
 
   _amPerfil     = (typeof getPerfilAdmin === 'function') ? getPerfilAdmin() : 'Administrador';
   _amInmersivo  = false;
+  _amZoomMovil  = 1;
   _amEditandoId = null;
   _amMunicipioVisor = null;
 
@@ -491,6 +493,11 @@ function _amVisorHtml(m) {
       '</div>' +
 
       '<div class="am-topbar-right">' +
+        '<div class="am-mobile-zoom" aria-label="Zoom de la hoja">' +
+          '<button type="button" onclick="amCambiarZoomMovil(-1)" title="Reducir tamaño de la hoja" class="am-mobile-zoom-btn">−</button>' +
+          '<span id="am-zoom-valor" class="am-mobile-zoom-valor">100%</span>' +
+          '<button type="button" onclick="amCambiarZoomMovil(1)" title="Aumentar tamaño de la hoja" class="am-mobile-zoom-btn">+</button>' +
+        '</div>' +
         // Pantalla completa
         '<button id="am-btn-inmersivo" onclick="amToggleInmersivo()" title="Pantalla completa" class="am-btn-inmersivo">' +
           '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">' +
@@ -537,6 +544,20 @@ function amCargarIframe() {
 
   // Siempre cargar en modo edición para tener barra de herramientas completa
   iframe.src = _amMunicipioVisor.linkHoja;
+}
+
+function amCambiarZoomMovil(direccion) {
+  if (!_amEsMovil()) return;
+
+  var niveles = [0.8, 0.9, 1, 1.1, 1.2, 1.3, 1.4];
+  var actual = niveles.indexOf(_amZoomMovil);
+  var siguiente = Math.max(0, Math.min(niveles.length - 1, actual + direccion));
+  _amZoomMovil = niveles[siguiente];
+
+  var iframe = document.getElementById('am-iframe');
+  var valor = document.getElementById('am-zoom-valor');
+  if (iframe) iframe.style.setProperty('--am-zoom', String(_amZoomMovil));
+  if (valor) valor.textContent = Math.round(_amZoomMovil * 100) + '%';
 }
 
 // ══════════════════════════════════════════════════════════════
