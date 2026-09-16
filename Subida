@@ -1,0 +1,84 @@
+═══════════════════════════════════════════════════════════════════════════════
+                        🚀 INSTRUCCIONES DE DEPLOY
+                    Portal de Nómina · Óptica Visión de Águila
+═══════════════════════════════════════════════════════════════════════════════
+
+📌 PROPÓSITO:
+   Este archivo contiene instrucciones y comandos para subir los cambios del
+   repositorio local (esta computadora) al servidor remoto GitHub.
+
+═══════════════════════════════════════════════════════════════════════════════
+                            ⚙️  CONFIGURACIÓN
+═══════════════════════════════════════════════════════════════════════════════
+
+Repositorio Remoto:  GitHub
+URL:                 https://github.com/SistemacontableVA/app.git
+Rama Local:          master
+Rama Remota:         main
+Credencial:          Token PAT (Personal Access Token)
+
+═══════════════════════════════════════════════════════════════════════════════
+                        🖥️  RUTAS DISPONIBLES (2 Computadores)
+═══════════════════════════════════════════════════════════════════════════════
+
+Opción 1 - Computador Principal (G:)
+   Ruta: "g:\Otros ordenadores\Mi portátil\Panel General\KS\Nomina Vision de Aguila\Aplicacion"
+
+Opción 2 - Computador Secundario (H:)
+   Ruta: "h:\Otros ordenadores\Mi portátil\Panel General\KS\Nomina Vision de Aguila\Aplicacion"
+
+═══════════════════════════════════════════════════════════════════════════════
+                          🔄 PROCESO DE DEPLOY
+═══════════════════════════════════════════════════════════════════════════════
+
+PASO 1: Confirmar la ruta (G: o H:)
+   ➜ La IA te preguntará cuál es la ruta en tu computador actual
+
+PASO 2: Agregar todos los cambios al staging area
+   git add -A
+
+PASO 3: Crear un commit con descripción
+   git commit -m "deploy: descripción de cambios"
+
+PASO 4: Hacer push a la rama main en GitHub
+   git push origin master:main --force
+
+═══════════════════════════════════════════════════════════════════════════════
+                        📝 COMANDO DE DEPLOY COMPLETO
+═══════════════════════════════════════════════════════════════════════════════
+
+Para ejecutar el deploy, usa el siguiente comando (reemplaza RUTA por G: o H:):
+
+git -C "RUTA:\Otros ordenadores\Mi portátil\Panel General\KS\Nomina Vision de Aguila\Aplicacion" add -A && git -C "RUTA:\Otros ordenadores\Mi portátil\Panel General\KS\Nomina Vision de Aguila\Aplicacion" commit -m "deploy: actualizacion" && git -C "RUTA:\Otros ordenadores\Mi portátil\Panel General\KS\Nomina Vision de Aguila\Aplicacion" push origin master:main --force
+
+Ejemplo con G::
+git -C "g:\Otros ordenadores\Mi portátil\Panel General\KS\Nomina Vision de Aguila\Aplicacion" add -A && git -C "g:\Otros ordenadores\Mi portátil\Panel General\KS\Nomina Vision de Aguila\Aplicacion" commit -m "deploy: actualizacion" && git -C "g:\Otros ordenadores\Mi portátil\Panel General\KS\Nomina Vision de Aguila\Aplicacion" push origin master:main --force
+
+Ejemplo con H::
+git -C "h:\Otros ordenadores\Mi portátil\Panel General\KS\Nomina Vision de Aguila\Aplicacion" add -A && git -C "h:\Otros ordenadores\Mi portátil\Panel General\KS\Nomina Vision de Aguila\Aplicacion" commit -m "deploy: actualizacion" && git -C "h:\Otros ordenadores\Mi portátil\Panel General\KS\Nomina Vision de Aguila\Aplicacion" push origin master:main --force
+
+═══════════════════════════════════════════════════════════════════════════════
+                         ✅ VERIFICACIÓN POSTERIOR
+═══════════════════════════════════════════════════════════════════════════════
+
+Después de ejecutar el deploy, verifica con:
+
+git status
+
+Debería mostrar:
+   "On branch master"
+   "Your branch is up to date with 'origin/main'"
+   "working tree clean"
+
+═══════════════════════════════════════════════════════════════════════════════
+                         ⚡ INSTRUCCIÓN PARA LA IA
+═══════════════════════════════════════════════════════════════════════════════
+
+CUANDO EL USUARIO DIGA "DEPLOY":
+
+1. Pregunta: "¿En cuál computador estás? ¿G: o H:?"
+2. Espera la respuesta
+3. Ejecuta el comando correspondiente con la ruta confirmada
+4. Verifica que todo se haya subido correctamente con "git status"
+
+NO ASUMIR LA RUTA - SIEMPRE PREGUNTAR PRIMERO.

@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Solicitud de Espacio - Óptica Visión de Águila</title>
+
+<style>
+  @page {
+    size: Letter;
+    margin: 0;
+  }
+
+  :root {
+    --petroleo: #0B5969;
+    --petroleo-dark: #083F4A;
+    --teal: #1E7B8F;
+    --teal-light: #2F97AE;
+    --gold: #D9A62E;
+    --gold-light: #F1D27A;
+    --ink: #17242A;
+    --muted: #63747A;
+    --paper: #FFFFFF;
+    --soft: #F5F7FA;
+    --line: #D9E1E4;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: #dfe7e9;
+    font-family: Inter, "Segoe UI", Arial, sans-serif;
+    color: var(--ink);
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .page {
+    width: 8.5in;
+    height: 11in;
+    margin: 0 auto;
+    position: relative;
+    overflow: hidden;
+    background: var(--paper);
+    padding: 0.18in 0.54in 0.78in;
+  }
+
+  /* Decorative background */
+  .page::before {
+    content: "";
+    position: absolute;
+    width: 4.8in;
+    height: 2.25in;
+    right: -2.35in;
+    top: -1.15in;
+    border: 10px solid rgba(11,89,105,.08);
+    border-radius: 50%;
+    transform: rotate(-12deg);
+  }
+
+  .page::after {
+    content: "";
+    position: absolute;
+    width: 3.8in;
+    height: 1.6in;
+    left: -2.05in;
+    bottom: -1.0in;
+    border: 8px solid rgba(217,166,46,.13);
+    border-radius: 50%;
+    transform: rotate(-15deg);
+  }
+
+  .top-band {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 7px;
+    background: linear-gradient(90deg, var(--petroleo-dark), var(--teal), var(--gold));
+  }
+
+  .header {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: 42% 58%;
+    gap: 22px;
+    align-items: center;
+    min-height: 1.47in;
+    padding-bottom: 0.04in;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .brand {
+    position: relative;
+    padding-right: 18px;
+    border-right: 1px dotted #8CA5AB;
+  }
+
+  .logo {
+    display: block;
+    width: 2.25in;
+    max-width: 100%;
+    height: auto;
+  }
+
+  .rif {
+    margin: 4px 0 0 0.95in;
+    color: var(--petroleo-dark);
+    font-size: 9.2pt;
+    font-weight: 800;
+    letter-spacing: .35px;
+  }
+
+  .request-meta {
+    display: grid;
+    gap: 7px;
+  }
+
+  .meta-row {
+    display: grid;
+    grid-template-columns: 22px 1fr;
+    gap: 8px;
+    align-items: start;
+  }
+
+  .meta-icon svg,
+  .commitment-icon svg,
+  .schedule-head small svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .meta-icon {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    background: var(--petroleo);
+    font-size: 10px;
+    font-weight: 800;
+  }
+
+  .meta-label {
+    display: block;
+    font-size: 10pt;
+    font-weight: 800;
+    color: var(--petroleo-dark);
+    line-height: 1.1;
+  }
+
+  .meta-value {
+    display: block;
+    margin-top: 2px;
+    font-size: 12pt;
+    color: var(--ink);
+    line-height: 1.2;
+  }
+
+  .meta-row.subject {
+    grid-template-columns: 22px 1fr;
+  }
+
+  .meta-row.subject .meta-value {
+    max-width: 3.75in;
+  }
+
+  .section-title {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 0.06in 0 0.1in;
+    color: var(--petroleo);
+  }
+
+  .section-title::before,
+  .section-title::after {
+    content: "";
+    height: 1px;
+    flex: 1;
+    background: linear-gradient(90deg, transparent, var(--gold));
+  }
+
+  .section-title::after {
+    background: linear-gradient(90deg, var(--gold), transparent);
+  }
+
+  .section-title span {
+    font-family: Georgia, "Times New Roman", serif;
+    font-style: italic;
+    font-weight: 700;
+    font-size: 17pt;
+    white-space: nowrap;
+  }
+
+  .intro {
+    position: relative;
+    z-index: 2;
+    margin: 0 0.12in;
+    font-size: 9.25pt;
+    line-height: 1.58;
+    text-align: justify;
+  }
+
+  .placeholder {
+    color: var(--petroleo-dark);
+    font-weight: 700;
+  }
+
+  .schedule {
+    position: relative;
+    z-index: 2;
+    margin-top: 0.14in;
+    border: 1px solid var(--gold);
+    border-radius: 14px;
+    overflow: hidden;
+    background: #fff;
+  }
+
+  .schedule-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.45fr 1fr 1.15fr;
+  }
+
+  .schedule-head {
+    min-height: 0.42in;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    padding: 6px 4px;
+    background: var(--petroleo-dark);
+    color: #fff;
+    font-size: 8.3pt;
+    font-weight: 800;
+    text-align: center;
+  }
+
+  .schedule-head small {
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .schedule-head small svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .schedule-cell {
+    min-height: 0.47in;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 5px;
+    border-right: 1px solid #E4D7B4;
+    color: var(--petroleo-dark);
+    font-size: 9pt;
+    font-weight: 650;
+    text-align: center;
+  }
+
+  .schedule-cell:last-child {
+    border-right: 0;
+  }
+
+  .commitments {
+    position: relative;
+    z-index: 2;
+    margin-top: 0.20in;
+    padding-top: 0.03in;
+  }
+
+  .commitment {
+    display: grid;
+    grid-template-columns: 34px 1fr;
+    gap: 12px;
+    position: relative;
+    margin-bottom: 13px;
+    min-height: 0.55in;
+  }
+
+  .commitment:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    left: 18px;
+    top: 36px;
+    bottom: -13px;
+    border-left: 1px dotted var(--teal-light);
+  }
+
+  .commitment-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--petroleo-dark);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 800;
+    box-shadow: 0 0 0 4px rgba(11,89,105,.07);
+  }
+
+  .commitment p {
+    margin: 0;
+    font-size: 8.75pt;
+    line-height: 1.58;
+    text-align: justify;
+  }
+
+  .signatures {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-top: 0.16in;
+  }
+
+  .signature-card {
+    border: 1px solid #B9C9CE;
+    border-radius: 13px;
+    min-height: 1.42in;
+    overflow: hidden;
+    background: #fff;
+  }
+
+  .signature-card.right {
+    border-color: #D8B65C;
+  }
+
+  .card-title {
+    display: inline-block;
+    margin: 0;
+    padding: 6px 14px;
+    border-radius: 0 0 10px 0;
+    background: var(--petroleo-dark);
+    color: white;
+    font-size: 8.2pt;
+    font-weight: 800;
+  }
+
+  .signature-card.right .card-title {
+    background: linear-gradient(90deg, var(--petroleo), var(--teal));
+  }
+
+  .signature-fields {
+    display: grid;
+    gap: 10px;
+    padding: 11px 15px 15px;
+    font-size: 8.3pt;
+  }
+
+  .signature-card.right .signature-fields {
+    gap: 9px;
+  }
+
+  .field-line {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    white-space: nowrap;
+    min-height: 20px;
+  }
+
+  .field-line strong {
+    color: var(--petroleo-dark);
+  }
+
+  .line {
+    flex: 1;
+    border-bottom: 1px dashed #8FA6AC;
+    min-width: 60px;
+    height: 20px;
+  }
+
+  .observations {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 10px;
+    align-items: center;
+    margin-top: 0.08in;
+    padding: 8px 12px;
+    border: 1px solid #B9C9CE;
+    border-radius: 11px;
+    min-height: 0.42in;
+    background: #fff;
+  }
+
+  .observations {
+    grid-template-columns: 0.95in 1fr;
+    align-items: stretch;
+    min-height: 0.62in;
+  }
+
+  .obs-label {
+    display: flex;
+    align-items: flex-start;
+    padding-top: 2px;
+  }
+
+  .observations strong {
+    color: var(--petroleo-dark);
+    font-size: 8.2pt;
+  }
+
+  .obs-lines {
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    gap: 10px;
+    padding-top: 2px;
+  }
+
+  .obs-line {
+    border-bottom: 1px dashed #91AAB1;
+    min-height: 12px;
+  }
+
+  .footer{position:absolute;z-index:3;left:0;bottom:0;width:100%;min-height:.62in;padding:9px .54in;background:#083F4A;color:#fff;border-top:3px solid #D9A62E;display:grid;grid-template-columns:1fr 1.35fr 1fr;gap:14px;align-items:center;font-size:6.6pt}
+  .footer strong{display:block;color:#F1D27A;font-size:6.8pt;margin-bottom:2px}
+  .footer-item{display:flex;align-items:center;gap:8px;min-width:0}
+  .footer-item strong{margin-bottom:3px}
+  .footer-icon{width:27px;height:27px;min-width:27px;border:1px solid rgba(255,255,255,.45);border-radius:50%;display:flex;align-items:center;justify-content:center}
+  .footer-icon svg{width:15px;height:15px;fill:none;stroke:#fff;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+  .footer-center{text-align:center;border-left:1px solid rgba(255,255,255,.25);border-right:1px solid rgba(255,255,255,.25);padding:0 10px}
+  .footer-right{text-align:right}
+
+  @media screen {
+    .page {
+      margin-top: 20px;
+      box-shadow: 0 15px 45px rgba(0,0,0,.15);
+    }
+  }
+
+  @media print {
+    html, body {
+      background: white;
+    }
+
+    .page {
+      margin: 0;
+      box-shadow: none;
+    }
+  }
+</style>
+</head>
+
+<body>
+
+<div class="page">
+  <div class="top-band"></div>
+
+  <header class="header">
+    <div class="brand">
+      <img class="logo" data-empresa-logo="../../../assets/images/logomenu.png" data-empresa-nombre="Óptica Visión de Águila" alt="" />
+         </div>
+
+    <div class="request-meta">
+      <div class="meta-row">
+        <div class="meta-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 9h16M8 13h2M14 13h2M8 17h2"/></svg></div>
+        <div>
+          <span class="meta-label">Fecha de Solicitud</span>
+          <span class="meta-value">{{fechasolicitud}}</span>
+        </div>
+      </div>
+
+      <div class="meta-row">
+        <div class="meta-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.2"/><path d="M5.5 20c.8-4 3-6 6.5-6s5.7 2 6.5 6"/></svg></div>
+        <div>
+          <span class="meta-label">Señores</span>
+          <span class="meta-value">{{dirigido}}</span>
+        </div>
+      </div>
+
+      <div class="meta-row">
+        <div class="meta-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 21s6-6.2 6-11a6 6 0 1 0-12 0c0 4.8 6 11 6 11Z"/><circle cx="12" cy="10" r="2"/></svg></div>
+        <div>
+          <span class="meta-label">Municipio</span>
+          <span class="meta-value">{{municipio}}</span>
+        </div>
+      </div>
+
+      <div class="meta-row subject">
+        <div class="meta-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M15 3v5h4M9 12h6M9 16h6"/></svg></div>
+        <div>
+          <span class="meta-label">Asunto</span>
+          <span class="meta-value">Solicitud de espacio Jornada de Salud Visual, Control y Garantía de Lentes.</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="section-title">
+    <span>Cordial saludo.</span>
+  </div>
+
+  <section class="intro">
+    <span data-empresa-nombre></span>, de manera respetuosa nos dirigimos ante su despacho; con la finalidad de solicitarles un espacio en las instalaciones de <span class="placeholder">{{lugar}}</span>, con la intención de realizar una Jornada de Salud Visual (Consulta por Primera Vez de Optometría), Control y Garantía de Lentes, en el municipio descrito, en caso recibir su aprobación, la campaña se estimaría a realizar el día <span class="placeholder">{{fechaatencion}}</span>, desde las <span class="placeholder">{{horainicio}}</span> am hasta las <span class="placeholder">{{horafinal}}</span>, tomando en cuenta los protocolo de bioseguridad.
+  </section>
+
+  <section class="schedule">
+    <div class="schedule-grid">
+      <div class="schedule-head"><small aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 21V9l4-3v15M10 21V4h10v17M13 8h2M17 8h1M13 12h2M17 12h1M13 16h2M17 16h1"/></svg></small>Municipio</div>
+      <div class="schedule-head"><small aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 21s6-6.2 6-11a6 6 0 1 0-12 0c0 4.8 6 11 6 11Z"/><circle cx="12" cy="10" r="2"/></svg></small>Lugar de Atención</div>
+      <div class="schedule-head"><small aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 9h16M8 13h2M14 13h2M8 17h2"/></svg></small>Fecha</div>
+      <div class="schedule-head"><small aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/></svg></small>Horario</div>
+
+      <div class="schedule-cell">{{municipio}}</div>
+      <div class="schedule-cell">{{lugar}}</div>
+      <div class="schedule-cell">{{fechaatencion}}</div>
+      <div class="schedule-cell">{{horainicio}} a {{horafinal}}</div>
+    </div>
+  </section>
+
+  <section class="commitments">
+    <div class="commitment">
+      <div class="commitment-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 20V9.5a2 2 0 0 1 4 0V13m0-2.5a2 2 0 0 1 4 0V14m0-1a2 2 0 0 1 4 0v2.5c0 3.3-2.3 5.5-5.5 5.5H10c-2.7 0-4.5-1.5-5.3-3.7L3 12.5a1.8 1.8 0 0 1 3.4-1.1L8 15"/><path d="M7 8V6a2 2 0 0 1 4 0v2M11 8V5.5a2 2 0 0 1 4 0V9"/></svg></div>
+      <p>La entidad se compromete a entregar el espacio en óptimas condiciones de limpieza, iluminación, y ventilación, permitiendo el uso del espacio y hacer entrega el mismo en las condiciones que fue entregado al momento de finalizar la jornada. </p>
+    </div>
+
+    <div class="commitment">
+      <div class="commitment-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="17" rx="2"/><path d="M9 4.5V3h6v1.5M9 10l1.5 1.5L14 8M9 15h6M9 18h6"/></svg></div>
+      <p>De igual manera, con la firma del presente convenio, la entidad se compromete al disponer y/o proporcionar un espacio o salón en buen estado en un término de 10 a 15 días para la entrega de lentes a las personas inscritas que participaron en la jornada de Salud Visual.</p>
+    </div>
+
+    <div class="commitment">
+      <div class="commitment-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3.5 20c.4-4 2.3-6 5.5-6s5.1 2 5.5 6M13.5 14.5c2.7-.8 5.9.8 6.5 5.5"/></svg></div>
+      <p><span data-empresa-nombre></span> cuenta con un equipo que consta de 5 personas las cuales al momento de su ingreso se identificarán como miembro de la empresa y ellos a su vez mantendrán el comportamiento y compostura debida.</p>
+    </div>
+  </section>
+
+  <section class="signatures">
+    <div class="signature-card">
+      <div class="card-title">Coordinador(a) Visión de Águila</div>
+      <div class="signature-fields">
+        <div class="field-line"><strong>Firma:</strong><span class="line"></span></div>
+        <div class="field-line"><strong>Teléfono:</strong><span class="line"></span></div>
+      </div>
+    </div>
+
+    <div class="signature-card right">
+      <div class="card-title">Representante</div>
+      <div class="signature-fields">
+        <div class="field-line"><strong>Nombre:</strong><span class="line"></span></div>
+        <div class="field-line"><strong>Cargo:</strong><span class="line"></span></div>
+        <div class="field-line"><strong>Teléfono:</strong><span class="line"></span></div>
+        <div class="field-line"><strong>Firma:</strong><span class="line"></span></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="observations">
+    <div class="obs-label"><strong>Observaciones:</strong></div>
+    <div class="obs-lines">
+      <div class="obs-line"></div>
+      <div class="obs-line"></div>
+    </div>
+  </div>
+
+  <footer class="footer" style="grid-template-columns:1fr 1.35fr 1fr;gap:14px">
+  <div class="footer-item">
+    <div class="footer-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="m4 7 8 6 8-6"></path></svg>
+    </div>
+    <div>
+      <strong>CONTACTO</strong>
+      <span data-empresa-email></span>
+    </div>
+  </div>
+  <div class="footer-item footer-center">
+    <div class="footer-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24"><path d="M12 21s7-6.4 7-12a7 7 0 1 0-14 0c0 5.6 7 12 7 12Z"></path><circle cx="12" cy="9" r="2.2"></circle></svg>
+    </div>
+    <div>
+      <strong>DIRECCION</strong>
+      <span data-empresa-direccion></span>
+    </div>
+  </div>
+  <div class="footer-item footer-right">
+    <div class="footer-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24"><path d="M6.5 3.5h3l1.5 4-2 1.7a15 15 0 0 0 5.8 5.8l1.7-2 4 1.5v3c0 1.1-.9 2-2 2C10.5 19.5 4.5 13.5 4.5 5.5c0-1.1.9-2 2-2Z"></path></svg>
+    </div>
+    <div>
+      <strong>TELEFONOS DE CONTACTO</strong>
+      <span data-empresa-telefonos></span>
+    </div>
+  </div>
+</footer>
+</div>
+
+</body>
+<script>
+(function() {
+  function loadLogo() {
+    const logoElements = document.querySelectorAll('[data-empresa-logo]');
+    if (logoElements.length > 0) {
+      logoElements.forEach(el => {
+        const fallback = el.dataset.empresaLogo || 'assets/images/logomenu.png';
+        el.setAttribute('src', fallback);
+        const altText = el.dataset.empresaNombre || 'Óptica Visión de Águila';
+        el.setAttribute('alt', altText);
+      });
+    }
+  }
+
+  function setText(selector, value) {
+    document.querySelectorAll(selector).forEach(el => {
+      if (value) el.textContent = value;
+    });
+  }
+
+  async function cargarContactoDesdeConfig() {
+    try {
+      const response = await fetch('/empresa-config.json', { cache: 'no-store' });
+      if (!response.ok) throw new Error('No se pudo cargar empresa-config.json');
+      const config = await response.json();
+      const empresa = config.empresa || {};
+      const contacto = config.contacto || {};
+      const nombre = empresa.nombreLegal || empresa.nombre || empresa.nombreCorto || '';
+      const email = contacto.email || '';
+      const direccion = contacto.direccion || '';
+      const telefonos = [contacto.telefonoGeneral, contacto.telefonoSecundario].filter(Boolean).join(' / ');
+
+      setText('[data-empresa-nombre]', nombre);
+      setText('[data-empresa-email]', email);
+      setText('[data-empresa-direccion]', direccion);
+      setText('[data-empresa-telefonos]', telefonos);
+      setText('[data-empresa-telefonos-principal]', contacto.telefonoGeneral || '');
+    } catch (error) {
+      console.warn('[Plantilla] No se pudo cargar contacto desde empresa-config.json:', error.message);
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function () {
+      loadLogo();
+      cargarContactoDesdeConfig();
+    });
+  } else {
+    loadLogo();
+    cargarContactoDesdeConfig();
+  }
+})();
+</script>
+</html>

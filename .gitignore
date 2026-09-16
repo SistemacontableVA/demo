@@ -1,0 +1,44 @@
+# Windows
+desktop.ini
+Thumbs.db
+ehthumbs.db
+$RECYCLE.BIN/
+
+# Editor
+.vscode/settings.json
+*.suo
+*.user
+
+# Logs
+*.log
+
+# Google Apps Script (no va al repo web)
+*.gs
+Código.gs
+
+# Documentos internos
+PENDIENTE-*.md
+
+# ⚠️ SEGURIDAD: Configuración de APIs (URLs de Google Apps Script)
+# NUNCA incluir archivos con URLs de APIs en repositorio público
+assets/js/api-config.js
+administracion/config/auth.js
+
+# Variables de entorno y secretos
+.env
+.env.local
+.env.*.local
+secrets.json
+config.local.js
+
+# Node modules (si usa npm en futuro)
+node_modules/
+package-lock.json
+
+# Build y dist
+dist/
+build/
+*.min.js
+
+# Python scripts temporales
+*.py

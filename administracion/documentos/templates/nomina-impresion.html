@@ -1,0 +1,1314 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nómina de Promotor </title>
+  <style>
+    @page {
+      size: letter portrait;
+      margin: 8mm;
+    }
+
+    :root {
+      --navy-900: #082c4a;
+      --navy-800: #082c4a;
+      --navy-700: #082c4a;
+      --blue-600: #082c4a;
+      --table-header-bg: #24535C;
+      --green-700: #008A69;
+      --green-600: #08795E;
+      --green-light: #e6f5ef;
+      --purple-700: #D9A62E;
+      --purple-600: #F1D27A;
+      --purple-light: #fcf6e8;
+
+      /* Colores específicos de Deducciones */
+      --ded-icon-bg: #b40018;
+      --ded-total-bg: #b4001811;
+      --ded-total-text: #b40018;
+      --ded-total-border: #b4001823;
+      --teal-500: #00A878;
+      --teal-600: #008A69;
+      --border: #C8D7DA;
+      --text: #17242A;
+      --muted: #24535C;
+      --bg: #dfe7e9;
+      --card: #ffffff;
+      --radius-lg: 13px;
+      --radius-md: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Arial, Roboto, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 15px;
+      font-size: 13px;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .hoja {
+      max-width: 850px;
+      margin: 0 auto;
+      background: var(--card);
+      padding: 20px;
+      border-radius: var(--radius-lg);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .icon {
+      width: 22px;
+      height: 22px;
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    .icon svg {
+      width: 100%;
+      height: 100%;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* ===================== CABECERA SUPERIOR ===================== */
+    .top-section {
+      margin-bottom: 16px;
+    }
+
+    .header-layout {
+      display: grid;
+      grid-template-columns: auto 1fr 360px;
+      gap: 12px;
+      align-items: stretch;
+    }
+
+    .titles-col {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      justify-content: center;
+    }
+
+    /* 1. Logo Panel */
+    .logo-panel {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+    }
+
+    .logo-panel .logo {
+      width: 1.4in;
+      height: auto;
+      display: block;
+    }
+
+    .titulo-block {
+      background: #082c4a;
+      border: 2px solid var(--navy-800);
+      border-radius: var(--radius-lg);
+      padding: 2px 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .titulo-block h1 {
+      font-size: 16.5px;
+      line-height: 1.1;
+      font-weight: 900;
+      color: var(--green-light);
+      margin: 0 0 2px;
+      letter-spacing: .01em;
+    }
+
+    .titulo-block .subt {
+      font-size: 10px;
+      color: var(--purple-600);
+      font-weight: 700;
+    }
+
+    .asesor-bar {
+      background: #f0f4f8;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2px 10px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .asesor-bar .avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--navy-800);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .asesor-bar .avatar .icon {
+      width: 22px;
+      height: 22px;
+    }
+
+    .asesor-bar .lbl {
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: .05em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 2px;
+    }
+
+    .asesor-bar .nombre {
+      font-size: 13px;
+      font-weight: 900;
+      color: var(--navy-900);
+      line-height: 1.1;
+      text-transform: uppercase;
+    }
+
+    /* 3. Rejilla de KPIs */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      align-content: center;
+    }
+
+    .stat-card {
+      background: #fff;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 8px 6px;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .stat-card.green-bg {
+      background: #1a8769;
+      border-color: transparent;
+    }
+
+    .stat-card.green-bg .icon-wrap {
+      color: #fff;
+    }
+
+    .stat-card.green-bg .lbl {
+      color: rgba(255, 255, 255, 0.95);
+    }
+
+    .stat-card.green-bg .val {
+      color: #fff;
+    }
+
+    .stat-card.blue-bg {
+      background: var(--navy-900);
+      border-color: transparent;
+    }
+
+    .stat-card.blue-bg .icon-wrap {
+      color: #fff;
+    }
+
+    .stat-card.blue-bg .lbl {
+      color: rgba(255, 255, 255, 0.95);
+    }
+
+    .stat-card.blue-bg .val {
+      color: #fff;
+    }
+
+    .stat-card .icon-wrap {
+      color: var(--blue-600);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .stat-card .icon-wrap .icon {
+      width: 20px;
+      height: 20px;
+    }
+
+    .stat-card .lbl {
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: .015em;
+      color: var(--muted);
+      text-transform: uppercase;
+      line-height: 1.2;
+      text-align: left;
+      flex: 1;
+    }
+
+    .stat-card .lbl .sub {
+      display: block;
+      font-size: 7.5px;
+      font-weight: 400;
+      text-transform: none;
+      margin-top: 1px;
+      line-height: 1.1;
+      opacity: 0.9;
+    }
+
+    .stat-card .val {
+      font-size: 14.5px;
+      font-weight: 700;
+      color: var(--navy-900);
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    .stat-card.destacado {
+      background: linear-gradient(135deg, #00897b, #004d40);
+      border-color: transparent;
+    }
+
+    .stat-card.destacado .icon-wrap {
+      color: #fff;
+    }
+
+    .stat-card.destacado .lbl {
+      color: rgba(255, 255, 255, .95);
+      font-size: 9.5px;
+    }
+
+    .stat-card.destacado .val {
+      color: #fff;
+      font-size: 18px;
+    }
+
+    /* ===================== RESUMEN ===================== */
+    .fila-resumen {
+      display: grid;
+      grid-template-columns: 1fr 1fr 0.65fr;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .panel {
+      background: #fff;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 14px;
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .panel-header .icon-circle {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    .panel-header .icon-circle .icon {
+      width: 18px;
+      height: 18px;
+    }
+
+    .icon-circle.verde {
+      background: var(--green-600);
+    }
+
+    .icon-circle.morado {
+      background: var(--ded-icon-bg);
+    }
+
+    .panel-header h3 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--navy-900);
+      letter-spacing: .02em;
+    }
+
+    table.linea {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      margin-bottom: 10px;
+    }
+
+    table.linea td {
+      padding: 4px 0;
+      border-bottom: 1px solid #e2e8f0;
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    table.linea tr:last-child td {
+      border-bottom: none;
+    }
+
+    table.linea td.d {
+      text-align: right;
+      font-weight: 800;
+      color: var(--navy-900);
+    }
+
+    .total-fila {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-radius: 6px;
+      padding: 7px 10px;
+      font-weight: 700;
+      font-size: 15px;
+    }
+
+    .total-fila.verde {
+      background: var(--green-light);
+      color: var(--green-700);
+      border: 1px solid #c8e6c9;
+    }
+
+    .total-fila.morado {
+      background: var(--ded-total-bg);
+      color: var(--ded-total-text);
+      border: 1px solid var(--ded-total-border);
+    }
+
+    .panel-resumen {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 24px 16px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .panel-resumen::before {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 90px;
+      background: linear-gradient(135deg, #0f6f5c, #064e3b);
+      z-index: -1;
+      border-radius: 0 0 16px 16px;
+      clip-path: ellipse(110% 100% at 50% 100%);
+    }
+
+    .panel-resumen .icon-circle-big {
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      background: #0f6f5c;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      border: 5px solid #fff;
+      box-shadow: 0 6px 16px rgba(15, 111, 92, 0.3);
+      margin-bottom: 8px;
+    }
+
+    .panel-resumen .icon-circle-big .icon {
+      width: 26px;
+      height: 26px;
+    }
+
+    .panel-resumen h3 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 900;
+      color: var(--navy-900);
+      line-height: 1.1;
+      text-transform: uppercase;
+      letter-spacing: -0.02em;
+    }
+
+    .panel-resumen .subt {
+      font-size: 11.5px;
+      color: #0f6f5c;
+      margin-top: 4px;
+      font-weight: 800;
+    }
+
+    .panel-resumen .separator {
+      width: 40px;
+      height: 3px;
+      background: #0f6f5c;
+      border-radius: 2px;
+      margin: 8px 0;
+    }
+
+    .panel-resumen .val-grande {
+      background: #fff;
+      font-size: 32px;
+      font-weight: 900;
+      color: #0f6f5c;
+      line-height: 1;
+      padding: 10px 32px;
+      border-radius: 24px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      margin-top: 4px;
+    }
+
+    /* ===================== TABLAS ===================== */
+    .tabla-panel {
+      background: #fff;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+
+    .tabla-titulo {
+      background: linear-gradient(90deg, var(--navy-900), var(--navy-700));
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 10px 14px;
+      font-weight: 700;
+      font-size: 13.5px;
+      letter-spacing: .04em;
+      border-bottom: 2px solid var(--purple-700);
+    }
+
+    .tabla-titulo .icon {
+      width: 18px;
+      height: 18px;
+    }
+
+    table.grande {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      table-layout: fixed;
+    }
+
+    /* ===================== TABLAS de coordinador y fecha ===================== */
+    table.grande thead th {
+      background: var(--table-header-bg);
+      color: #ffffff;
+      padding: 5px 8px;
+      text-align: center;
+      font-weight: 500;
+      border-bottom: 2px solid var(--table-header-bg);
+      border-right: 1px solid rgba(255, 255, 255, 0.35);
+      line-height: 1.2;
+    }
+
+    table.grande thead th:last-child {
+      border-right: none;
+    }
+
+    table.grande thead th.c {
+      text-align: center;
+    }
+
+    table.grande tbody td {
+      padding: 8px 8px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+      vertical-align: middle;
+      line-height: 1.3;
+      font-weight: 600;
+      overflow-wrap: anywhere;
+    }
+
+    table.grande tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    table.grande td.c {
+      text-align: center;
+      font-weight: 500;
+    }
+
+    table.grande td.izq {
+      text-align: left;
+    }
+
+    table.grande tbody tr:nth-child(even) {
+      background: #f1f5f9;
+    }
+
+    /* Ancho de columnas - Jornadas */
+    table.tabla-jornadas th:nth-child(1) {
+      width: 15%;
+    }
+
+    table.tabla-jornadas th:nth-child(2) {
+      width: 15%;
+    }
+
+    table.tabla-jornadas th:nth-child(3) {
+      width: 10%;
+    }
+
+    table.tabla-jornadas th:nth-child(4) {
+      width: 8%;
+    }
+
+    table.tabla-jornadas th:nth-child(5) {
+      width: 8%;
+    }
+
+    table.tabla-jornadas th:nth-child(6) {
+      width: 8%;
+    }
+
+    table.tabla-jornadas th:nth-child(7) {
+      width: 10%;
+    }
+
+    table.tabla-jornadas th:nth-child(8) {
+      width: 9%;
+    }
+
+    table.tabla-jornadas th:nth-child(9) {
+      width: 17%;
+    }
+
+    table.tabla-jornadas td:nth-child(1) {
+      font-size: 8.5px;
+      line-height: 1.1;
+      letter-spacing: -0.01em;
+    }
+
+    /* Ancho de columnas - Lentes */
+    table.tabla-lentes th:nth-child(1) {
+      width: 12%;
+    }
+
+    table.tabla-lentes th:nth-child(2) {
+      width: 16%;
+    }
+
+    table.tabla-lentes th:nth-child(3) {
+      width: 30%;
+    }
+
+    table.tabla-lentes th:nth-child(4) {
+      width: 11%;
+    }
+
+    table.tabla-lentes th:nth-child(5) {
+      width: 10%;
+    }
+
+    table.tabla-lentes th:nth-child(6) {
+      width: 11%;
+    }
+
+    table.tabla-lentes th:nth-child(7) {
+      width: 10%;
+    }
+
+    /* ===================== FOOTER ===================== */
+    .footer {
+      background: var(--navy-900);
+      color: #fff;
+      border-radius: var(--radius-lg);
+      padding: 12px 18px;
+      border-top: 3px solid var(--purple-700);
+      display: grid;
+      grid-template-columns: 1fr 1.35fr 1fr;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .footer strong {
+      display: block;
+      color: var(--purple-600);
+      font-size: 10px;
+      margin-bottom: 2px;
+    }
+
+    .footer-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+      font-size: 9px;
+    }
+
+    .footer-icon {
+      width: 27px;
+      height: 27px;
+      min-width: 27px;
+      border: 1px solid rgba(255, 255, 255, .45);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .footer-icon svg {
+      width: 15px;
+      height: 15px;
+      fill: none;
+      stroke: #fff;
+      stroke-width: 1.7;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .footer-item strong {
+      margin-bottom: 3px;
+    }
+
+    .footer-center {
+      border-left: 1px solid rgba(255, 255, 255, .25);
+      border-right: 1px solid rgba(255, 255, 255, .25);
+      padding: 0 12px;
+      text-align: left;
+    }
+
+    .footer-right {
+      text-align: left;
+    }
+
+    .footer .marca {
+      flex: 0 0 auto;
+      font-weight: 900;
+      font-size: 13px;
+      letter-spacing: .03em;
+    }
+
+    .footer .marca .destacado-txt {
+      color: var(--teal-500);
+    }
+
+    /* ===================== IMPRESIÓN ===================== */
+    @media print {
+      #btnImprimir {
+        display: none !important;
+      }
+
+      body {
+        background: #fff;
+        padding: 0;
+        font-size: 12px;
+      }
+
+      .hoja {
+        max-width: 100%;
+        width: 100%;
+        padding: 0;
+        box-shadow: none;
+        border-radius: 0;
+      }
+
+      .top-section {
+        gap: 10px;
+        margin-bottom: 12px;
+      }
+
+      .header-row {
+        gap: 10px;
+      }
+
+      .stat-grid {
+        gap: 6px;
+      }
+
+      .stat-card {
+        padding: 6px 8px;
+      }
+
+      .stat-card .val {
+        font-size: 15px;
+      }
+
+      .stat-card.destacado .val {
+        font-size: 17px;
+      }
+
+      .fila-resumen {
+        gap: 10px;
+        margin-bottom: 12px;
+      }
+
+      .panel {
+        padding: 10px 12px;
+      }
+
+      .tabla-panel {
+        margin-bottom: 12px;
+      }
+
+      table.grande {
+        font-size: 10.5px;
+      }
+
+      table.grande thead th {
+        padding: 7px 6px;
+      }
+
+      table.grande tbody td {
+        padding: 6.5px 6px;
+      }
+
+      .footer {
+        padding: 10px 14px;
+      }
+
+      .top-section,
+      .header-row,
+      .fila-resumen,
+      .panel,
+      .tabla-panel,
+      .footer {
+        page-break-inside: avoid;
+      }
+    }
+
+    @media screen and (max-width: 768px) {
+      body {
+        padding: 8px 4px;
+      }
+
+      .top-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .stat-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .fila-resumen {
+        grid-template-columns: 1fr;
+      }
+
+      .footer {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .footer .item:last-child {
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="hoja">
+
+    <!-- ===== TOP ===== -->
+    <div class="top-section">
+      <div class="header-layout">
+
+        <!-- COL 1: Logo -->
+        <div class="logo-panel">
+          <img class="logo" data-empresa-logo="../../../assets/images/logomenu.png" data-empresa-nombre="Óptica Visión de Águila" alt="" />
+        </div>
+
+        <!-- COL 2: Títulos -->
+        <div class="titles-col">
+          <div class="titulo-block">
+            <h1>NÓMINA DE PROMOTOR</h1>
+            <div class="subt">Resumen de ingresos, deducciones y jornadas</div>
+          </div>
+          <div class="asesor-bar">
+            <div class="avatar">
+              <div class="icon"><svg viewBox="0 0 24 24">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                  <circle cx="12" cy="7" r="4" />
+                </svg></div>
+            </div>
+            <div>
+              <div class="lbl">Nombre Asesor</div>
+              <div class="nombre" id="asesorNombre">—</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- COL 3: Estadísticas (KPIs) -->
+        <div class="stat-grid">
+          <div class="stat-card green-bg">
+            <div class="icon-wrap">
+              <div class="icon"><svg viewBox="0 0 24 24">
+                  <circle cx="6" cy="15" r="3" />
+                  <circle cx="18" cy="15" r="3" />
+                  <path d="M9 15h6" />
+                  <path d="M4 12l2-6h12l2 6" />
+                </svg></div>
+            </div>
+            <div class="lbl">LENTE<br>ESPECIAL</div>
+            <div class="val" id="kpiLenteEsp">0</div>
+          </div>
+
+          <div class="stat-card green-bg">
+            <div class="icon-wrap">
+              <div class="icon"><svg viewBox="0 0 24 24">
+                  <circle cx="6" cy="15" r="3" />
+                  <circle cx="18" cy="15" r="3" />
+                  <path d="M9 15h6" />
+                  <path d="M4 12l2-6h12l2 6" />
+                </svg></div>
+            </div>
+            <div class="lbl">LENTE<br>SENCILLO</div>
+            <div class="val" id="kpiLenteSen">0</div>
+          </div>
+
+          <div class="stat-card blue-bg">
+            <div class="icon-wrap">
+              <div class="icon"><svg viewBox="0 0 24 24">
+                  <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg></div>
+            </div>
+            <div class="lbl">TOTAL<br>VENTA</div>
+            <div class="val" id="kpiTotalVenta">0</div>
+          </div>
+
+          <div class="stat-card blue-bg">
+            <div class="icon-wrap">
+              <div class="icon"><svg viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="9" />
+                  <path
+                    d="M12 7v10M9.5 9.5c0-1.1 1.1-2 2.5-2s2.5.9 2.5 2-1.1 2-2.5 2-2.5.9-2.5 2 1.1 2 2.5 2 2.5-.9 2.5-2" />
+                </svg></div>
+            </div>
+            <div class="lbl">PROMEDIO<br>X VENTA</div>
+            <div class="val" id="kpiPromedioVenta">0,0</div>
+          </div>
+
+          <div class="stat-card blue-bg">
+            <div class="icon-wrap">
+              <div class="icon"><svg viewBox="0 0 24 24">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                  <circle cx="9" cy="7" r="4" />
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                </svg></div>
+            </div>
+            <div class="lbl">BRIG. CAMPO</div>
+            <div class="val" id="kpiBrigCampo">0</div>
+          </div>
+
+          <div class="stat-card blue-bg">
+            <div class="icon-wrap">
+              <div class="icon"><svg viewBox="0 0 24 24">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                  <circle cx="9" cy="7" r="4" />
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                </svg></div>
+            </div>
+            <div class="lbl">BRIG.<br>ATENCIÓN</div>
+            <div class="val" id="kpiBrigAtend">0</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ===== INGRESOS / DEDUCCIONES / RESUMEN ===== -->
+    <div class="fila-resumen">
+
+      <div class="panel">
+        <div class="panel-header">
+          <div class="icon-circle verde">
+            <div class="icon"><svg viewBox="0 0 24 24">
+                <path d="M23 6l-9.5 9.5-5-5L1 18" />
+                <path d="M17 6h6v6" />
+              </svg></div>
+          </div>
+          <h3>INGRESOS</h3>
+        </div>
+        <table class="linea">
+          <tr>
+            <td>Cantidad Afiliaciones</td>
+            <td class="d" id="ingCantidadAff">0</td>
+          </tr>
+          <tr>
+            <td>Total Afiliaciones</td>
+            <td class="d" id="ingTotalAff">$0</td>
+          </tr>
+          <tr>
+            <td>Lent. Especial</td>
+            <td class="d" id="ingLenteEsp">$0</td>
+          </tr>
+          <tr>
+            <td>Lent. Sencillo</td>
+            <td class="d" id="ingLenteSen">$0</td>
+          </tr>
+          <tr>
+            <td>Bono Asistencia</td>
+            <td class="d" id="ingPagoAsistencia">$0</td>
+          </tr>
+        </table>
+        <div class="total-fila verde"><span>TOTAL INGRESOS</span><span id="ingTotalIngresos">$0</span></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <div class="icon-circle morado">
+            <div class="icon"><svg viewBox="0 0 24 24">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <path d="M7 10l5 5 5-5" />
+                <path d="M12 15V3" />
+              </svg></div>
+          </div>
+          <h3>DEDUCCIONES</h3>
+        </div>
+        <table class="linea">
+          <tr>
+            <td>Préstamos / Adelantos</td>
+            <td class="d" id="dedPrestamo">$0</td>
+          </tr>
+          <tr>
+            <td>Comida / Medicina</td>
+            <td class="d" id="dedComida">$0</td>
+          </tr>
+          <tr>
+            <td>Descuento</td>
+            <td class="d" id="dedDescuento">$0</td>
+          </tr>
+        </table>
+        <div class="total-fila morado"><span>TOTAL DEDUCCIONES</span><span id="dedTotalDeducciones">$0</span></div>
+      </div>
+
+      <div class="panel-resumen">
+        <div class="icon-circle-big">
+          <div class="icon"><svg viewBox="0 0 24 24">
+              <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4" />
+              <path d="M3 5v14a2 2 0 0 0 2 2h16v-5" />
+              <path d="M18 12a2 2 0 0 0 0 4h4v-4z" />
+            </svg></div>
+        </div>
+        <h3>RESUMEN GENERAL</h3>
+        <div class="subt">Ingresos − Deducciones</div>
+        <div class="separator"></div>
+        <div class="val-grande" id="resumenGeneral">$0</div>
+      </div>
+
+    </div>
+
+    <!-- ===== DETALLE DE JORNADAS ===== -->
+    <div class="tabla-panel">
+      <div class="tabla-titulo">
+        <div class="icon"><svg viewBox="0 0 24 24">
+            <rect x="3" y="4" width="18" height="18" rx="2" />
+            <path d="M16 2v4M8 2v4M3 10h18" />
+          </svg></div>
+        DETALLE DE JORNADAS Y DEDUCCIONES
+      </div>
+      <table class="grande tabla-jornadas">
+        <thead>
+          <tr>
+            <th>Coordinador</th>
+            <th>Municipio</th>
+            <th>Fecha</th>
+            <th class="c">N° AFF.</th>
+            <th class="c">N° Brig.</th>
+            <th class="c">Comida</th>
+            <th class="c">Prest / Adel</th>
+            <th class="c">Descuento</th>
+            <th>Detalle</th>
+          </tr>
+        </thead>
+        <tbody id="tablaJornadas"></tbody>
+      </table>
+    </div>
+
+    <!-- ===== RELACIÓN DE LENTES ===== -->
+    <div class="tabla-panel">
+      <div class="tabla-titulo">
+        <div class="icon"><svg viewBox="0 0 24 24">
+            <circle cx="6" cy="15" r="3" />
+            <circle cx="18" cy="15" r="3" />
+            <path d="M9 15h6" />
+            <path d="M4 12l2-6h12l2 6" />
+          </svg></div>
+        RELACIÓN DE LENTES VENDIDOS EN JORNADAS DE ATENCIÓN
+      </div>
+      <table class="grande tabla-lentes">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Municipio</th>
+            <th>Asesor</th>
+            <th class="c">C. Prom.</th>
+            <th class="c">Asist.</th>
+            <th class="c">Venta Lent.</th>
+            <th class="c">Brigada</th>
+          </tr>
+        </thead>
+        <tbody id="tablaLentes"></tbody>
+      </table>
+    </div>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="footer">
+      <div class="footer-item">
+        <div class="footer-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <rect x="3" y="5" width="18" height="14" rx="2"></rect>
+            <path d="m4 7 8 6 8-6"></path>
+          </svg>
+        </div>
+        <div>
+          <strong>CONTACTO</strong>
+          <span data-empresa-email></span>
+        </div>
+      </div>
+      <div class="footer-item footer-center">
+        <div class="footer-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path d="M12 21s7-6.4 7-12a7 7 0 1 0-14 0c0 5.6 7 12 7 12Z"></path>
+            <circle cx="12" cy="9" r="2.2"></circle>
+          </svg>
+        </div>
+        <div>
+          <strong>DIRECCIÓN</strong>
+          <span data-empresa-direccion></span>
+        </div>
+      </div>
+      <div class="footer-item footer-right">
+        <div class="footer-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path
+              d="M6.5 3.5h3l1.5 4-2 1.7a15 15 0 0 0 5.8 5.8l1.7-2 4 1.5v3c0 1.1-.9 2-2 2C10.5 19.5 4.5 13.5 4.5 5.5c0-1.1.9-2 2-2Z">
+            </path>
+          </svg>
+        </div>
+        <div>
+          <strong>TELÉFONOS DE CONTACTO</strong>
+          <span data-empresa-telefonos></span>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    function setText(selector, value) {
+      document.querySelectorAll(selector).forEach(el => {
+        el.textContent = value || '';
+      });
+    }
+
+    function fmt(value, showDecimals = false) {
+      const n = Number(value ?? 0) || 0;
+      const signo = n < 0 ? "-$" : "$";
+      const opts = showDecimals ? { minimumFractionDigits: 2, maximumFractionDigits: 2 } : { maximumFractionDigits: 0 };
+      return `${signo}${Math.abs(n).toLocaleString("es-CO", opts)}`;
+    }
+
+    function num(value, fallback) {
+      const safeFallback = fallback === undefined ? "-" : fallback;
+      return (value === "" || value === null || value === undefined || value === 0) ? safeFallback : value;
+    }
+
+    function setEmptyState() {
+      document.getElementById("asesorNombre").textContent = "—";
+      document.getElementById("kpiBrigCampo").textContent = "0";
+      document.getElementById("kpiBrigAtend").textContent = "0";
+      document.getElementById("kpiAsistidos").textContent = "0";
+      document.getElementById("kpiTotalAff").textContent = "0";
+      document.getElementById("ingCantidadAff").textContent = "0";
+      document.getElementById("ingTotalAff").textContent = fmt(0);
+      document.getElementById("ingLenteEsp").textContent = fmt(0);
+      document.getElementById("ingLenteSen").textContent = fmt(0);
+      document.getElementById("ingPagoAsistencia").textContent = fmt(0);
+      document.getElementById("ingTotalIngresos").textContent = fmt(0, true);
+      document.getElementById("dedPrestamo").textContent = fmt(0);
+      document.getElementById("dedComida").textContent = fmt(0);
+      document.getElementById("dedDescuento").textContent = fmt(0);
+      document.getElementById("dedTotalDeducciones").textContent = fmt(0, true);
+      document.getElementById("resumenGeneral").textContent = fmt(0, true);
+      document.getElementById("tablaJornadas").innerHTML = "";
+      document.getElementById("tablaLentes").innerHTML = "";
+    }
+
+    function initTemplate() {
+      const payload = window.__nominaData || null;
+      if (!payload) {
+        setEmptyState();
+        return;
+      }
+      renderNominaImpresion(payload);
+    }
+
+    function renderNominaImpresion(d) {
+      const payload = d || {};
+      const resumen = payload.resumen || {};
+      const logDiario = Array.isArray(payload.logDiario) ? payload.logDiario : [];
+      const lentesDetalle = Array.isArray(payload.lentesDetalle) ? payload.lentesDetalle : [];
+
+      document.getElementById("asesorNombre").textContent = (payload.nombre || "").toUpperCase();
+
+      document.getElementById("kpiLenteEsp").textContent = resumen.cantLenteEsp ?? resumen.lenteEspecial ?? 0;
+      document.getElementById("kpiLenteSen").textContent = resumen.cantLenteSen ?? resumen.lenteSencillo ?? 0;
+      document.getElementById("kpiTotalVenta").textContent = resumen.totalVentaLentes ?? 0;
+      document.getElementById("kpiPromedioVenta").textContent = Number(resumen.promedioVenta ?? 0).toLocaleString("es-CO", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+      document.getElementById("kpiBrigCampo").textContent = resumen.brigCampo ?? 0;
+      document.getElementById("kpiBrigAtend").textContent = resumen.brigAtend ?? 0;
+
+      const totalAffMonto = resumen.totalAffMonto ?? 0;
+      const pagoAsistencia = resumen.pagoAsistencia ?? 0;
+      const montoLenteEsp = resumen.montoLenteEsp ?? 0;
+      const montoLenteSen = resumen.montoLenteSen ?? 0;
+      const totalIngresos = resumen.totalIngresos ?? 0;
+      const totalDeducciones = resumen.totalDeducciones ?? 0;
+      const neto = resumen.neto ?? 0;
+
+      document.getElementById("ingCantidadAff").textContent = resumen.totalAff ?? 0;
+      document.getElementById("ingTotalAff").textContent = fmt(totalAffMonto);
+      document.getElementById("ingLenteEsp").textContent = fmt(montoLenteEsp);
+      document.getElementById("ingLenteSen").textContent = fmt(montoLenteSen);
+      document.getElementById("ingPagoAsistencia").textContent = fmt(pagoAsistencia);
+      const totalIngresosConAsistencia = totalIngresos + pagoAsistencia;
+      document.getElementById("ingTotalIngresos").textContent = fmt(totalIngresosConAsistencia, true);
+
+      document.getElementById("dedPrestamo").textContent = fmt(resumen.deducPrestamo ?? 0);
+      document.getElementById("dedComida").textContent = fmt(resumen.deducComida ?? 0);
+      document.getElementById("dedDescuento").textContent = fmt(resumen.deducDescuento ?? 0);
+      document.getElementById("dedTotalDeducciones").textContent = fmt(totalDeducciones, true);
+      document.getElementById("resumenGeneral").textContent = fmt(neto, true);
+
+      const tbJornadas = document.getElementById("tablaJornadas");
+      tbJornadas.innerHTML = "";
+      logDiario.forEach(function (registro) {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td class="izq">${registro.coordinador || ""}</td>
+          <td class="izq">${registro.municipio || ""}</td>
+          <td>${registro.fecha || ""}</td>
+          <td class="c">${num(registro.aff, 0)}</td>
+          <td class="c">${num(registro.brig, 0)}</td>
+          <td class="c">${registro.comida !== undefined && registro.comida !== null && registro.comida !== "" ? fmt(registro.comida) : "-"}</td>
+          <td class="c">${registro.prestamo !== undefined && registro.prestamo !== null && registro.prestamo !== "" ? fmt(registro.prestamo) : "-"}</td>
+          <td class="c">${registro.descuento !== undefined && registro.descuento !== null && registro.descuento !== "" ? fmt(registro.descuento) : "-"}</td>
+          <td class="izq">${registro.detalle || ""}</td>
+        `;
+        tbJornadas.appendChild(tr);
+      });
+
+      const tbLentes = document.getElementById("tablaLentes");
+      tbLentes.innerHTML = "";
+      lentesDetalle.forEach(function (lente) {
+        const venta = Number(lente.totalVenta ?? 0);
+        const cantidad = Number(lente.cProm ?? 0);
+        const asist = Number(lente.asist ?? 0);
+        const brig = Number(lente.brigada ?? lente.brig ?? 0);
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${lente.fecha || ""}</td>
+          <td class="izq">${lente.municipio || ""}</td>
+          <td class="izq">${lente.asesor || payload.nombre || ""}</td>
+          <td class="c">${cantidad || 0}</td>
+          <td class="c">${asist || 0}</td>
+          <td class="c">${venta ? fmt(venta) : "-"}</td>
+          <td class="c">${brig || 0}</td>
+        `;
+        tbLentes.appendChild(tr);
+      });
+    }
+
+    function render(d) {
+      if (!d && !window.__nominaData) {
+        setEmptyState();
+        return;
+      }
+      renderNominaImpresion(d || window.__nominaData);
+    }
+
+    window.renderNominaImpresion = renderNominaImpresion;
+    window.render = render;
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initTemplate);
+    } else {
+      initTemplate();
+    }
+  </script>
+<script>
+(function() {
+  function setText(selector, value) {
+    document.querySelectorAll(selector).forEach(el => {
+      el.textContent = value || '';
+    });
+  }
+
+  function loadDynamicData() {
+    const logoElements = document.querySelectorAll('[data-empresa-logo]');
+    if (logoElements.length > 0) {
+      logoElements.forEach(el => {
+        const fallback = el.dataset.empresaLogo || '../../../assets/images/logomenu.png';
+        el.setAttribute('src', fallback);
+        const altText = el.dataset.empresaNombre || 'Óptica Visión de Águila';
+        el.setAttribute('alt', altText);
+      });
+    }
+  }
+
+  async function cargarContactoDesdeConfig() {
+    try {
+      const response = await fetch('/empresa-config.json', { cache: 'no-store' });
+      if (!response.ok) throw new Error('No se pudo cargar empresa-config.json');
+
+      const config = await response.json();
+      const contacto = config.contacto || {};
+      const email = contacto.email || '';
+      const direccion = contacto.direccion || '';
+      const telefonos = [contacto.telefonoGeneral, contacto.telefonoSecundario].filter(Boolean).join(' / ');
+
+      setText('[data-empresa-email]', email);
+      setText('[data-empresa-direccion]', direccion);
+      setText('[data-empresa-telefonos]', telefonos);
+      setText('[data-empresa-telefonos-principal]', contacto.telefonoGeneral || '');
+    } catch (error) {
+      console.warn('[Plantilla] No se pudo cargar contacto desde empresa-config.json:', error.message);
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function () {
+      loadDynamicData();
+      cargarContactoDesdeConfig();
+    });
+  } else {
+    loadDynamicData();
+    cargarContactoDesdeConfig();
+  }
+})();
+</script>
+</body>
+
+</html>

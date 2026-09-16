@@ -1,0 +1,151 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8">
+<title>Hoja de Convenio - Óptica Visión de Águila</title>
+<style>
+@page{size:Letter;margin:0}*{box-sizing:border-box}html,body{margin:0;background:#dfe7e9;font-family:Inter,"Segoe UI",Arial,sans-serif;color:#17242A;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.page{width:8.5in;height:11in;margin:0 auto;position:relative;overflow:hidden;background:#fff;padding:.18in .54in .78in}
+.top{position:absolute;top:0;left:0;width:100%;height:7px;background:linear-gradient(90deg,#083F4A,#1E7B8F,#D9A62E)}
+.page:before{content:"";position:absolute;width:4.8in;height:2.25in;right:-2.35in;top:-1.15in;border:10px solid rgba(11,89,105,.08);border-radius:50%;transform:rotate(-12deg)}
+.header{position:relative;z-index:2;display:grid;grid-template-columns:42% 58%;gap:22px;align-items:center;min-height:1.45in;padding-bottom:.04in;border-bottom:1px solid #D9E1E4}
+.brand{padding-right:18px;border-right:1px dotted #8CA5AB}.logo{width:2.65in;display:block;height:auto}.rif{margin:4px 0 0 .95in;color:#083F4A;font-size:9.2pt;font-weight:800}
+.meta{display:grid;grid-template-columns:1fr 1fr;gap:7px 12px}.mr{display:grid;grid-template-columns:20px 1fr;gap:7px;align-items:start}.mi{width:20px;height:20px;border-radius:50%;background:#0B5969;color:white;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:bold}.label{display:block;color:#083F4A;font-size:7.8pt;font-weight:800}.value{display:block;margin-top:2px;font-size:8.8pt}.fieldline{display:block;border-bottom:1px dashed #8FA6AC;height:15px;width:100%}
+.title{display:flex;align-items:center;gap:14px;margin:.06in 0 .1in;color:#0B5969}.title:before,.title:after{content:"";height:1px;flex:1;background:linear-gradient(90deg,transparent,#D9A62E)}.title:after{background:linear-gradient(90deg,#D9A62E,transparent)}.title span{font:italic 700 17pt Georgia,serif;white-space:nowrap}
+.letter{position:relative;z-index:2;margin:0 .11in;font-size:9.65pt;line-height:1.58;text-align:justify}.letter p{margin:0 0 .15in}.letter strong{color:#083F4A}
+.commitment{border-left:3px solid #D9A62E;padding:10px 13px;background:#F7FAFB;border-radius:0 10px 10px 0;font-size:9.45pt;line-height:1.5;text-align:justify;margin:.10in 0 .14in}
+.signature-wrap{position:relative;z-index:2;margin:.1in .11in 0;display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.signature-card{border:1px solid #B9C9CE;border-radius:13px;overflow:hidden;background:#fff;min-height:1.15in}.signature-head{background:linear-gradient(90deg,#083F4A,#1E7B8F);color:#fff;padding:7px 11px;font-size:9.1pt;font-weight:800}.signature-body{padding:8px 12px;font-size:8.8pt}.sig-line{display:flex;align-items:flex-end;gap:6px;min-height:21px;margin-bottom:5px}.sig-line b{color:#083F4A;white-space:nowrap}.sig-space{flex:1;border-bottom:1px dashed #8FA6AC;height:18px}.sig-img{height:28px;max-width:1.8in;display:block;object-fit:contain;object-position:left bottom;margin-bottom:2px}
+.footer{position:absolute;z-index:3;left:0;bottom:0;width:100%;min-height:.62in;padding:9px .54in;background:#083F4A;color:#fff;border-top:3px solid #D9A62E;display:grid;grid-template-columns:1fr 1.25fr 1fr;gap:12px;align-items:center;font-size:6.6pt}.footer strong{display:block;color:#F1D27A;font-size:6.8pt;margin-bottom:2px}.fc{text-align:center;border-left:1px solid #ffffff40;border-right:1px solid #ffffff40;padding:0 10px}.fr{text-align:right}
+.footer-item{display:flex;align-items:center;gap:8px;min-width:0}
+.footer-icon{width:27px;height:27px;min-width:27px;border:1px solid rgba(255,255,255,.45);border-radius:50%;display:flex;align-items:center;justify-content:center}
+.footer-icon svg{width:15px;height:15px;fill:none;stroke:#fff;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.footer-item strong{margin-bottom:3px}
+.footer-center{border-left:1px solid rgba(255,255,255,.25);border-right:1px solid rgba(255,255,255,.25);padding:0 12px;text-align:left}
+.footer-right{text-align:left}
+@media screen{.page{margin-top:20px;box-shadow:0 15px 45px #0002}}@media print{html,body{background:#fff}.page{margin:0;box-shadow:none}}
+</style></head><body><main class="page"><div class="top"></div>
+<header class="header"><div class="brand"><img class="logo" data-empresa-logo="../../../assets/images/logomenu.png" data-empresa-nombre="Óptica Visión de Águila" alt="" /></div>
+<div class="meta">
+<div class="mr"><div class="mi">S</div><div><span class="label">Sres.</span><span class="value">{{sres}}</span></div></div>
+<div class="mr"><div class="mi">F</div><div><span class="label">Fecha</span><span class="value">{{fecha}}</span></div></div>
+<div class="mr"><div class="mi">C</div><div><span class="label">Ciudad</span><span class="value">{{ciudad}}</span></div></div>
+<div class="mr"><div class="mi">T</div><div><span class="label">Teléfono</span><span class="value">{{telefono}}</span></div></div>
+<div class="mr"><div class="mi">E</div><div><span class="label">Estado</span><span class="value">{{estado}}</span></div></div>
+<div class="mr"><div class="mi">D</div><div><span class="label">Dirección</span><span class="value">{{direccion}}</span></div></div>
+</div></header>
+<div class="title"><span>Cordial saludo.</span></div>
+<section class="letter">
+<p>Por medio de la presente le solicitamos respetuosamente el alquiler de uno de sus salones para realizar una campaña de salud visual, la cual tiene como fin brindar servicios y tratamientos de salud visual a bajo costo a la población, esta se llevará a cabo el día <strong>{{dia_jornada}} de {{mes_jornada}} de 2026.</strong></p>
+<p>Con la firma del presente convenio, la entidad se compromete el arrendamiento del salón en buen estado para la realización de la jornada de salud visual y en un término de 10 a 15 días proporcionar un espacio para la entrega de lentes a las personas inscritas.</p>
+<p>La entidad se compromete a entregar el espacio en óptimas condiciones de limpieza, iluminación, y <strong data-empresa-nombre></strong>, a su vez se compromete a pagar el valor de <strong>{{valor_pago}} por día de atención y entrega de lentes</strong>, a su vez hacer entrega del mismo en las condiciones que fue entregado al momento de finalizar la jornada.</p>
+<div class="commitment"><strong>Condiciones de la jornada:</strong> <span data-empresa-nombre></span> cuenta con un equipo que consta de 5 personas las cuales al momento de su ingreso se identificarán como miembro de la empresa y ellos a su vez mantendrán el comportamiento y compostura debida para la realización de la actividad, iniciando desde las <strong>7:30 am hasta 5:30 pm.</strong></div>
+<p>De antemano gracias por la atención prestada.</p></section>
+<section class="signature-wrap" style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:.27in">
+<div class="signature-card">
+  <div class="signature-head">Coordinador(a) Visión de Águila</div>
+  <div class="signature-body" style="padding-top:12px">
+    <div class="sig-line" style="min-height:30px;margin-bottom:9px"><b>Nombre:</b><span class="sig-value">{{nombre_coordinador}}</span></div>
+    <div class="sig-line" style="min-height:30px;margin-bottom:9px"><b>Teléfono:</b><span class="sig-value">{{telefono_coordinador}}</span></div>
+    <div class="sig-line" style="min-height:40px;margin-top:8px"><b>Firma:</b><span class="sig-space" style="height:35px"></span></div>
+  </div>
+</div>
+
+<div class="signature-card">
+  <div class="signature-head">Constancia de recepción</div>
+  <div class="signature-body" style="padding-top:12px">
+    <div class="sig-line" style="min-height:25px"><b>Nombre:</b><span class="sig-space" style="height:20px"></span></div>
+    <div class="sig-line" style="min-height:25px"><b>Cargo:</b><span class="sig-space" style="height:20px"></span></div>
+    <div class="sig-line" style="min-height:25px"><b>Teléfono:</b><span class="sig-space" style="height:20px"></span></div>
+    <div class="sig-line" style="min-height:25px"><b>Firma:</b><span class="sig-space" style="height:20px"></span></div>
+  </div>
+</div>
+</section>
+
+<section class="observations" style="position:relative;z-index:2;margin:.22in .11in 0;border:1px solid #1E7B8F;border-radius:10px;padding:8px 12px 10px">
+  <div style="font-size:8pt;font-weight:800;color:#083F4A;margin-bottom:5px">Observaciones:</div>
+  <div style="font-size:8.5pt;color:#17242A;line-height:1.5;min-height:40px">{{observaciones}}</div>
+</section>
+<footer class="footer" style="grid-template-columns:1fr 1.35fr 1fr;gap:14px">
+  <div class="footer-item">
+    <div class="footer-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="m4 7 8 6 8-6"></path></svg>
+    </div>
+    <div>
+      <strong>CONTACTO</strong>
+      <span data-empresa-email></span>
+    </div>
+  </div>
+
+  <div class="footer-item footer-center">
+    <div class="footer-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24"><path d="M12 21s7-6.4 7-12a7 7 0 1 0-14 0c0 5.6 7 12 7 12Z"></path><circle cx="12" cy="9" r="2.2"></circle></svg>
+    </div>
+    <div>
+      <strong>DIRECCIÓN</strong>
+      <span data-empresa-direccion></span>
+    </div>
+  </div>
+
+  <div class="footer-item footer-right">
+    <div class="footer-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24"><path d="M6.5 3.5h3l1.5 4-2 1.7a15 15 0 0 0 5.8 5.8l1.7-2 4 1.5v3c0 1.1-.9 2-2 2C10.5 19.5 4.5 13.5 4.5 5.5c0-1.1.9-2 2-2Z"></path></svg>
+    </div>
+    <div>
+      <strong>TELÉFONOS DE CONTACTO</strong>
+      <span data-empresa-telefonos></span>
+    </div>
+  </div>
+</footer>
+</main><script>
+(function() {
+  function setText(selector, value) {
+    document.querySelectorAll(selector).forEach(el => {
+      el.textContent = value || '';
+    });
+  }
+
+  function loadDynamicData() {
+    const logoElements = document.querySelectorAll('[data-empresa-logo]');
+    if (logoElements.length > 0) {
+      logoElements.forEach(el => {
+        const fallback = el.dataset.empresaLogo || '../../../assets/images/logomenu.png';
+        el.setAttribute('src', fallback);
+        const altText = el.dataset.empresaNombre || 'Óptica Visión de Águila';
+        el.setAttribute('alt', altText);
+      });
+    }
+  }
+
+  async function cargarContactoDesdeConfig() {
+    try {
+      const response = await fetch('/empresa-config.json', { cache: 'no-store' });
+      if (!response.ok) throw new Error('No se pudo cargar empresa-config.json');
+
+      const config = await response.json();
+      const empresa = config.empresa || {};
+      const contacto = config.contacto || {};
+      const nombre = empresa.nombreLegal || empresa.nombre || empresa.nombreCorto || '';
+      const email = contacto.email || '';
+      const direccion = contacto.direccion || '';
+      const telefonos = [contacto.telefonoGeneral, contacto.telefonoSecundario].filter(Boolean).join(' / ');
+
+      setText('[data-empresa-nombre]', nombre);
+      setText('[data-empresa-email]', email);
+      setText('[data-empresa-direccion]', direccion);
+      setText('[data-empresa-telefonos]', telefonos);
+      setText('[data-empresa-telefonos-principal]', contacto.telefonoGeneral || '');
+    } catch (error) {
+      console.warn('[Plantilla] No se pudo cargar contacto desde empresa-config.json:', error.message);
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function () {
+      loadDynamicData();
+      cargarContactoDesdeConfig();
+    });
+  } else {
+    loadDynamicData();
+    cargarContactoDesdeConfig();
+  }
+})();
+</script>
+</body></html>

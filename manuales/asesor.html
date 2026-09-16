@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manual de Usuario · Portal de Nómina</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      fontFamily: { sans: ['Poppins', 'sans-serif'] },
+      colors: {
+        marino:  { DEFAULT: 'rgb(12,45,72)', dark: 'rgb(8,30,48)', light: 'rgba(12,45,72,0.08)' },
+        dorado:  { DEFAULT: 'rgb(212,161,56)', light: 'rgb(235,187,87)', suave: 'rgba(212,161,56,0.15)' },
+        gris:    { DEFAULT: 'rgb(71,85,105)', claro: 'rgb(243,244,246)' }
+      },
+      boxShadow: {
+        card:  '0 10px 30px -10px rgba(12,45,72,0.22)',
+        soft:  '0 4px 14px -4px rgba(12,45,72,0.14)',
+        glow:  '0 0 0 0 rgba(212,161,56,0.4)'
+      }
+    }
+  }
+}
+</script>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: 'Poppins', sans-serif; }
+
+  /* Pasos */
+  .step { display: none; animation: fadeUp .35s ease both; }
+  .step.active { display: block; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Fondo cuadriculado igual al index */
+  .tech-grid {
+    position: relative;
+    background-color: #f8fafc;
+    background-image:
+      linear-gradient(rgba(12,45,72,.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(12,45,72,.04) 1px, transparent 1px);
+    background-size: 26px 26px;
+  }
+  .tech-grid::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      radial-gradient(circle at 15% 30%, rgba(212,161,56,.12) 0, transparent 45%),
+      radial-gradient(circle at 85% 70%, rgba(12,45,72,.08) 0, transparent 40%);
+  }
+  .tech-grid > * { position: relative; z-index: 1; }
+
+  /* Barra degradada igual al landing */
+  .brand-bar {
+    background: linear-gradient(90deg, rgb(12,45,72), rgb(30,65,100), rgb(212,161,56));
+    height: 4px;
+  }
+
+  /* Pulso dorado */
+  .pulse-gold { animation: pulseGold 2s infinite; }
+  @keyframes pulseGold {
+    0%,100% { box-shadow: 0 0 0 0 rgba(212,161,56,.45); }
+    50%      { box-shadow: 0 0 0 10px rgba(212,161,56,0); }
+  }
+
+  /* Tarjeta mock */
+  .mock-card {
+    box-shadow: 0 20px 50px rgba(12,45,72,.12), 0 1px 0 rgba(255,255,255,.8) inset;
+  }
+
+  /* Barra de progreso */
+  #progressBar { transition: width .5s cubic-bezier(.4,0,.2,1); }
+
+  /* Botón nav */
+  .nav-btn {
+    display: flex; align-items: center; gap: 6px;
+    padding: 10px 22px; border-radius: 12px;
+    font-size: 13px; font-weight: 700;
+    transition: all .2s;
+  }
+  .nav-btn:active { transform: scale(.97); }
+  .nav-btn:disabled { opacity: .35; pointer-events: none; }
+</style>
+</head>
+
+<body class="bg-[#f8fafc] text-marino min-h-screen">
+
+<!-- HEADER -->
+<header class="bg-white border-b border-slate-200 sticky top-0 z-50">
+  <div class="brand-bar"></div>
+  <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+    <div class="flex items-center gap-3">
+      <img src="https://github.com/Soportekgservices/Visiondeaguila/blob/10a459ffeafcfcedfcade0f0a2700b330668e52c/LOGO%20AGUILA%20VISION%202025%20(1).png?raw=true"
+           alt="Óptica Visión de Águila" class="w-10 h-10 object-contain">
+      <div>
+        <p class="font-extrabold text-marino text-sm leading-tight">Manual de Usuario</p>
+        <p class="text-[10px] text-gris">Portal de Nómina · Óptica Visión de Águila</p>
+      </div>
+    </div>
+    <span id="stepLabel" class="text-[11px] font-bold text-dorado bg-dorado-suave px-3 py-1 rounded-full">Inicio</span>
+  </div>
+</header>
+
+<main class="max-w-5xl mx-auto px-4 py-7 md:py-10">
+
+  <!-- PROGRESO -->
+  <div class="mb-8">
+    <div class="flex items-center justify-between mb-1.5">
+      <span class="text-[10px] font-bold uppercase tracking-widest text-gris">Progreso</span>
+      <span id="progressText" class="text-[11px] font-bold text-marino">Inicio</span>
+    </div>
+    <div class="h-1.5 bg-slate-200 rounded-full overflow-hidden">
+      <div id="progressBar" class="h-full rounded-full" style="width:0%;background:linear-gradient(90deg,rgb(12,45,72),rgb(212,161,56))"></div>
+    </div>
+    <div class="flex gap-1.5 mt-2.5">
+      <div class="progress-dot flex-1 h-1 rounded bg-marino"></div>
+      <div class="progress-dot flex-1 h-1 rounded bg-slate-200"></div>
+      <div class="progress-dot flex-1 h-1 rounded bg-slate-200"></div>
+      <div class="progress-dot flex-1 h-1 rounded bg-slate-200"></div>
+      <div class="progress-dot flex-1 h-1 rounded bg-slate-200"></div>
+      <div class="progress-dot flex-1 h-1 rounded bg-slate-200"></div>
+      <div class="progress-dot flex-1 h-1 rounded bg-slate-200"></div>
+      <div class="progress-dot flex-1 h-1 rounded bg-slate-200"></div>
+    </div>
+  </div>
+
+  <!-- ══ PASO 0 — Portada ══ -->
+  <section class="step active" data-step="0">
+    <div class="tech-grid rounded-2xl overflow-hidden">
+      <div class="px-6 py-12 md:py-16 text-center max-w-2xl mx-auto">
+        <div class="w-20 h-20 mx-auto bg-white rounded-2xl shadow-soft flex items-center justify-center p-3 mb-6">
+          <img src="https://github.com/Soportekgservices/Visiondeaguila/blob/10a459ffeafcfcedfcade0f0a2700b330668e52c/LOGO%20AGUILA%20VISION%202025%20(1).png?raw=true"
+               alt="Logo" class="w-full h-full object-contain">
+        </div>
+        <p class="text-dorado font-bold text-xs uppercase tracking-widest mb-2">Óptica Visión de Águila</p>
+        <h2 class="text-3xl md:text-4xl font-extrabold text-marino leading-tight">Consulta de Nómina</h2>
+        <p class="mt-4 text-gris text-sm leading-relaxed max-w-md mx-auto">
+          Aprende paso a paso cómo ingresar al portal, consultar tu nómina y revisar el detalle de ingresos, deducciones y registros.
+        </p>
+        <button onclick="nextStep()"
+          class="mt-8 inline-flex items-center gap-2 bg-marino hover:bg-marino-dark text-white font-bold px-8 py-3.5 rounded-xl shadow-card transition-all active:scale-95">
+          Comenzar manual
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ PASO 1 — Seleccionar perfil ══ -->
+  <section class="step" data-step="1">
+    <div class="grid lg:grid-cols-2 gap-6 items-center">
+      <div>
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-dorado-suave text-marino text-xs font-bold">
+          <span class="w-4 h-4 rounded-full bg-dorado text-white flex items-center justify-center text-[9px] font-black">1</span>
+          PASO 1
+        </span>
+        <h2 class="text-2xl md:text-3xl font-extrabold text-marino mt-3">Selecciona tu perfil</h2>
+        <p class="text-gris mt-3 text-sm leading-relaxed">
+          Al ingresar al sistema encontrarás la pantalla de bienvenida. Para realizar tu consulta debes seleccionar el perfil <strong class="text-marino">Asesor de Campo</strong>.
+        </p>
+        <div class="mt-5 bg-marino text-white rounded-xl p-4 text-sm">
+          <p class="font-bold text-dorado-light">¿Qué debes hacer?</p>
+          <p class="text-white/80 mt-1">Pulsa únicamente la opción <strong>Asesor de Campo</strong>. Las otras opciones son para otros perfiles del sistema.</p>
+        </div>
+      </div>
+      <div class="mock-card bg-white rounded-2xl p-5">
+        <p class="text-[11px] text-center text-gris mb-1">Bienvenido al Sistema Contable</p>
+        <p class="font-extrabold text-marine text-center text-marino mb-4">Óptica Visión de Águila</p>
+        <!-- Botón asesor destacado -->
+        <div class="pulse-gold rounded-xl border-2 border-dorado bg-marino text-white p-4 flex items-center gap-3 mb-2.5">
+          <div class="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+            </svg>
+          </div>
+          <div>
+            <p class="font-bold text-sm">Asesor de Campo</p>
+            <p class="text-[10px] text-white/60">Gestión y consulta de información</p>
+          </div>
+          <svg class="w-4 h-4 ml-auto text-dorado" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+          </svg>
+        </div>
+        <!-- Otros perfiles apagados -->
+        <div class="rounded-xl bg-slate-50 p-4 opacity-40 flex items-center gap-3 mb-2">
+          <div class="w-8 h-8 rounded-lg bg-slate-200 flex-shrink-0"></div>
+          <p class="text-xs text-gris">Coordinador de Campo</p>
+        </div>
+        <div class="rounded-xl bg-slate-50 p-4 opacity-40 flex items-center gap-3">
+          <div class="w-8 h-8 rounded-lg bg-slate-200 flex-shrink-0"></div>
+          <p class="text-xs text-gris">Administrativo</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ PASO 2 — Ingresar cédula ══ -->
+  <section class="step" data-step="2">
+    <div class="grid lg:grid-cols-2 gap-6 items-center">
+      <div>
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-dorado-suave text-marino text-xs font-bold">
+          <span class="w-4 h-4 rounded-full bg-dorado text-white flex items-center justify-center text-[9px] font-black">2</span>
+          PASO 2
+        </span>
+        <h2 class="text-2xl md:text-3xl font-extrabold text-marino mt-3">Ingresa tu documento</h2>
+        <p class="text-gris mt-3 text-sm leading-relaxed">
+          En el Portal de Nómina encontrarás el campo <strong class="text-marino">"Cédula del asesor"</strong>. Escribe allí tu número de documento de identidad.
+        </p>
+        <div class="mt-5 bg-marino text-white rounded-xl p-4 text-sm">
+          <p class="font-bold text-dorado-light">Recomendación</p>
+          <p class="text-white/80 mt-1">Verifica que el número esté escrito correctamente antes de consultar. El sistema no encontrará tu información si hay algún dígito incorrecto.</p>
+        </div>
+      </div>
+      <div class="mock-card bg-white rounded-2xl p-6">
+        <div class="flex items-center gap-3 mb-5">
+          <img src="https://github.com/Soportekgservices/Visiondeaguila/blob/10a459ffeafcfcedfcade0f0a2700b330668e52c/LOGO%20AGUILA%20VISION%202025%20(1).png?raw=true"
+               alt="Logo" class="w-9 h-9 object-contain">
+          <div>
+            <p class="font-extrabold text-marino text-sm">Portal de Nómina</p>
+            <p class="text-[10px] text-gris">Consulta individual</p>
+          </div>
+        </div>
+        <div class="pulse-gold bg-white border-2 border-dorado rounded-xl p-1.5 flex items-center gap-2 shadow-soft">
+          <div class="flex-1 px-4 py-2.5 text-gris text-xs">Cédula del asesor</div>
+          <div class="bg-marino text-white font-bold px-5 py-2.5 rounded-lg text-xs">Consultar</div>
+        </div>
+        <p class="text-[10px] text-gris mt-3 text-center">← Escribe aquí tu número de documento</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ PASO 3 — Consultar ══ -->
+  <section class="step" data-step="3">
+    <div class="grid lg:grid-cols-2 gap-6 items-center">
+      <div>
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-dorado-suave text-marino text-xs font-bold">
+          <span class="w-4 h-4 rounded-full bg-dorado text-white flex items-center justify-center text-[9px] font-black">3</span>
+          PASO 3
+        </span>
+        <h2 class="text-2xl md:text-3xl font-extrabold text-marino mt-3">Presiona "Consultar"</h2>
+        <p class="text-gris mt-3 text-sm leading-relaxed">
+          Después de escribir tu cédula, pulsa el botón <strong class="text-marino">Consultar</strong>. El sistema realizará la búsqueda y puede aparecer el estado <strong class="text-marino">"Buscando..."</strong> mientras carga.
+        </p>
+        <div class="mt-5 bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm text-amber-800">
+          <p class="font-bold">⚠ Importante</p>
+          <p class="mt-1 text-amber-700">Espera a que termine la búsqueda. No es necesario presionar el botón varias veces.</p>
+        </div>
+      </div>
+      <div class="mock-card bg-white rounded-2xl p-8 text-center">
+        <p class="text-xs text-gris mb-3">Cédula del asesor</p>
+        <div class="bg-slate-50 rounded-xl py-3.5 px-6 font-bold text-marino text-lg mb-5">12 345 678</div>
+        <button class="pulse-gold bg-marino text-white font-bold px-10 py-3.5 rounded-xl text-sm">
+          Consultar
+        </button>
+        <div class="mt-5 flex items-center justify-center gap-2 text-xs text-emerald-600 font-semibold">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          El sistema está realizando la consulta…
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ PASO 4 — Resumen ══ -->
+  <section class="step" data-step="4">
+    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-dorado-suave text-marino text-xs font-bold mb-4">
+      <span class="w-4 h-4 rounded-full bg-dorado text-white flex items-center justify-center text-[9px] font-black">4</span>
+      PASO 4
+    </span>
+    <h2 class="text-2xl md:text-3xl font-extrabold text-marino mb-2">Revisa el resumen de tu nómina</h2>
+    <p class="text-gris text-sm mb-5">Cuando la consulta finalice, aparecerá el resumen con los principales valores de tu liquidación.</p>
+
+    <div class="mock-card bg-white rounded-2xl overflow-hidden">
+      <!-- Banner marino igual al sistema -->
+      <div class="bg-marino p-5 flex justify-between items-center">
+        <div>
+          <p class="text-[10px] text-white/50 uppercase tracking-wider">Nómina de Promotor</p>
+          <p class="font-extrabold text-white text-lg mt-0.5">Nombre del Asesor</p>
+        </div>
+        <div class="text-right">
+          <p class="text-[10px] text-white/50">Perfil</p>
+          <p class="font-bold text-dorado text-sm">Asesor de Campo</p>
+        </div>
+      </div>
+      <!-- KPIs -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 p-4">
+        <div class="bg-slate-50 rounded-xl p-4">
+          <p class="text-[10px] text-gris uppercase tracking-wide">Afiliaciones</p>
+          <p class="font-extrabold text-2xl text-marino mt-1">25</p>
+        </div>
+        <div class="bg-slate-50 rounded-xl p-4">
+          <p class="text-[10px] text-gris uppercase tracking-wide">Venta lentes</p>
+          <p class="font-extrabold text-2xl text-marino mt-1">40</p>
+        </div>
+        <div class="bg-slate-50 rounded-xl p-4">
+          <p class="text-[10px] text-gris uppercase tracking-wide">Brigadas</p>
+          <p class="font-extrabold text-2xl text-marino mt-1">8</p>
+        </div>
+        <div class="bg-dorado-suave rounded-xl p-4 border border-dorado/30">
+          <p class="text-[10px] text-marino uppercase tracking-wide font-semibold">Saldo final</p>
+          <p class="font-extrabold text-2xl text-marino mt-1">$ 0.000</p>
+        </div>
+      </div>
+      <!-- Tabla ingresos / deducciones -->
+      <div class="grid md:grid-cols-2 gap-3 px-4 pb-4">
+        <div class="border border-slate-100 rounded-xl p-4">
+          <p class="font-bold text-marino text-xs uppercase tracking-wider mb-3">Ingresos</p>
+          <div class="flex justify-between text-xs py-2 border-b border-slate-100"><span class="text-gris">Afiliaciones</span><strong>$ 0.000</strong></div>
+          <div class="flex justify-between text-xs py-2 border-b border-slate-100"><span class="text-gris">Bonificaciones</span><strong>$ 0.000</strong></div>
+          <div class="flex justify-between text-xs py-2"><span class="text-gris font-semibold">Total ingresos</span><strong class="text-marino">$ 0.000</strong></div>
+        </div>
+        <div class="border border-slate-100 rounded-xl p-4">
+          <p class="font-bold text-marino text-xs uppercase tracking-wider mb-3">Deducciones</p>
+          <div class="flex justify-between text-xs py-2 border-b border-slate-100"><span class="text-gris">Comida / Medicina</span><strong>$ 0.000</strong></div>
+          <div class="flex justify-between text-xs py-2 border-b border-slate-100"><span class="text-gris">Préstamos / Adelantos</span><strong>$ 0.000</strong></div>
+          <div class="flex justify-between text-xs py-2"><span class="text-gris">Descuento</span><strong>$ 0.000</strong></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ PASO 5 — Detalle ══ -->
+  <section class="step" data-step="5">
+    <div class="grid lg:grid-cols-2 gap-6 items-start">
+      <div>
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-dorado-suave text-marino text-xs font-bold">
+          <span class="w-4 h-4 rounded-full bg-dorado text-white flex items-center justify-center text-[9px] font-black">5</span>
+          PASO 5
+        </span>
+        <h2 class="text-2xl md:text-3xl font-extrabold text-marino mt-3">Consulta el detalle</h2>
+        <p class="text-gris mt-3 text-sm leading-relaxed">
+          En <strong class="text-marino">Detalle de Jornadas y Deducciones</strong> puedes revisar cada registro que compone tu liquidación.
+        </p>
+        <div class="space-y-2.5 mt-5">
+          <div class="bg-white rounded-xl p-4 shadow-soft flex gap-3">
+            <div class="w-8 h-8 rounded-lg bg-marino/10 flex items-center justify-center flex-shrink-0">
+              <svg class="w-4 h-4 text-marino" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+            </div>
+            <div>
+              <p class="font-bold text-marino text-sm">Préstamos / Adelantos</p>
+              <p class="text-xs text-gris mt-0.5">Valores registrados por préstamos o adelantos de dinero.</p>
+            </div>
+          </div>
+          <div class="bg-white rounded-xl p-4 shadow-soft flex gap-3">
+            <div class="w-8 h-8 rounded-lg bg-marino/10 flex items-center justify-center flex-shrink-0">
+              <svg class="w-4 h-4 text-marino" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z"/>
+              </svg>
+            </div>
+            <div>
+              <p class="font-bold text-marino text-sm">Descuento</p>
+              <p class="text-xs text-gris mt-0.5">Descuentos registrados en la liquidación del período.</p>
+            </div>
+          </div>
+          <div class="bg-white rounded-xl p-4 shadow-soft flex gap-3">
+            <div class="w-8 h-8 rounded-lg bg-marino/10 flex items-center justify-center flex-shrink-0">
+              <svg class="w-4 h-4 text-marino" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+              </svg>
+            </div>
+            <div>
+              <p class="font-bold text-marino text-sm">Detalle</p>
+              <p class="text-xs text-gris mt-0.5">El concepto o descripción asociada a cada registro.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mock-card bg-white rounded-2xl overflow-hidden">
+        <div class="bg-marino text-white px-4 py-3 text-xs font-bold uppercase tracking-wider">
+          Detalle de Jornadas y Deducciones
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-xs">
+            <thead>
+              <tr class="bg-slate-50 text-gris border-b border-slate-100">
+                <th class="p-3 text-left font-semibold">Fecha</th>
+                <th class="p-3 text-left font-semibold">Municipio</th>
+                <th class="p-3 text-right font-semibold">Préstamo</th>
+                <th class="p-3 text-right font-semibold">Descuento</th>
+                <th class="p-3 text-left font-semibold">Detalle</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="border-b border-slate-50">
+                <td class="p-3 text-marino font-medium">01/08/2026</td>
+                <td class="p-3 text-gris">Municipio</td>
+                <td class="p-3 text-right text-marino">$ 50.000</td>
+                <td class="p-3 text-right text-marino">$ 5.000</td>
+                <td class="p-3 text-gris">Concepto</td>
+              </tr>
+              <tr class="bg-slate-50/50">
+                <td class="p-3 text-marino font-medium">03/08/2026</td>
+                <td class="p-3 text-gris">Municipio</td>
+                <td class="p-3 text-right text-gris">$ 0</td>
+                <td class="p-3 text-right text-marino">$ 10.000</td>
+                <td class="p-3 text-gris">Concepto</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ PASO 6 — Lentes y brigadas ══ -->
+  <section class="step" data-step="6">
+    <div class="grid lg:grid-cols-2 gap-6 items-center">
+      <div>
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-dorado-suave text-marino text-xs font-bold">
+          <span class="w-4 h-4 rounded-full bg-dorado text-white flex items-center justify-center text-[9px] font-black">6</span>
+          PASO 6
+        </span>
+        <h2 class="text-2xl md:text-3xl font-extrabold text-marino mt-3">Lentes y brigadas</h2>
+        <p class="text-gris mt-3 text-sm leading-relaxed">
+          El portal cuenta con secciones adicionales para consultar la <strong class="text-marino">Venta de Lentes</strong> y las <strong class="text-marino">Brigadas Trabajadas</strong> del período.
+        </p>
+        <div class="grid sm:grid-cols-2 gap-3 mt-5">
+          <div class="bg-white rounded-xl p-4 shadow-soft">
+            <div class="w-9 h-9 rounded-lg bg-marino/10 flex items-center justify-center mb-3">
+              <svg class="w-5 h-5 text-marino" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+              </svg>
+            </div>
+            <p class="font-bold text-marino text-sm">Venta de Lentes</p>
+            <p class="text-xs text-gris mt-1">Lentes especiales, sencillos y total vendido.</p>
+          </div>
+          <div class="bg-white rounded-xl p-4 shadow-soft">
+            <div class="w-9 h-9 rounded-lg bg-marino/10 flex items-center justify-center mb-3">
+              <svg class="w-5 h-5 text-marino" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+              </svg>
+            </div>
+            <p class="font-bold text-marino text-sm">Brigadas Trabajadas</p>
+            <p class="text-xs text-gris mt-1">Total y registros de brigadas del período.</p>
+          </div>
+        </div>
+      </div>
+      <div class="mock-card bg-white rounded-2xl p-5">
+        <div class="grid grid-cols-2 gap-3 mb-3">
+          <div class="pulse-gold border-2 border-dorado rounded-xl p-5 text-center">
+            <p class="text-[10px] uppercase text-gris tracking-wide">Venta de Lentes</p>
+            <p class="font-extrabold text-4xl text-marino mt-1">40</p>
+            <p class="text-[10px] text-gris mt-0.5">lentes vendidos</p>
+          </div>
+          <div class="pulse-gold border-2 border-dorado rounded-xl p-5 text-center">
+            <p class="text-[10px] uppercase text-gris tracking-wide">Brigadas</p>
+            <p class="font-extrabold text-4xl text-marino mt-1">8</p>
+            <p class="text-[10px] text-gris mt-0.5">brigadas trabajadas</p>
+          </div>
+        </div>
+        <div class="bg-slate-50 rounded-xl p-3 text-xs text-gris text-center">
+          Cambia de sección para ver cada tipo de información disponible.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ PASO 7 — Final ══ -->
+  <section class="step" data-step="7">
+    <div class="tech-grid rounded-2xl overflow-hidden">
+      <div class="px-6 py-12 md:py-16 text-center max-w-2xl mx-auto">
+        <div class="w-16 h-16 mx-auto rounded-full bg-marino flex items-center justify-center mb-6 shadow-card">
+          <svg class="w-8 h-8 text-dorado" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </div>
+        <p class="text-dorado font-bold text-xs uppercase tracking-widest mb-2">Manual completado</p>
+        <h2 class="text-2xl md:text-3xl font-extrabold text-marino">¡Ya sabes cómo consultar tu nómina!</h2>
+        <p class="text-gris text-sm max-w-md mx-auto mt-3">
+          Recuerda revisar cuidadosamente el resumen y el detalle de tu liquidación.
+        </p>
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 max-w-md mx-auto mt-7 text-left">
+          <div class="bg-white rounded-xl p-3 shadow-soft flex items-center gap-2">
+            <span class="text-dorado font-black text-sm">✓</span>
+            <span class="text-xs font-semibold text-marino">Ingresos</span>
+          </div>
+          <div class="bg-white rounded-xl p-3 shadow-soft flex items-center gap-2">
+            <span class="text-dorado font-black text-sm">✓</span>
+            <span class="text-xs font-semibold text-marino">Deducciones</span>
+          </div>
+          <div class="bg-white rounded-xl p-3 shadow-soft flex items-center gap-2">
+            <span class="text-dorado font-black text-sm">✓</span>
+            <span class="text-xs font-semibold text-marino">Préstamos</span>
+          </div>
+          <div class="bg-white rounded-xl p-3 shadow-soft flex items-center gap-2">
+            <span class="text-dorado font-black text-sm">✓</span>
+            <span class="text-xs font-semibold text-marino">Descuentos</span>
+          </div>
+          <div class="bg-white rounded-xl p-3 shadow-soft flex items-center gap-2">
+            <span class="text-dorado font-black text-sm">✓</span>
+            <span class="text-xs font-semibold text-marino">Lentes</span>
+          </div>
+          <div class="bg-white rounded-xl p-3 shadow-soft flex items-center gap-2">
+            <span class="text-dorado font-black text-sm">✓</span>
+            <span class="text-xs font-semibold text-marino">Brigadas</span>
+          </div>
+        </div>
+        <button onclick="goTo(0)"
+          class="mt-8 inline-flex items-center gap-2 border border-marino text-marino font-bold px-7 py-3 rounded-xl hover:bg-marino hover:text-white transition-all text-sm active:scale-95">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+          </svg>
+          Ver el manual nuevamente
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- NAVEGACIÓN -->
+  <div class="flex items-center justify-between gap-3 mt-8">
+    <button id="prevBtn" onclick="prevStep()"
+      class="nav-btn bg-white border border-slate-200 text-gris hover:border-marino hover:text-marino">
+      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+      </svg>
+      Anterior
+    </button>
+    <span id="counter" class="text-xs font-bold text-gris">Inicio</span>
+    <button id="nextBtn" onclick="nextStep()"
+      class="nav-btn bg-marino text-white hover:bg-marino-dark">
+      Siguiente
+      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+      </svg>
+    </button>
+  </div>
+
+</main>
+
+<footer class="text-center text-[11px] text-gris py-8 border-t border-slate-100 mt-4">
+  Óptica Visión de Águila · Manual de Usuario del Portal de Nómina
+</footer>
+
+<script>
+let current = 0;
+const TOTAL = 8;
+const LABELS = ['Inicio','Seleccionar perfil','Ingresar documento','Consultar','Ver resumen','Ver detalle','Lentes y brigadas','¡Listo!'];
+
+function updateUI() {
+  document.querySelectorAll('.step').forEach((el, i) => el.classList.toggle('active', i === current));
+
+  const pct = current === 0 ? 0 : (current / (TOTAL - 1)) * 100;
+  document.getElementById('progressBar').style.width = pct + '%';
+
+  document.getElementById('stepLabel').textContent = LABELS[current];
+  document.getElementById('progressText').textContent = current === 0 ? 'Inicio' : `Paso ${current} de ${TOTAL - 1}`;
+  document.getElementById('counter').textContent = current === 0 ? 'Inicio' : `${current} / ${TOTAL - 1}`;
+
+  document.querySelectorAll('.progress-dot').forEach((d, i) => {
+    d.classList.toggle('bg-marino', i <= current);
+    d.classList.toggle('bg-slate-200', i > current);
+  });
+
+  document.getElementById('prevBtn').disabled = current === 0;
+  document.getElementById('nextBtn').style.display = current === TOTAL - 1 ? 'none' : 'flex';
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function goTo(n)     { current = Math.max(0, Math.min(TOTAL - 1, n)); updateUI(); }
+function nextStep()  { if (current < TOTAL - 1) { current++; updateUI(); } }
+function prevStep()  { if (current > 0)          { current--; updateUI(); } }
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight') nextStep();
+  if (e.key === 'ArrowLeft')  prevStep();
+});
+
+updateUI();
+</script>
+</body>
+</html>

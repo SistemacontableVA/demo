@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Relación de Pago - Óptica Visión de Águila</title>
+<style>
+@page{size:Letter;margin:0}
+*{box-sizing:border-box}
+html,body{margin:0;background:#dfe7e9;font-family:Inter,"Segoe UI",Arial,sans-serif;color:#17242A;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.page{
+  width:8.5in;height:11in;margin:0 auto;position:relative;overflow:hidden;
+  background:#fff;padding:.18in .46in .72in;
+}
+.page:before{
+  content:"";position:absolute;width:4.9in;height:2.4in;right:-2.35in;top:-1.18in;
+  border:10px solid rgba(11,89,105,.08);border-radius:50%;transform:rotate(-12deg)
+}
+.page:after{
+  content:"";position:absolute;width:3.2in;height:1.5in;left:-2.1in;bottom:-.9in;
+  border:8px solid rgba(0,145,104,.10);border-radius:50%;transform:rotate(15deg)
+}
+.top{position:absolute;top:0;left:0;width:100%;height:7px;background:#083F4A}
+.header{
+  position:relative;z-index:2;display:grid;grid-template-columns:30% 70%;
+  gap:18px;align-items:center;min-height:1.15in;padding-bottom:.04in;
+  border-bottom:1px solid #D9E1E4
+}
+.brand{padding-right:14px;border-right:1px dotted #8CA5AB}
+.logo{width:2.22in;display:block;height:auto}
+.heading{text-align:center;padding-right:8px}
+.heading h1{
+  margin:0;color:#083F4A;font-size:31pt;line-height:.98;letter-spacing:-1.2px;
+  font-weight:800;text-transform:uppercase
+}
+.heading h1 span{color:#00A878}
+.subtitle{
+  margin:8px 0 0;color:#24535C;font-size:10pt;font-weight:700;
+  letter-spacing:4px;text-transform:uppercase
+}
+.subtitle:before,.subtitle:after{content:"";display:inline-block;width:65px;height:1px;
+  vertical-align:middle;margin:0 9px;background:#00A878}
+.employee{
+  position:relative;z-index:2;margin:.12in 0 .11in;
+  display:grid;grid-template-columns:1.45fr 1fr 1fr;gap:8px
+}
+.field{
+  border:1px solid #B7CDD1;border-radius:9px;overflow:hidden;background:#fff;
+  min-height:35px;display:grid;grid-template-columns:auto 1fr;align-items:stretch
+}
+.field .label{
+  display:flex;align-items:center;padding:0 9px;background:#0B5969;
+  color:#fff;font-size:7.5pt;font-weight:800;text-transform:uppercase;white-space:nowrap
+}
+.field .value{display:flex;align-items:center;padding:0 10px;font-size:8.3pt;font-weight:600}
+.employee .wide{grid-column:span 2}
+.content{position:relative;z-index:2;display:grid;grid-template-columns:2.05in 1fr;gap:.24in}
+.summary{
+  border:1px solid #B9C9CE;border-radius:14px;background:#fff;
+  padding:10px;box-shadow:0 5px 15px rgba(8,63,74,.07)
+}
+.section-title{
+  color:#fff;background:#0B5969;
+  border-radius:8px;padding:7px 10px;margin:0 0 7px;font-size:9.1pt;font-weight:800;
+  letter-spacing:.2px
+}
+.section-title.green{background:#008A69;margin-top:11px}
+.rows{border:1px solid #C8D7DA;border-radius:8px;overflow:hidden}
+.row{
+  display:grid;grid-template-columns:1.3fr .7fr;min-height:25px;
+  border-bottom:1px solid #DDE5E7;font-size:8.1pt
+}
+.row:last-child{border-bottom:0}
+.row>div{padding:5px 7px}
+.row .amount{text-align:right;font-weight:700;color:#0B5969}
+.total{
+  display:grid;grid-template-columns:1.3fr .7fr;background:#083F4A;color:#fff;
+  min-height:30px;font-weight:800;font-size:8.5pt
+}
+.total>div{padding:7px}
+.total .amount{text-align:right}
+.net{
+  margin-top:12px;border:1px solid #7DBAB0;border-radius:10px;overflow:hidden;
+  display:grid;grid-template-columns:1fr auto;align-items:center
+}
+.net .caption{padding:9px 10px;color:#08795E;font-size:9pt;font-weight:800}
+.net .amount{padding:7px 12px;color:#008A69;font-size:16pt;font-weight:900}
+.receipt{margin:22px 7px 0;text-align:center;color:#173B45;font-size:8.6pt;font-weight:700}
+.receipt:before{content:"";display:block;border-top:1px solid #173B45;margin-bottom:8px}
+.ledger{
+  border:1px solid #0B5969;border-radius:13px;overflow:hidden;background:#fff;
+  box-shadow:0 5px 15px rgba(8,63,74,.06)
+}
+table{width:100%;border-collapse:collapse;table-layout:fixed}
+th{
+  background:#0B5969;color:#fff;
+  padding:8px 5px;font-size:7.5pt;text-transform:uppercase
+}
+td{
+  border-top:1px solid #D7E1E3;border-right:1px solid #D7E1E3;
+  height:26px;padding:4px 5px;font-size:7.7pt
+}
+td:last-child{border-right:0}
+tbody tr:nth-child(even){background:#FAFCFC}
+.center{text-align:center}
+.check{color:#008A69;font-size:11pt;font-weight:900}
+.money{text-align:right;font-weight:700;color:#0B5969}
+.footer{
+  position:absolute;z-index:3;left:0;bottom:0;width:100%;min-height:.60in;
+  padding:8px .46in;background:#083F4A;color:#fff;border-top:3px solid #00A878;
+  display:grid;grid-template-columns:1fr 1.25fr 1fr;gap:12px;align-items:center;font-size:6.3pt
+}
+.footer strong{display:block;color:#8EE4C7;font-size:6.8pt;margin-bottom:2px}
+.footer-center{border-left:1px solid rgba(255,255,255,.25);border-right:1px solid rgba(255,255,255,.25);padding:0 12px}
+@media screen{.page{margin-top:20px;box-shadow:0 15px 45px #0002}}
+@media print{html,body{background:#fff}.page{margin:0;box-shadow:none}}
+
+/* ── Borde superior (copiado de hoja-convenio) ── */
+.top{position:absolute;top:0;left:0;width:100%;height:7px;background:linear-gradient(90deg,#083F4A,#1E7B8F,#D9A62E)}
+
+/* ── Footer (copiado de hoja-convenio) ── */
+.footer{position:absolute;z-index:3;left:0;bottom:0;width:100%;min-height:.62in;padding:9px .54in;background:#083F4A;color:#fff;border-top:3px solid #D9A62E;display:grid;grid-template-columns:1fr 1.25fr 1fr;gap:12px;align-items:center;font-size:6.6pt}
+.footer strong{display:block;color:#F1D27A;font-size:6.8pt;margin-bottom:2px}
+.fc{text-align:center;border-left:1px solid #ffffff40;border-right:1px solid #ffffff40;padding:0 10px}
+.fr{text-align:right}
+.footer-item{display:flex;align-items:center;gap:8px;min-width:0}
+.footer-icon{width:27px;height:27px;min-width:27px;border:1px solid rgba(255,255,255,.45);border-radius:50%;display:flex;align-items:center;justify-content:center}
+.footer-icon svg{width:15px;height:15px;fill:none;stroke:#fff;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.footer-item strong{margin-bottom:3px}
+.footer-center{border-left:1px solid rgba(255,255,255,.25);border-right:1px solid rgba(255,255,255,.25);padding:0 12px;text-align:left}
+.footer-right{text-align:left}
+
+</style>
+</head>
+<body>
+<main class="page">
+<div class="top"></div>
+
+<header class="header">
+  <div class="brand">
+    <img class="logo" data-empresa-logo="../../../assets/images/logomenu.png" data-empresa-nombre="Óptica Visión de Águila" alt="" />
+  </div>
+  <div class="heading">
+    <h1>RELACIÓN <span>DE PAGO</span></h1>
+    <div class="subtitle">POR PRESTACIÓN DE SERVICIO</div>
+  </div>
+</header>
+
+<section class="employee">
+  <div class="field wide"><div class="label">Nombre</div><div class="value">{{nombreEmpleado}}</div></div>
+  <div class="field"><div class="label">Banco</div><div class="value">{{bancoPago}}</div></div>
+  <div class="field"><div class="label">Identificación</div><div class="value">{{identificacionEmpleado}}</div></div>
+  <div class="field"><div class="label">Cargo</div><div class="value">{{cargoEmpleado}}</div></div>
+  <div class="field"><div class="label">Teléfono</div><div class="value">{{telefonoEmpleado}}</div></div>
+</section>
+
+<section class="content">
+  <aside class="summary">
+    <h3 class="section-title">INGRESOS</h3>
+    <div class="rows">
+      <div class="row"><div>Días Laborados</div><div class="amount">{{diasLaborados}}</div></div>
+      <div class="row"><div>Valor Días Laborados</div><div class="amount">{{valorDiasLaborados}}</div></div>
+      <div class="row"><div>Adic. / Fest.</div><div class="amount">{{adicionalFestivos}}</div></div>
+      <div class="total"><div>TOTAL INGRESOS</div><div class="amount">{{totalIngresos}}</div></div>
+    </div>
+
+    <h3 class="section-title green">DEDUCCIONES / APORTE NÓMINA</h3>
+    <div class="rows">
+      <div class="row"><div>Préstamos / Adelanto</div><div class="amount">{{prestamosAdelanto}}</div></div>
+      <div class="row"><div>Penalización</div><div class="amount">{{penalizacionDeduccion}}</div></div>
+      <div class="total"><div>TOTAL DEDUCCIONES</div><div class="amount">{{totalDeducciones}}</div></div>
+    </div>
+
+    <div class="net"><div class="caption">NETO A PAGAR</div><div class="amount">{{netoAPagar}}</div></div>
+    <br><br><br><br><div class="receipt">RECIBO CONFORME</div>
+  </aside>
+
+  <section class="ledger">
+    <table>
+      <thead>
+        <tr>
+          <th style="width:19%">Fecha</th>
+          <th style="width:19%">Laborado</th>
+          <th style="width:18%">Préstamo</th>
+          <th style="width:19%">Adic. / Fest.</th>
+          <th style="width:25%">Detalle</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each detalleDiario}}
+        <tr>
+          <td class="center">{{fecha}}</td>
+          <td class="center check">{{#if laborado}}✓{{else}}—{{/if}}</td>
+          <td class="money">{{#if prestamo}}{{prestamo}}{{/if}}</td>
+          <td class="money">{{#if adicionalFestivo}}{{adicionalFestivo}}{{/if}}</td>
+          <td>{{detalle}}</td>
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </section>
+</section>
+
+<footer class="footer" style="grid-template-columns:1fr 1.35fr 1fr;gap:14px">
+  <div class="footer-item">
+    <div class="footer-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="m4 7 8 6 8-6"></path></svg>
+    </div>
+    <div>
+      <strong>CONTACTO</strong>
+      <span data-empresa-email></span>
+    </div>
+  </div>
+  <div class="footer-item footer-center">
+    <div class="footer-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24"><path d="M12 21s7-6.4 7-12a7 7 0 1 0-14 0c0 5.6 7 12 7 12Z"></path><circle cx="12" cy="9" r="2.2"></circle></svg>
+    </div>
+    <div>
+      <strong>DIRECCIÓN</strong>
+      <span data-empresa-direccion></span>
+    </div>
+  </div>
+  <div class="footer-item footer-right">
+    <div class="footer-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24"><path d="M6.5 3.5h3l1.5 4-2 1.7a15 15 0 0 0 5.8 5.8l1.7-2 4 1.5v3c0 1.1-.9 2-2 2C10.5 19.5 4.5 13.5 4.5 5.5c0-1.1.9-2 2-2Z"></path></svg>
+    </div>
+    <div>
+      <strong>TELÉFONOS DE CONTACTO</strong>
+      <span data-empresa-telefonos></span>
+    </div>
+  </div>
+</footer>
+</main>
+</body>
+<script>
+(function() {
+  function loadLogo() {
+    const logoElements = document.querySelectorAll('[data-empresa-logo]');
+    if (logoElements.length > 0) {
+      logoElements.forEach(el => {
+        const fallback = el.dataset.empresaLogo || 'assets/images/logomenu.png';
+        el.setAttribute('src', fallback);
+        const altText = el.dataset.empresaNombre || 'Óptica Visión de Águila';
+        el.setAttribute('alt', altText);
+      });
+    }
+  }
+
+  function setText(selector, value) {
+    document.querySelectorAll(selector).forEach(el => {
+      if (value) el.textContent = value;
+    });
+  }
+
+  async function cargarContactoDesdeConfig() {
+    try {
+      const response = await fetch('/empresa-config.json', { cache: 'no-store' });
+      if (!response.ok) throw new Error('No se pudo cargar empresa-config.json');
+      const config = await response.json();
+      const contacto = config.contacto || {};
+      const email = contacto.email || '';
+      const direccion = contacto.direccion || '';
+      const telefonos = [contacto.telefonoGeneral, contacto.telefonoSecundario].filter(Boolean).join(' / ');
+
+      setText('[data-empresa-email]', email);
+      setText('[data-empresa-direccion]', direccion);
+      setText('[data-empresa-telefonos]', telefonos);
+      setText('[data-empresa-telefonos-principal]', contacto.telefonoGeneral || '');
+    } catch (error) {
+      console.warn('[Plantilla] No se pudo cargar contacto desde empresa-config.json:', error.message);
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function () {
+      loadLogo();
+      cargarContactoDesdeConfig();
+    });
+  } else {
+    loadLogo();
+    cargarContactoDesdeConfig();
+  }
+})();
+</script>
+</html>

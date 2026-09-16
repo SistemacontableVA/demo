@@ -1,0 +1,131 @@
+{
+  "_comentario": "Configuración centralizada de la empresa - DATOS SENSIBLES - Excluir de repositorio público",
+  "version": "1.0",
+  "actualizacion": "2026-09-01",
+  
+  "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━": "DATOS DE EMPRESA",
+  
+  "empresa": {
+    "nombre": "Óptica Angelus Visión",
+    "nombreCorto": "Angelus Visión",
+    "nombreLegal": "Óptica Angelus Visión C.A.",
+    "rif": "J-458434377",
+    "activo": true,
+    "versionSistema": "v5.0",
+    "descripcion": "Empresa líder en servicios optométricos y venta de lentes"
+  },
+
+  "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━": "CONTACTO",
+  
+  "contacto": {
+    "telefonoWhatsApp": "+573027350587",
+    "telefonoGeneral": "+58-0412-7552868",
+    "telefonoSecundario": "+58-0424-6592968",
+    "email": "OPTICAANGELUSVISION@GMAIL.COM",
+    "emailAlternativo": "info@angelusvision.com",
+    "direccion": "SECTOR LOS ROBLES 6, AV PRINCIPAL, CENTRO COMERCIAL BUENA VISTA LOCAL – 80 BARRANQUILLA - ATLÁNTICO",
+    "municipio": "Barranquilla",
+    "estado": "Atlántico",
+    "pais": "Colombia",
+    "codePostal": "4001"
+  },
+
+  "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━": "BRANDING E IDENTIDAD VISUAL",
+  
+  "branding": {
+    "logoSvg": "assets/images/logomenu.svg",
+    "logoPng": "assets/images/logomenu.png",
+    "logoUrlLocal": "assets/images/logomenu.png",
+    "logoPngLocal": "assets/images/logomenu.png",
+    "logoGithub": "https://github.com/Soportekgservices/propuestas/blob/main/LOGOKG.png?raw=true",
+    "colores": {
+      "primario": "#083F4A",
+      "secundario": "#0B5969",
+      "acento": "#D9A62E",
+      "fondo": "#dfe7e9"
+    }
+  },
+
+  "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━": "ROLES Y PERMISOS DEL SISTEMA",
+  
+  "usuarios_sistema": {
+    "admin": {
+      "descripcion": "Administrador del sistema - acceso total",
+      "permisos": [
+        "ver_administracion",
+        "ver_catalogos",
+        "ver_configuracion",
+        "editar_config",
+        "generar_documentos"
+      ]
+    },
+    "secretaria": {
+      "descripcion": "Secretaria - gestión de nóminas y reportes",
+      "permisos": [
+        "ver_nominas",
+        "ingresar_nominas",
+        "ver_reportes"
+      ]
+    },
+    "coordinador": {
+      "descripcion": "Coordinador - gestión de brigadas",
+      "permisos": [
+        "ver_brigadas",
+        "crear_brigadas",
+        "asignar_promotores"
+      ]
+    },
+    "promotor": {
+      "descripcion": "Promotor - visualización de nóminas",
+      "permisos": [
+        "ver_mi_nomina",
+        "ver_expediente"
+      ]
+    }
+  },
+
+  "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━": "CONFIGURACIÓN DEL SISTEMA",
+  
+  "configuracion_sistema": {
+    "tema": "light",
+    "idioma": "es",
+    "zona_horaria": "America/Caracas",
+    "formato_fecha": "DD/MM/YYYY",
+    "formato_moneda": "USD",
+    "cache_minutos": 5,
+    "sesion_minutos": 120
+  },
+
+  "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━": "INTEGRACIONES EXTERNAS",
+  
+  "integraciones": {
+    "whatsapp": {
+      "habilitado": true,
+      "numero": "+573027350587",
+      "descripcion": "Canal de contacto para solicitudes de licencia",
+      "mensaje_licencia": "Buenas tardes, deseo extender la licencia del sistema administrativo para óptica, para la empresa Óptica Angelus Visión."
+    },
+    "google_drive": {
+      "habilitado": true,
+      "descripcion": "Almacenamiento de documentos generados",
+      "carpeta_ventas": "1LRwTimG26evV5mREqh66npjp26LE7mb6"
+    },
+    "google_sheets": {
+      "habilitado": true,
+      "habilitado_para_scripts": true,
+      "descripcion": "Base de datos de nóminas y promotores"
+    }
+  },
+
+  "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━": "METADATA Y SOPORTE",
+  
+  "metadata": {
+    "desarrollador": "KGServices",
+    "host": "Óptica Angelus Visión",
+    "proyecto": "Sistema de Nómina y Gestión de Brigadas",
+    "ambiente": "produccion",
+    "soporte_email": "soporte@kgservices.com",
+    "documentacion": "Ver ANALISIS_APIS.md y assets/js/api-config.js para APIs y endpoints"
+  }
+}
+

@@ -1,0 +1,1193 @@
+/* ============================================================
+   ADMIN.CSS — Estilos exclusivos del módulo Administración
+   Óptica Visión de Águila
+   ============================================================ */
+
+/* ── Shell: layout sidebar + contenido ── */
+#admin-shell {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+  background: rgb(243, 244, 246);
+  font-size: 14px; /* +1pt base para todo el panel */
+}
+
+/* ── Sidebar ── */
+#admin-sidebar {
+  width: 240px;
+  min-width: 240px;
+  background: rgb(12, 45, 72);
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  transition: width 0.2s ease;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.1) transparent;
+}
+
+#admin-sidebar::-webkit-scrollbar { width: 4px; }
+#admin-sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+
+/* ── Sidebar logo ── */
+.admin-sidebar-logo {
+  padding: 10px 8px 10px;
+  min-height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  flex-shrink: 0;
+  padding-top: 10px;
+}
+
+/* ── Logo imagen (responsivo) ── */
+.admin-logo-img {
+  width: 160px;
+  height: 120px;
+}
+
+/* Tablet: 768px - 1023px */
+@media (min-width: 768px) {
+  .admin-sidebar-logo { min-height: auto; }
+  .admin-logo-img { width: 210px; height: 155px; }
+}
+
+/* Desktop: 1024px y superior */
+@media (min-width: 1024px) {
+  .admin-sidebar-logo { min-height: auto; }
+  .admin-logo-img { width: 280px; height: 180px; }
+}
+
+/* ── Secciones del menu ── */
+.admin-menu-section {
+  padding: 18px 18px 6px;
+  font-size: 10px; /* +1pt */
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+  flex-shrink: 0;
+}
+
+/* ── Items del menu ── */
+.admin-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 18px; /* +1px para más presencia */
+  margin: 2px 8px;
+  border-radius: 10px;
+  font-size: 14px; /* +1pt */
+  font-weight: 500;
+  color: #ffffff;
+  cursor: pointer;
+  text-decoration: none;
+  flex-shrink: 0;
+  /* Transición suave en todos los estados */
+  transition: background 0.2s ease,
+              color 0.2s ease,
+              transform 0.15s ease,
+              box-shadow 0.2s ease,
+              padding-left 0.15s ease;
+}
+
+.admin-menu-parent {
+  width: calc(100% - 16px);
+  border: none;
+  text-align: left;
+}
+
+.admin-menu-chevron {
+  width: 15px;
+  height: 15px;
+  margin-left: auto;
+  opacity: 0.65;
+  transition: transform 0.2s ease;
+}
+
+.admin-menu-parent.expanded .admin-menu-chevron {
+  transform: rotate(90deg);
+}
+
+.admin-submenu { display: none; }
+.admin-submenu.open { display: block; }
+
+.admin-submenu-item {
+  margin-left: 24px;
+  padding-left: 18px;
+  font-size: 13px; /* +1pt */
+}
+
+.admin-submenu-item .admin-menu-icon {
+  width: 15px;
+  height: 15px;
+}
+
+/* Hover: fondo más visible + sutil elevación */
+.admin-menu-item:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  transform: translateX(2px);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06);
+}
+
+/* Activo: acento dorado + borde izquierdo + brillo */
+.admin-menu-item.activo {
+  background: rgba(212, 161, 56, 0.16);
+  border-left: 3px solid rgb(212, 161, 56);
+  padding-left: 15px;
+  color: #ffffff;
+  font-weight: 700;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.05),
+              0 2px 8px -2px rgba(212,161,56,0.25);
+}
+
+.admin-menu-item.activo .admin-menu-icon {
+  color: rgb(212, 161, 56);
+  opacity: 1;
+  filter: drop-shadow(0 0 3px rgba(212,161,56,0.4));
+}
+
+/* Efecto press al hacer click */
+.admin-menu-item:active {
+  transform: translateX(1px) scale(0.98);
+}
+
+.admin-menu-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  opacity: 0.8;
+  transition: color 0.15s, opacity 0.15s, filter 0.15s;
+}
+
+/* ── Footer del sidebar ── */
+.admin-sidebar-footer {
+  margin-top: auto;
+  padding: 14px 18px;
+  border-top: 1px solid rgba(255,255,255,0.07);
+  flex-shrink: 0;
+  font-size: 13px; /* +1pt */
+}
+
+/* ── Main wrapper (topbar + contenido) ── */
+#admin-main-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ── Topbar ── */
+#admin-topbar {
+  height: 56px;
+  min-height: 56px;
+  background: #fff;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  flex-shrink: 0;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  font-size: 14px; /* +1pt */
+}
+
+/* ── Contenido principal scrolleable ── */
+#admin-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+  font-size: 14px; /* +1pt base */
+}
+
+#admin-content:has(.contabilidad-diaria-shell) {
+  padding: 0;
+  overflow: hidden;
+}
+
+.contabilidad-diaria-shell {
+  width: 100%;
+  min-height: calc(100vh - 64px);
+  padding: 30px;
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .contabilidad-diaria-shell { padding: 4px; }
+}
+
+#admin-content::-webkit-scrollbar { width: 5px; }
+#admin-content::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 6px; }
+
+/* ── Rediseño visual del módulo Nómina Oficina ── */
+#admin-content .oficina-module,
+#admin-content .ingresar-nomina-module {
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  border-radius: 24px;
+  padding: 18px 18px 12px;
+  box-shadow: 0 12px 30px -22px rgba(15, 23, 42, 0.14), inset 0 1px 0 rgba(255,255,255,0.9);
+  color: rgb(15, 23, 42);
+}
+
+#admin-content .ingresar-nomina-module {
+  padding-bottom: 8px;
+}
+
+#admin-content .ingresar-nomina-module .btn-primario,
+#admin-content .ingresar-nomina-module button.btn-primario,
+#admin-content .ingresar-nomina-module [id^="tab-"] {
+  color: #ffffff !important;
+}
+
+#admin-content .ingresar-nomina-module [id^="tab-"] {
+  border-radius: 12px;
+  padding: 0.7rem 1rem;
+  border: 1px solid transparent;
+}
+
+#admin-content .ingresar-nomina-module .tab-btn-inactivo,
+#admin-content .oficina-nav .tab-btn-inactivo {
+  background: linear-gradient(135deg, rgb(11, 50, 135), rgb(14, 65, 114)) !important;
+  border-color: rgba(14, 65, 114, 0.25) !important;
+  color: #ffffff !important;
+  box-shadow: 0 8px 18px -12px rgba(14, 65, 114, 0.7);
+}
+
+#admin-content .ingresar-nomina-module .tab-btn-activo,
+#admin-content .oficina-nav .tab-btn-activo {
+  background: linear-gradient(135deg, rgb(7, 140, 56), rgb(11, 128, 81)) !important;
+  border-color: rgba(11, 128, 81, 0.2) !important;
+  color: #ffffff !important;
+  box-shadow: 0 10px 18px -12px rgba(11, 128, 81, 0.8);
+}
+
+#admin-content .ingresar-nomina-module #in-panel-1,
+#admin-content .ingresar-nomina-module #in-panel-2,
+#admin-content .ingresar-nomina-module #in-panel-3,
+#admin-content .ingresar-nomina-module #in-modo-editar > .bg-white,
+#admin-content .ingresar-nomina-module .bg-white.rounded-2xl,
+#admin-content .ingresar-nomina-module .bg-white {
+  background: rgba(255,255,255,0.96) !important;
+  border: 1px solid rgba(148, 163, 184, 0.18) !important;
+  box-shadow: 0 10px 25px -20px rgba(15, 23, 42, 0.22), 0 1px 3px rgba(15, 23, 42, 0.04) !important;
+}
+
+#admin-content .ingresar-nomina-module input,
+#admin-content .ingresar-nomina-module select,
+#admin-content .ingresar-nomina-module textarea {
+  border: 1px solid rgba(148, 163, 184, 0.45) !important;
+  background: rgba(248, 250, 252, 0.92) !important;
+  color: rgb(15, 23, 42) !important;
+  border-radius: 12px !important;
+  box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.02);
+}
+
+#admin-content .ingresar-nomina-module input:focus,
+#admin-content .ingresar-nomina-module select:focus,
+#admin-content .ingresar-nomina-module textarea:focus {
+  border-color: rgba(11, 170, 90, 0.8) !important;
+  background: rgba(255,255,255,0.98) !important;
+  box-shadow: 0 0 0 3px rgba(15, 170, 93, 0.12), inset 0 1px 2px rgba(15, 23, 42, 0.02);
+  outline: none;
+}
+
+#admin-content .ingresar-nomina-module [id^="in-step-"] {
+  background: linear-gradient(135deg, rgb(11, 50, 135), rgb(14, 65, 114)) !important;
+  color: #ffffff !important;
+  box-shadow: 0 6px 12px -10px rgba(14, 65, 114, 0.8);
+}
+
+#admin-content .ingresar-nomina-module [id^="in-step-"].bg-emerald-500,
+#admin-content .ingresar-nomina-module .bg-verde-oscuro,
+#admin-content .ingresar-nomina-module [id^="in-step-"].bg-verde-oscuro {
+  background: linear-gradient(135deg, rgb(7, 140, 56), rgb(11, 128, 81)) !important;
+}
+
+#admin-content .ingresar-nomina-module [id^="in-badge-"] {
+  background: linear-gradient(135deg, rgb(11, 50, 135), rgb(14, 65, 114)) !important;
+  color: #ffffff !important;
+}
+
+#admin-content .ingresar-nomina-module [id^="in-badge-"].bg-emerald-500,
+#admin-content .ingresar-nomina-module [id^="in-badge-"].bg-verde-oscuro {
+  background: linear-gradient(135deg, rgb(7, 140, 56), rgb(11, 128, 81)) !important;
+}
+
+#admin-content .ingresar-nomina-module .text-slate-600,
+#admin-content .ingresar-nomina-module .text-slate-700,
+#admin-content .ingresar-nomina-module .text-slate-500,
+#admin-content .oficina-module .text-slate-600,
+#admin-content .oficina-module .text-slate-700,
+#admin-content .oficina-module .text-slate-500,
+#admin-content .oficina-module h3,
+#admin-content .oficina-module h4,
+#admin-content .oficina-module .text-verde-oscuro {
+  color: rgb(12, 45, 72);
+}
+
+#admin-content .ingresar-nomina-module .text-slate-400,
+#admin-content .oficina-module .text-slate-400 {
+  color: rgb(100, 116, 139);
+}
+
+#admin-content .oficina-nav {
+  padding: 4px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.46);
+  border: 1px solid rgba(148, 163, 184, 0.18);
+}
+
+#admin-content .oficina-nav [data-of-tab] {
+  min-width: 110px;
+  border-radius: 12px;
+  padding: 0.7rem 1rem;
+  border: 1px solid transparent;
+  background: rgba(255, 255, 255, 0.68);
+  color: #475569;
+  box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.05);
+}
+
+#admin-content .oficina-nav [data-of-tab].btn-primario,
+#admin-content .oficina-nav [data-of-tab][class*="btn-primario"] {
+  background: linear-gradient(135deg, rgb(7, 140, 56), rgb(11, 128, 81));
+  border-color: rgba(11, 128, 81, 0.2);
+  color: #ffffff !important;
+  box-shadow: 0 8px 18px -12px rgba(11, 128, 81, 0.8);
+}
+
+#admin-content .oficina-nav [data-of-tab].btn-primario.text-white,
+#admin-content .oficina-nav [data-of-tab][class*="btn-primario"].text-white {
+  color: #ffffff !important;
+}
+
+#admin-content .oficina-nav [data-of-tab].btn-primario:hover,
+#admin-content .oficina-nav [data-of-tab][class*="btn-primario"]:hover {
+  background: linear-gradient(135deg, rgb(11, 128, 81), rgb(8, 96, 62));
+  color: #ffffff !important;
+}
+
+#admin-content .oficina-module .bg-white.rounded-2xl,
+#admin-content .oficina-module .bg-white.rounded-xl,
+#admin-content .oficina-module .bg-white {
+  background: rgba(255, 255, 255, 0.96) !important;
+  border: 1px solid rgba(148, 163, 184, 0.18) !important;
+  box-shadow: 0 10px 25px -20px rgba(15, 23, 42, 0.22), 0 1px 3px rgba(15, 23, 42, 0.04) !important;
+}
+
+#admin-content .oficina-module .bg-white.rounded-2xl {
+  border-radius: 20px;
+}
+
+#admin-content .oficina-module .oficina-panel > div:first-child {
+  border-radius: 20px;
+}
+
+#admin-content .oficina-module input,
+#admin-content .oficina-module select,
+#admin-content .oficina-module textarea {
+  border: 1px solid rgba(148, 163, 184, 0.45) !important;
+  background: rgba(248, 250, 252, 0.9) !important;
+  color: rgb(15, 23, 42) !important;
+  border-radius: 12px !important;
+  box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.02);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+#admin-content .oficina-module input:focus,
+#admin-content .oficina-module select:focus,
+#admin-content .oficina-module textarea:focus {
+  border-color: rgba(11, 170, 90, 0.8) !important;
+  background: rgba(255,255,255,0.98) !important;
+  box-shadow: 0 0 0 3px rgba(15, 170, 93, 0.12), inset 0 1px 2px rgba(15, 23, 42, 0.02);
+  outline: none;
+}
+
+#admin-content .oficina-module label,
+#admin-content .oficina-module .font-bold,
+#admin-content .oficina-module .font-semibold {
+  letter-spacing: -0.01em;
+}
+
+#admin-content .oficina-module .btn-primario,
+#admin-content .oficina-module button.btn-primario {
+  background: linear-gradient(135deg, rgb(7, 140, 56), rgb(11, 128, 81));
+  border: 1px solid rgba(11, 128, 81, 0.2);
+  box-shadow: 0 10px 18px -12px rgba(11, 128, 81, 0.8);
+}
+
+#admin-content .oficina-module .btn-primario:hover,
+#admin-content .oficina-module button.btn-primario:hover {
+  background: linear-gradient(135deg, rgb(11, 128, 81), rgb(8, 96, 62));
+}
+
+#admin-content .oficina-module table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+#admin-content .oficina-module thead th {
+  background: rgba(12, 45, 72, 0.03);
+  color: rgb(71, 85, 105);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding-top: 0.9rem;
+  padding-bottom: 0.9rem;
+}
+
+#admin-content .oficina-module tbody tr {
+  transition: background-color 0.15s ease;
+}
+
+#admin-content .oficina-module tbody tr:hover {
+  background: rgba(12, 45, 72, 0.02);
+}
+
+#admin-content .oficina-module tbody td {
+  border-bottom: 1px solid rgba(148, 163, 184, 0.16);
+  vertical-align: middle;
+}
+
+#admin-content .oficina-module .bg-slate-100.text-slate-500,
+#admin-content .oficina-module .bg-slate-100.text-slate-400,
+#admin-content .oficina-module .bg-slate-50.text-slate-400 {
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.6);
+}
+
+#admin-content .oficina-module .bg-slate-100.text-slate-500 {
+  background: rgba(148, 163, 184, 0.12) !important;
+  color: rgb(71, 85, 105) !important;
+}
+
+#admin-content .oficina-module .bg-emerald-100.text-emerald-700,
+#admin-content .oficina-module .bg-emerald-50.text-emerald-700 {
+  background: rgba(7, 140, 56, 0.12) !important;
+  color: rgb(4, 120, 87) !important;
+}
+
+#admin-content .oficina-module .text-slate-400,
+#admin-content .oficina-module .text-slate-500,
+#admin-content .oficina-module .text-slate-600,
+#admin-content .oficina-module .text-slate-700 {
+  color: rgb(51, 65, 85);
+}
+
+#admin-content .oficina-module .text-slate-400 {
+  color: rgb(100, 116, 139);
+}
+
+#admin-content .oficina-module .shadow-soft {
+  box-shadow: 0 12px 30px -20px rgba(15, 23, 42, 0.18), 0 2px 10px rgba(15, 23, 42, 0.04) !important;
+}
+
+#admin-content .oficina-module .overflow-hidden {
+  border-radius: 20px;
+}
+
+#admin-content .oficina-module .rounded-xl,
+#admin-content .oficina-module .rounded-2xl {
+  border-radius: 18px;
+}
+
+/* ── Cards del dashboard ── */
+.admin-kpi-card {
+  background: #fff;
+  border-radius: 18px;
+  padding: 20px 22px;
+  border: 1px solid rgba(12, 45, 72, 0.05);
+  box-shadow: 0 2px 12px -3px rgba(12, 45, 72, 0.09),
+              0 1px 3px rgba(0, 0, 0, 0.04);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: default;
+}
+
+.admin-kpi-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 28px -5px rgba(12, 45, 72, 0.16),
+              0 3px 8px rgba(0, 0, 0, 0.06);
+}
+
+/* ── Tabla de actividad ── */
+.admin-activity-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 0;
+  border-bottom: 1px solid #f1f5f9;
+  transition: background 0.15s;
+}
+.admin-activity-row:hover { background: #f8fafc; border-radius: 8px; padding-left: 6px; }
+.admin-activity-row:last-child { border-bottom: none; }
+
+/* ── Badge de tipo ── */
+.admin-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 10.5px; /* +1pt */
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ── Login card ── */
+.admin-login-shell {
+  font-family: 'Poppins', sans-serif;
+}
+
+.admin-login-panel {
+  padding: 0.25rem 0;
+}
+
+.card-glow {
+  background: linear-gradient(145deg, #f0f3f6 0%, #e2e8f0 100%);
+  box-shadow: 0 0 25px rgba(230, 180, 80, 0.45),
+    0 0 60px rgba(212, 161, 56, 0.25),
+    0 20px 40px rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 235, 180, 0.6);
+}
+
+.input-shadow {
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.04), 0 4px 10px rgba(0, 0, 0, 0.03);
+}
+
+.btn-emerald-gradient {
+  background: linear-gradient(180deg, #0ba84a 0%, #05682c 100%);
+  box-shadow: 0 8px 20px rgba(7, 140, 56, 0.35);
+}
+
+.btn-emerald-gradient:hover {
+  background: linear-gradient(180deg, #0cb952 0%, #067833 100%);
+  box-shadow: 0 10px 24px rgba(7, 140, 56, 0.45);
+}
+
+.custom-checkbox:checked {
+  background-color: #078c38;
+  border-color: #078c38;
+}
+
+.admin-login-card {
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 20px 50px -12px rgba(11,89,105,0.22);
+  padding: 40px 36px;
+  width: 100%;
+  max-width: 400px;
+}
+
+/* ── Input del login ── */
+.admin-input {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 15px; /* +1pt */
+  font-family: 'Poppins', sans-serif;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  color: #1e293b;
+  background: #f8fafc;
+}
+
+.admin-input:focus {
+  border-color: rgb(12, 45, 72);
+  box-shadow: 0 0 0 3px rgba(12, 45, 72, 0.10);
+  background: #fff;
+}
+
+/* ── Botón primario admin ── */
+.admin-btn-primary {
+  width: 100%;
+  background: rgb(12, 45, 72);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 12px;
+  font-size: 15px; /* +1pt */
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
+}
+
+.admin-btn-primary:hover {
+  background: rgb(8, 30, 48);
+  box-shadow: 0 4px 14px -3px rgba(12,45,72,0.4);
+}
+.admin-btn-primary:active { transform: scale(0.98); }
+
+/* ── Error de login ── */
+.admin-login-error {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 14px; /* +1pt */
+  color: #dc2626;
+  display: none;
+}
+.admin-login-error.visible { display: block; }
+
+/* ── Pestañas de nóminas generales — tab activo resaltado ── */
+.admin-nomina-tab,
+.in-general-tab {
+  position: relative;
+  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+  border-radius: 8px 8px 0 0;
+  font-size: 13px; /* +1pt */
+}
+
+.admin-nomina-tab:hover:not(.tab-activo),
+.in-general-tab:hover:not(.tab-activo) {
+  background: rgba(12, 45, 72, 0.04);
+  color: rgb(12, 45, 72);
+}
+
+/* Tab activo: resaltado con fondo dorado suave + subrayado */
+.admin-nomina-tab.tab-activo,
+.admin-nomina-tab[data-activo="true"],
+.in-general-tab.tab-activo,
+.in-general-tab[data-activo="true"] {
+  background: rgba(212, 161, 56, 0.10);
+  color: rgb(12, 45, 72);
+  border-bottom-color: rgb(212, 161, 56) !important;
+  font-weight: 700;
+}
+
+.nomina-general-btn {
+  background: linear-gradient(135deg, rgb(7, 140, 56), rgb(11, 128, 81));
+  color: #fff;
+  border: 1px solid rgba(11, 128, 81, 0.4);
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 10px 16px;
+  line-height: 1.2;
+  width: auto;
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.nomina-general-btn:hover {
+  background: linear-gradient(135deg, rgb(11, 128, 81), rgb(7, 92, 59));
+  border-color: rgba(7, 92, 59, 0.5);
+  box-shadow: 0 8px 18px -12px rgba(11, 128, 81, 0.8);
+}
+
+.nomina-general-btn:active {
+  transform: translateY(1px);
+}
+
+.nomina-resumen-grid {
+  display: grid;
+  grid-template-columns: repeat(9, minmax(0, 1fr));
+  gap: 4px;
+  margin-bottom: 1rem;
+}
+
+.nomina-resumen-card {
+  min-width: 0;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  padding: 8px 6px;
+  text-align: center;
+}
+
+.nomina-resumen-card.total {
+  background: #ecfdf5;
+  border-color: #bbf7d0;
+  box-shadow: inset 0 0 0 1px rgba(7, 140, 56, 0.08);
+}
+
+/* ── Mobile: sidebar como drawer deslizante ── */
+@media (max-width: 768px) {
+  #admin-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 100;
+    height: 100vh;
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+    width: 260px;
+    min-width: 260px;
+  }
+
+  #admin-sidebar.open { transform: translateX(0); }
+
+  #admin-mobile-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 99;
+    background: rgba(12, 45, 72, 0.55);
+  }
+
+  #admin-mobile-overlay.open { display: block; }
+
+  #admin-content { padding: 16px; }
+  #admin-hamburger { display: flex; }
+}
+
+@media (min-width: 769px) {
+  #admin-hamburger { display: none; }
+  #admin-mobile-overlay { display: none !important; }
+}
+
+/* ── Botón hamburguesa ── */
+#admin-hamburger {
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: rgb(12, 45, 72);
+  margin-right: 8px;
+  transition: background 0.15s, transform 0.1s;
+}
+
+#admin-hamburger:hover {
+  background: rgba(12, 45, 72, 0.07);
+  transform: scale(1.05);
+}
+
+#admin-hamburger:active { transform: scale(0.95); }
+
+
+/* ══════════════════════════════════════════════════════════════
+   MÓDULO: ATENCIÓN MUNICIPIO — pantalla completa sin padding
+   ══════════════════════════════════════════════════════════════ */
+
+/* Quitar padding al #admin-content cuando está el módulo activo */
+#admin-content:has(.am-shell) {
+  padding: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Shell principal: ocupa todo el espacio disponible */
+.am-shell {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  background: #f8fafc;
+  overflow: hidden;
+}
+
+/* Área de contenido — un único contenedor que llena el resto */
+.am-body {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Cada panel ocupa exactamente el área del am-body */
+.am-panel {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: auto;
+}
+
+/* Panel del iframe: sin scroll extra, el iframe llena todo */
+.am-iframe-panel {
+  overflow: hidden;
+}
+
+/* ── Barra superior ─────────────────────────────────────────── */
+.am-topbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px;
+  background: #fff;
+  border-bottom: 1px solid #e2e8f0;
+  flex-shrink: 0;
+  min-height: 52px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+}
+
+.am-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.am-sheets-icon {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  border-radius: 6px;
+}
+
+.am-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+  white-space: nowrap;
+}
+
+/* Badges de modo */
+.am-badge-ver,
+.am-badge-editar {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.am-badge-ver {
+  background: #f1f5f9;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+}
+
+.am-badge-editar {
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fde68a;
+}
+
+/* ── Input de URL (centro) ──────────────────────────────────── */
+.am-topbar-center {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.am-url-input {
+  flex: 1;
+  min-width: 0;
+  padding: 7px 12px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 12px;
+  font-family: ui-monospace, 'Cascadia Code', monospace;
+  color: #334155;
+  background: #f8fafc;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+}
+
+.am-url-input:focus {
+  border-color: #0b5969;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(11,89,105,0.10);
+}
+
+.am-btn-cargar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border-radius: 9px;
+  background: #0b5969;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+}
+
+.am-btn-cargar:hover  { background: #083f4a; }
+.am-btn-cargar:active { transform: scale(0.95); }
+
+/* ── Controles derecha ──────────────────────────────────────── */
+.am-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+/* Toggle Ver/Editar */
+.am-modo-toggle {
+  display: flex;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 9px;
+  padding: 2px;
+  gap: 2px;
+}
+
+.am-modo-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 11px;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  white-space: nowrap;
+}
+
+.am-modo-btn:hover:not(.am-modo-activo) {
+  background: rgba(0,0,0,0.04);
+  color: #334155;
+}
+
+.am-modo-activo {
+  background: #fff;
+  color: #0b5969;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.10);
+}
+
+/* Iconos de acción */
+.am-btn-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  color: #64748b;
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  text-decoration: none;
+}
+
+.am-btn-icon:hover      { background: #f1f5f9; color: #334155; border-color: #e2e8f0; }
+.am-btn-limpiar:hover   { background: #fef2f2; color: #ef4444; border-color: #fecaca; }
+
+/* ── Barra de error ─────────────────────────────────────────── */
+.am-error-bar {
+  padding: 8px 16px;
+  background: #fef2f2;
+  border-bottom: 1px solid #fecaca;
+  color: #dc2626;
+  font-size: 12px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+/* ── Estado vacío ───────────────────────────────────────────── */
+.am-empty {
+  /* heredado de .am-panel: position:absolute, inset:0, flex, overflow:auto */
+  padding: 40px 20px;
+  background: #f8fafc;
+}
+
+.am-empty-inner {
+  text-align: center;
+  max-width: 460px;
+}
+
+.am-empty-icon {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 16px;
+  display: block;
+}
+
+.am-empty-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 8px;
+}
+
+.am-empty-desc {
+  font-size: 13px;
+  color: #64748b;
+  margin-bottom: 24px;
+  line-height: 1.6;
+}
+
+.am-empty-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: left;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 16px 20px;
+}
+
+.am-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13px;
+  color: #334155;
+}
+
+.am-step-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  background: #0b5969;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 50%;
+}
+
+.am-step-note {
+  background: #fefce8;
+  border: 1px solid #fde68a;
+  border-radius: 9px;
+  padding: 8px 10px;
+  margin-top: 4px;
+  font-size: 12px;
+  color: #78350f;
+}
+
+/* ── Spinner ────────────────────────────────────────────────── */
+.am-spinner-wrap {
+  /* heredado de .am-panel */
+  gap: 12px;
+  background: #f8fafc;
+}
+
+.am-spinner-txt {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+/* ── Iframe ─────────────────────────────────────────────────── */
+.am-iframe-wrap {
+  /* hereda de .am-panel + .am-iframe-panel: position absolute, inset 0, overflow hidden */
+}
+
+.am-iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+}
+
+/* ── Botón volver en el visor ───────────────────────────────── */
+.am-btn-volver {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  border-radius: 9px;
+  background: #f1f5f9;
+  color: #334155;
+  border: 1px solid #e2e8f0;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  white-space: nowrap;
+}
+.am-btn-volver:hover { background: #e2e8f0; color: #0f172a; }
+
+/* ── Botón modo inmersivo (en topbar) ───────────────────────── */
+.am-btn-inmersivo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 9px;
+  background: #083f4a;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: background 0.15s, transform 0.1s;
+}
+
+.am-btn-inmersivo:hover  { background: #0b5969; }
+.am-btn-inmersivo:active { transform: scale(0.97); }
+
+.am-btn-inmersivo.am-inmersivo-activo {
+  background: #d9a62e;
+  color: #fff;
+}
+
+.am-inmersivo-txt {
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* ── FAB flotante "Mostrar menú" ─────────────────────────────── */
+#am-fab-salir {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 16px;
+  background: #083f4a;
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(8,63,74,0.40);
+  transition: background 0.15s, transform 0.15s, opacity 0.2s;
+  opacity: 0.85;
+}
+
+#am-fab-salir:hover {
+  background: #0b5969;
+  opacity: 1;
+  transform: translateY(-2px);
+}
+
+#am-fab-salir:active { transform: scale(0.97); }
+
+/* ── Responsive ─────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .am-topbar {
+    flex-wrap: wrap;
+    padding: 8px 12px;
+    gap: 8px;
+  }
+
+  .am-topbar-left  { order: 1; }
+  .am-topbar-right { order: 2; margin-left: auto; }
+  .am-topbar-center { order: 3; width: 100%; }
+
+  .am-title { font-size: 13px; }
+}

@@ -1,0 +1,517 @@
+
+:root {
+  /* ---------- 1. COLORES BASE ---------- */
+  --verde-oscuro:  rgb(12, 45, 72);     /* Azul Marino principal (banner, cabeceras, tabla) */
+  --verde-medio:   rgb(212, 161, 56);   /* Dorado (botones, acentos, iconos activos) */
+  --verde-claro:   rgb(235, 187, 87);   /* Dorado claro (brillos, saldo positivo) */
+
+  --gris-oscuro:   rgb(15, 23, 42);     /* Texto principal, títulos */
+  --gris-medio:    rgb(30, 41, 59);     /* Texto secundario / etiquetas */
+  --gris-claro:    rgb(248, 250, 252);  /* Fondo general más limpio */
+  --blanco:        rgb(255, 255, 255);
+
+  --rojo:          rgb(244, 63, 94);    /* Deducciones, mensajes de error */
+  --rojo-oscuro:   rgb(225, 29, 72);    /* Total deducciones (fila de énfasis) */
+  --rojo-claro:    rgb(253, 164, 175);  /* Texto rojo sobre fondo oscuro (saldo negativo) */
+  --rojo-fondo:    rgb(255, 241, 241);  /* Fondo claro para bloque de alerta roja */
+
+  /* ---------- 2. PATRÓN GLOBAL DE BOTONES ---------- */
+  --boton-activo-inicio: rgb(12, 45, 72);
+  --boton-activo-fin:    rgb(9, 31, 49);
+  --boton-inactivo-inicio: rgb(24, 92, 155);
+  --boton-inactivo-fin:    rgb(14, 65, 114);
+
+  /* ---------- 3. COLOR POR SECCIÓN ---------- */
+  --color-banner:             var(--verde-oscuro);
+  --color-header-ingresos:    var(--verde-oscuro);
+  --color-header-deducciones: var(--verde-oscuro);
+  --color-tabla-header:       var(--verde-oscuro);
+  --color-footer:             var(--verde-oscuro);
+  --color-boton-activo:       var(--boton-activo-inicio);
+  --color-boton-hover:        var(--boton-activo-fin);
+  --color-boton-inactivo:     var(--boton-inactivo-inicio);
+  --color-boton-inactivo-hover: var(--boton-inactivo-fin);
+  --color-saldo-inicio:       var(--verde-oscuro);
+  --color-saldo-fin:          rgb(8, 30, 48);
+
+  /* ---------- 3. TRANSPARENCIAS SOBRE FONDO OSCURO ---------- */
+  --sobre-oscuro-90:            rgba(255, 255, 255, 0.90);
+  --sobre-oscuro-fuerte:        rgba(255, 255, 255, 0.80);
+  --sobre-oscuro-medio:         rgba(255, 255, 255, 0.70);
+  --sobre-oscuro-sutil:         rgba(255, 255, 255, 0.40);
+  --fondo-sobre-oscuro-fuerte:  rgba(255, 255, 255, 0.20);
+  --fondo-sobre-oscuro-sutil:   rgba(255, 255, 255, 0.10);
+  --borde-sobre-oscuro:         rgba(255, 255, 255, 0.10);
+}
+
+/* ================================================================
+   CLASES DE COLOR — generadas a partir de las variables de :root
+   ================================================================ */
+
+/* --- Fondos --- */
+.bg-verde-oscuro  { background-color: var(--color-banner); }
+.bg-verde-medio   { background-color: var(--color-boton-activo); }
+.bg-verde-claro   { background-color: var(--verde-claro); }
+.bg-verde-suave   { background-color: rgba(212, 161, 56, 0.15); }
+.bg-gris-claro    { background-color: var(--gris-claro); }
+.bg-gris-claro-70 { background-color: rgba(248, 250, 252, 0.70); }
+.bg-gris-claro-60 { background-color: rgba(248, 250, 252, 0.60); }
+.bg-rojo-suave    { background-color: var(--rojo-fondo); }
+
+/* --- Fondos / bordes sobre superficies oscuras --- */
+.fondo-sobre-oscuro-fuerte { background-color: var(--fondo-sobre-oscuro-fuerte); }
+.fondo-sobre-oscuro-sutil  { background-color: var(--fondo-sobre-oscuro-sutil); }
+.borde-sobre-oscuro        { border-color: var(--borde-sobre-oscuro); }
+.overlay-verde             { background-color: rgba(12, 45, 72, 0.6); }
+
+/* --- Texto --- */
+.text-verde-oscuro { color: var(--verde-oscuro); }
+.text-verde-medio  { color: var(--verde-medio); }
+.text-verde-claro  { color: var(--verde-claro); }
+.text-gris-oscuro  { color: var(--gris-oscuro); }
+.text-gris-medio   { color: var(--gris-medio); }
+.text-rojo         { color: var(--rojo); }
+.text-rojo-oscuro  { color: var(--rojo-oscuro); }
+.text-rojo-claro   { color: var(--rojo-claro); }
+.text-rojo-claro-60 { color: rgba(253, 164, 175, 0.6); }
+
+/* --- Texto sobre fondo oscuro --- */
+.texto-sobre-oscuro-90     { color: var(--sobre-oscuro-90); }
+.texto-sobre-oscuro-fuerte { color: var(--sobre-oscuro-fuerte); }
+.texto-sobre-oscuro-medio  { color: var(--sobre-oscuro-medio); }
+.texto-sobre-oscuro-sutil  { color: var(--sobre-oscuro-sutil); }
+
+/* --- Bordes --- */
+.border-verde-medio { border-color: var(--verde-medio); }
+.border-rojo        { border-color: var(--rojo); }
+
+/* ================================================================
+   COMPONENTES DE COLOR COMPUESTO
+   ================================================================ */
+.btn-primario {
+  background: linear-gradient(135deg, var(--boton-activo-inicio), var(--boton-activo-fin));
+  color: #ffffff;
+  border: 1px solid rgba(9, 31, 49, 0.25);
+  transition: background .2s ease, transform .15s ease, box-shadow .2s ease;
+  box-shadow: 0 8px 18px -12px rgba(9, 31, 49, 0.8);
+}
+.btn-primario:hover {
+  background: linear-gradient(135deg, rgb(9, 31, 49), rgb(6, 22, 36));
+  color: #ffffff;
+}
+
+#pantalla-busqueda .btn-primario,
+#pantalla-licencia .btn-primario,
+#modal-proximamente .btn-primario {
+  background: linear-gradient(135deg, rgb(24, 92, 155), rgb(14, 65, 114)) !important;
+  border: 1px solid rgba(14, 65, 114, 0.25) !important;
+  color: #ffffff !important;
+  box-shadow: 0 8px 18px -12px rgba(14, 65, 114, 0.8) !important;
+}
+
+#pantalla-busqueda .btn-primario:hover,
+#pantalla-licencia .btn-primario:hover,
+#modal-proximamente .btn-primario:hover {
+  background: linear-gradient(135deg, rgb(14, 65, 114), rgb(10, 47, 83)) !important;
+  color: #ffffff !important;
+}
+
+/* ============================================================================
+   LANDING PRINCIPAL — Entrada al portal
+   Usa la paleta global del sistema y no altera el selector de perfiles.
+   ============================================================================ */
+#landing-principal {
+  isolation: isolate;
+}
+
+.landing-brand-header {
+  position: relative;
+  z-index: 30;
+  min-height: 56px;
+  margin-bottom: 3.5rem;
+}
+
+.landing-main-grid {
+  position: relative;
+  z-index: 10;
+}
+
+.landing-main-grid > div {
+  position: relative;
+  z-index: 10;
+}
+
+.landing-hero-bg {
+  background: radial-gradient(circle at 80% 20%, #143C5E 0%, #0C2D48 50%, #081E30 100%);
+}
+
+.landing-aperture {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid rgba(212, 161, 56, 0.15);
+  pointer-events: none;
+}
+
+.landing-aperture-a {
+  width: 500px;
+  height: 500px;
+  top: -112px;
+  right: -112px;
+}
+
+.landing-aperture-b {
+  width: 350px;
+  height: 350px;
+  top: 50%;
+  left: -128px;
+}
+
+.landing-aperture-c {
+  width: 280px;
+  height: 280px;
+  right: 25%;
+  bottom: -80px;
+}
+
+.landing-card-glass {
+  background: rgba(255, 255, 255, 0.97);
+  backdrop-filter: blur(16px);
+  min-height: 540px;
+  display: flex;
+  align-items: center;
+}
+
+.landing-card-glass > .landing-fade-step {
+  width: 100%;
+}
+
+.landing-iris {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 2px solid #D4A138;
+  box-shadow: 0 0 15px rgba(212, 161, 56, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  flex-shrink: 0;
+  background: rgba(12, 45, 72, 0.6);
+}
+
+.landing-iris::before {
+  content: '';
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #D4A138;
+}
+
+.landing-iris::after {
+  content: '';
+  position: absolute;
+  inset: 5px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255, 255, 255, 0.4);
+}
+
+.landing-status {
+  background: rgba(212, 161, 56, 0.15);
+  border-color: rgba(212, 161, 56, 0.4);
+}
+
+.landing-gold-dot { background: #D4A138; }
+.landing-gold-light { color: #E8C065; }
+.landing-gold-gradient {
+  color: transparent;
+  background: linear-gradient(90deg, #E8C065, #ffffff, #10AA5A);
+  background-clip: text;
+  -webkit-background-clip: text;
+}
+
+.landing-badge {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(8px);
+}
+
+.landing-access-icon {
+  background: linear-gradient(135deg, #0C2D48, #143C5E);
+  color: #D4A138;
+  border: 1px solid rgba(212, 161, 56, 0.3);
+}
+
+.landing-enter {
+  background: linear-gradient(180deg, #0BA84A 0%, #05682C 100%);
+  color: #ffffff;
+  border: 1px solid rgba(7, 140, 56, 0.3);
+  box-shadow: 0 8px 20px rgba(7, 140, 56, 0.35);
+  transition: all 0.2s ease;
+}
+
+.landing-enter:hover {
+  background: linear-gradient(180deg, #0CB952 0%, #067833 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(7, 140, 56, 0.45);
+}
+
+.landing-emerald-dot { background: #078C38; box-shadow: 0 0 25px rgba(7, 140, 56, 0.4); }
+.landing-navy-text { color: #0C2D48; }
+
+.landing-fade-step {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.landing-fade-out {
+  opacity: 0;
+  transform: translateY(-10px);
+  pointer-events: none;
+}
+
+.landing-fade-in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.landing-profile-primary {
+  background: linear-gradient(180deg, #0BA84A 0%, #05682C 100%);
+  color: #ffffff;
+  box-shadow: 0 8px 20px rgba(7, 140, 56, 0.35);
+  transition: all 0.2s ease;
+  min-height: 104px;
+  padding: 1.25rem 1.35rem;
+}
+
+.landing-profile-primary:hover {
+  background: linear-gradient(180deg, #0CB952 0%, #067833 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(7, 140, 56, 0.45);
+}
+
+.landing-profile-admin {
+  background: #ffffff;
+  border: 1.5px solid #E2E8F0;
+  transition: all 0.3s cubic-bezier(.22, .61, .36, 1);
+  min-height: 104px;
+  padding: 1.25rem 1.35rem;
+}
+
+#landing-card-perfiles {
+  min-height: 510px;
+  justify-content: center;
+}
+
+#landing-card-consulta {
+  min-height: 460px;
+  justify-content: center;
+}
+
+#landing-card-consulta input {
+  min-height: 54px;
+}
+
+#landing-card-perfiles > h3 {
+  font-size: 1.35rem;
+}
+
+#landing-card-perfiles > p {
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
+}
+
+#landing-card-perfiles > div {
+  gap: 1.35rem;
+}
+
+#landing-card-perfiles .landing-profile-primary span:first-of-type,
+#landing-card-perfiles .landing-profile-admin span:first-of-type {
+  font-size: 1.12rem;
+}
+
+#landing-card-perfiles .landing-profile-primary span:last-of-type,
+#landing-card-perfiles .landing-profile-admin span:last-of-type {
+  font-size: 0.9rem;
+  margin-top: 0.35rem;
+}
+
+#landing-card-perfiles .landing-profile-primary svg,
+#landing-card-perfiles .landing-profile-admin svg {
+  width: 1.55rem;
+  height: 1.55rem;
+}
+
+#landing-card-perfiles .landing-profile-icon,
+#landing-card-perfiles .landing-profile-primary > div:first-child {
+  padding: 0.85rem;
+}
+
+.landing-profile-admin:hover {
+  background: linear-gradient(180deg, #0BA84A 0%, #05682C 100%);
+  border-color: #078C38;
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(7, 140, 56, 0.45);
+}
+
+.landing-profile-icon {
+  background: #0C2D48;
+  color: #ffffff;
+  box-shadow: 0 4px 10px rgba(12, 45, 72, 0.2);
+}
+
+.landing-profile-admin:hover .landing-profile-icon {
+  background: #0C2D48;
+  color: #ffffff;
+}
+
+@media (max-width: 640px) {
+  .landing-aperture-a { width: 320px; height: 320px; top: -90px; right: -120px; }
+  .landing-aperture-b { width: 240px; height: 240px; left: -120px; }
+  .landing-aperture-c { width: 200px; height: 200px; right: -70px; }
+}
+
+.btn-inactivo,
+.tab-btn-inactivo {
+  background: linear-gradient(135deg, var(--boton-inactivo-inicio), var(--boton-inactivo-fin));
+  color: #ffffff;
+  border: 1px solid rgba(12, 45, 72, 0.25);
+  box-shadow: 0 8px 18px -12px rgba(12, 45, 72, 0.7);
+}
+
+.tab-btn-activo {
+  background: linear-gradient(135deg, var(--boton-activo-inicio), var(--boton-activo-fin));
+  color: #ffffff;
+  border: 1px solid rgba(180, 131, 35, 0.2);
+  box-shadow: 0 10px 18px -12px rgba(180, 131, 35, 0.8);
+}
+
+.fila-hover:hover { background-color: rgba(12, 45, 72, 0.05); }
+
+.input-foco-verde { outline: none; }
+.input-foco-verde:focus { box-shadow: 0 0 0 2px rgba(212, 161, 56, 0.5); }
+
+.gradiente-verde-oscuro {
+  background: linear-gradient(135deg, var(--color-saldo-inicio), var(--color-saldo-fin));
+}
+.saldo-fondo-normal {
+  background: linear-gradient(135deg, var(--color-saldo-inicio), var(--color-saldo-fin));
+}
+.saldo-fondo-negativo { background: var(--rojo-fondo); }
+
+.tabla-header { background-color: var(--color-tabla-header); }
+
+/* ================================================================
+   ESTILOS GENERALES
+   ================================================================ */
+body {
+  font-family: 'Poppins', sans-serif;
+  color: var(--gris-oscuro);
+  background: var(--gris-claro);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--verde-oscuro);
+}
+
+/* ── Animaciones de entrada ── */
+.fade-in {
+  animation: fadeIn .5s ease both;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.stagger {
+  animation: fadeIn .4s ease both;
+}
+
+/* ── Spinner de carga ── */
+.spinner {
+  border: 3px solid rgba(212, 161, 56, 0.15);
+  border-top-color: rgb(212, 161, 56);
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  animation: spin .7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Scrollbar personalizada ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+/* ── Ocultar en impresión ── */
+@media print {
+  .no-print { display: none !important; }
+}
+
+/* ── Efecto tecnológico para otros módulos ── */
+.tech-grid {
+  position: relative;
+  overflow: hidden;
+}
+
+.tech-grid::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle at 18% 30%, rgba(102,187,106,0.22) 0, transparent 45%),
+    radial-gradient(circle at 85% 75%, rgba(102,187,106,0.18) 0, transparent 40%),
+    linear-gradient(rgba(255,255,255,0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.07) 1px, transparent 1px);
+  background-size: auto, auto, 26px 26px, 26px 26px;
+}
+
+.tech-grid > * {
+  position: relative;
+  z-index: 1;
+}
+
+.tech-glow-line {
+  height: 3px;
+  width: 64px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, var(--verde-claro), transparent);
+  box-shadow: 0 0 10px 1px rgba(102,187,106,0.8);
+}
+
+.tech-dot {
+  box-shadow: 0 0 0 4px rgba(102,187,106,0.15);
+}
+
+/* ── Tarjeta premium "Saldo final a pagar" ── */
+.saldo-card {
+  box-shadow:
+    0 16px 36px -14px rgba(12,45,72,0.65),
+    inset 0 1px 0 rgba(255,255,255,0.10);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+/* ── Iconos de pestañas/filtros: contraste en ambos estados ── */
+.vista-btn.bg-white .icon-wrap,
+.filtro-btn.bg-white .icon-wrap {
+  background-color: rgba(212, 161, 56, 0.15) !important;
+}
+
+.vista-btn.bg-white .icon-wrap svg,
+.filtro-btn.bg-white .icon-wrap svg {
+  color: rgb(212, 161, 56) !important;
+}
+
+.vista-btn.bg-verde-medio .icon-wrap,
+.filtro-btn.bg-verde-medio .icon-wrap {
+  background-color: rgba(255,255,255,0.20) !important;
+}
+
+.vista-btn.bg-verde-medio .icon-wrap svg,
+.filtro-btn.bg-verde-medio .icon-wrap svg {
+  color: #FFFFFF !important;
+}

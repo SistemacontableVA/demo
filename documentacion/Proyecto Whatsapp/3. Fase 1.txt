@@ -1,0 +1,375 @@
+Fase 1: Pasos a realizar en Meta (Al pasar el tiempo de espera)
+Crear la Cuenta Comercial: Vuelve a la pantalla de Meta Developers y completa la asignación del portfolio comercial (Business Account).
+
+Entrar a la Configuración de la API:
+
+En el menú lateral izquierdo de tu app, ve a WhatsApp > Configuración de la API.
+
+Ahí verás tu Identificador de teléfono de prueba (copia esa serie numérica).
+
+Verás también un Token de acceso temporal (copia la clave larga).
+
+Enviar un mensaje de prueba:
+
+En el campo "Para", selecciona tu número de teléfono móvil personal.
+
+Presiona el botón Enviar mensaje de prueba para confirmar que recibes el mensaje en tu WhatsApp.
+
+Crear los Plantillas (Templates):
+
+En el menú de WhatsApp dentro de Meta, entra a Administrador de WhatsApp > Plantillas de mensaje.
+
+Crea dos plantillas con la categoría Utilidad (Utility):
+
+recordatorio_consulta: "Hola {{1}}, le saludamos de {{2}}. Le recordamos su cita de atención visual en {{3}}, en {{4}} el día {{5}}. ¡Le esperamos!"
+
+recordatorio_entrega: "Hola {{1}}, le informamos de {{2}} que la entrega de sus lentes ({{3}}) está programada para el día {{4}} en {{5}}. Saldo pendiente: ${{6}}."
+
+Fase 2: Ajuste del Código en Google Apps Script
+Actualiza el código principal en tu editor de Google Apps Script. Este código incluye el menú con las opciones para generar los textos y el nuevo botón para enviar los mensajes automáticamente por la API de Meta.
+
+JavaScript
+/**
+ * Menú personalizado con la opción de envío automático por Meta API.
+ */
+function onOpen() {
+  var ui = SpreadsheetApp.getUi();
+  ui.createMenu('🟢 Gestión WhatsApp')
+    .addItem('1. Generar Recordatorios de Consulta', 'generarRecordatorioConsulta')
+    .addItem('2. Generar Recordatorios de Entrega', 'generarRecordatorioEntrega')
+    .addItem('🚀 Generar Ambos Reportes', 'generarAmbosReportes')
+    .addSeparator()
+    .addItem('📲 ENVIAR MENSAJES (Meta API)', 'enviarMensajesDesdeHojaActiva')
+    .addToUi();
+}
+
+/**
+ * Pide al usuario las credenciales e inicia el envío automático en la hoja visible.
+ */
+function enviarMensajesDesdeHojaActiva() {
+  var ui = SpreadsheetApp.getUi();
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var hoja = ss.getActiveSheet();
+  var nombreHoja = hoja.getName();
+  
+  if (nombreHoja !== "Recordatorio Consulta WS" && nombreHoja !== "Recordatorio entrega WS") {
+    ui.alert("⚠️ Debes estar posicionado en la pestaña 'Recordatorio Consulta WS' o 'Recordatorio entrega WS' para enviar los mensajes.");
+    return;
+  }
+  
+  // Pegar las credenciales obtenidas de Meta
+  var idTelefono = "AQUI_TU_ID_DE_TELEFONO"; 
+  var token = "AQUI_TU_TOKEN_DE_ACCESO";
+  
+  if (idTelefono === "AQUI_TU_ID_DE_TELEFONO" || token === "AQUI_TU_TOKEN_DE_ACCESO") {
+    ui.alert("❌ Debes reemplazar 'idTelefono' y 'token' en el código de Apps Script con tus datos reales de Meta.");
+    return;
+  }
+
+  var ultimaFila = hoja.getLastRow();
+  if (ultimaFila < 2) {
+    ui.alert("⚠️ No hay datos para enviar en esta pestaña.");
+    return;
+  }
+
+  var url = "https://graph.facebook.com/v18.0/" + idTelefono + "/messages";
+  var datos = hoja.getRange(2, 1, ultimaFila - 1, 11).getValues();
+  var confirmacion = ui.alert("🚀 ¿Deseas iniciar el envío masivo para " + datos.length + " filas?", ui.ButtonSet.YES_NO);
+  
+  if (confirmacion !== ui.Button.YES) return;
+
+  for (var i = 0; i < datos.length; i++) {
+    var fila = datos[i];
+    var telefono = fila[4]; // Columna E (Teléfono WhatsApp)
+    var estado = fila[10];  // Columna K (Estado Envío)
+    
+    if (estado === "Pendiente" && telefono) {
+      
+      var payload = {};
+      
+      if (nombreHoja === "Recordatorio Consulta WS") {
+        payload = {
+          "messaging_product": "whatsapp",
+          "to": telefono,
+          "type": "template",
+          "template": {
+            "name": "recordatorio_consulta",
+            "language": { "code": "es" },
+            "components": [{
+              "type": "body",
+              "parameters": [
+                { "type": "text", "text": fila[2] }, // Paciente
+                { "type": "text", "text": "Óptica" },  // Empresa
+                { "type": "text", "text": "Municipio" },
+                { "type": "text", "text": "Lugar" },
+                { "type": "text", "text": "Fecha" }
+              ]
+            }]
+          }
+        };
+      } else {
+        payload = {
+          "messaging_product": "whatsapp",
+          "to": telefono,
+          "type": "template",
+          "template": {
+            "name": "recordatorio_entrega",
+            "language": { "code": "es" },
+            "components": [{
+              "type": "body",
+              "parameters": [
+                { "type": "text", "text": fila[2] }, // Paciente
+                { "type": "text", "text": "Óptica" },  // Empresa
+                { "type": "text", "text": fila[5] }, // Tipo Lente
+                { "type": "text", "text": "Fecha" },
+                { "type": "text", "text": "Lugar" },
+                { "type": "text", "text": fila[6].toString() } // Saldo
+              ]
+            }]
+          }
+        };
+      }
+      
+      var opciones = {
+        "method": "post",
+        "contentType": "application/json",
+        "headers": { "Authorization": "Bearer " + token },
+        "payload": JSON.stringify(payload),
+        "muteHttpExceptions": true
+      };
+      
+      try {
+        var respuesta = UrlFetchApp.fetch(url, opciones);
+        if (respuesta.getResponseCode() === 200) {
+          hoja.getRange(i + 2, 11).setValue("Enviado ✅");
+        } else {
+          hoja.getRange(i + 2, 11).setValue("Error Meta ❌");
+        }
+      } catch (e) {
+        hoja.getRange(i + 2, 11).setValue("Error Conexión ❌");
+      }
+      
+      // Espera de 1 segundo entre envíos para proteger el límite de frecuencia
+      Utilities.sleep(1000);
+    }
+  }
+  
+  ui.alert("🏁 Proceso de envío finalizado.");
+}
+
+function generarAmbosReportes() {
+  generarRecordatorioConsulta();
+  generarRecordatorioEntrega();
+  SpreadsheetApp.getUi().alert("✅ Se generaron las pestañas 'Recordatorio Consulta WS' y 'Recordatorio entrega WS'.");
+}
+
+function generarRecordatorioConsulta() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var hojaAtencion = ss.getSheetByName("ATENCION");
+  if (!hojaAtencion) return;
+  
+  var empresa = hojaAtencion.getRange("P1").getDisplayValue();
+  var municipio = hojaAtencion.getRange("F1").getDisplayValue();
+  var lugar = hojaAtencion.getRange("G4").getDisplayValue();
+  var direccion = hojaAtencion.getRange("G7").getDisplayValue();
+  var referencia = hojaAtencion.getRange("G9").getDisplayValue();
+  var fechaAtencion = hojaAtencion.getRange("K6").getDisplayValue();
+  
+  var pacientes = obtenerPacientesBase(hojaAtencion);
+  if (!pacientes || pacientes.length === 0) return;
+  
+  var nombreHoja = "Recordatorio Consulta WS";
+  var hoja = ss.getSheetByName(nombreHoja);
+  if (hoja) hoja.clear(); else hoja = ss.insertSheet(nombreHoja);
+  
+  var encabezados = [["No. Volante", "Identificación", "Paciente", "Teléfono Original", "Teléfono WhatsApp", "Saldo", "Estado Asistencia", "Tipo de Mensaje", "Mensaje Generado", "Link WhatsApp (Haz clic)", "Estado Envío"]];
+  hoja.getRange(1, 1, 1, encabezados[0].length).setValues(encabezados);
+  hoja.getRange("1:1").setFontWeight("bold").setBackground("#d9ead3");
+  
+  var filas = [];
+  for (var i = 0; i < pacientes.length; i++) {
+    var p = pacientes[i];
+    var msg = !p.telfLimpio ? "Sin Teléfono" : "Hola " + p.paciente + ", le saludamos de " + empresa + ". Le recordamos su cita de atención visual en " + municipio + ", en " + lugar + " (" + direccion + " - Ref: " + referencia + ") el día " + fechaAtencion + ". ¡Le esperamos!";
+    var lnk = !p.telfLimpio ? "" : "https://wa.me/" + p.telfLimpio + "?text=" + encodeURIComponent(msg);
+    filas.push([p.volante, p.id, p.paciente, p.telfRaw, p.telfLimpio, p.saldo, p.estadoSondeo, "Recordatorio Previo", msg, lnk, "Pendiente"]);
+  }
+  
+  if (filas.length > 0) {
+    hoja.getRange(2, 1, filas.length, filas[0].length).setValues(filas);
+    hoja.autoResizeColumns(1, 11);
+  }
+}
+
+function generarRecordatorioEntrega() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var hojaAtencion = ss.getSheetByName("ATENCION");
+  if (!hojaAtencion) return;
+  
+  var empresa = hojaAtencion.getRange("P1").getDisplayValue();
+  var lugar = hojaAtencion.getRange("G4").getDisplayValue();
+  var direccion = hojaAtencion.getRange("G7").getDisplayValue();
+  var fechaEntrega = hojaAtencion.getRange("K7").getDisplayValue();
+  
+  var pacientes = obtenerPacientesBase(hojaAtencion);
+  if (!pacientes || pacientes.length === 0) return;
+  
+  var nombreHoja = "Recordatorio entrega WS";
+  var hoja = ss.getSheetByName(nombreHoja);
+  if (hoja) hoja.clear(); else hoja = ss.insertSheet(nombreHoja);
+  
+  var encabezados = [["No. Volante", "Identificación", "Paciente", "Teléfono Original", "Teléfono WhatsApp", "Tipo de Lente", "Saldo a Cancelar", "Mensaje Generado", "Link WhatsApp (Haz clic)", "Estado Envío"]];
+  hoja.getRange(1, 1, 1, encabezados[0].length).setValues(encabezados);
+  hoja.getRange("1:1").setFontWeight("bold").setBackground("#fff2cc");
+  
+  var filas = [];
+  for (var i = 0; i < pacientes.length; i++) {
+    var p = pacientes[i];
+    if (p.comproLentes !== "SI") continue;
+    
+    var msg = !p.telfLimpio ? "Sin Teléfono" : "Hola " + p.paciente + ", le informamos de " + empresa + " que la entrega de sus lentes (" + p.tipoLente + ") está programada para el día " + fechaEntrega + " en " + lugar + " (" + direccion + "). Saldo pendiente a cancelar: $" + p.saldo;
+    var lnk = !p.telfLimpio ? "" : "https://wa.me/" + p.telfLimpio + "?text=" + encodeURIComponent(msg);
+    
+    filas.push([p.volante, p.id, p.paciente, p.telfRaw, p.telfLimpio, p.tipoLente, p.saldo, msg, lnk, "Pendiente"]);
+  }
+  
+  if (filas.length > 0) {
+    hoja.getRange(2, 1, filas.length, filas[0].length).setValues(filas);
+    hoja.autoResizeColumns(1, 10);
+  }
+}
+
+function obtenerPacientesBase(hojaAtencion) {
+  var ultimaFila = hojaAtencion.getLastRow();
+  if (ultimaFila < 13) return [];
+  
+  var numFilas = ultimaFila - 12;
+  var datos = hojaAtencion.getRange(13, 1, numFilas, 39).getValues();
+  var codigoPaisDefault = "58";
+  var pacientes = [];
+  
+  for (var i = 0; i < datos.length; i++) {
+    var fila = datos[i];
+    var paciente = fila[7];
+    if (!paciente) continue;
+    
+    var telf1 = fila[8];
+    var telf2 = fila[9];
+    var telfRaw = telf1 ? telf1.toString() : (telf2 ? telf2.toString() : "");
+    var telfLimpio = telfRaw.replace(/\D/g, '');
+    
+    if (telfLimpio.startsWith("0")) {
+      telfLimpio = codigoPaisDefault + telfLimpio.substring(1);
+    } else if (telfLimpio.length === 10 && !telfLimpio.startsWith(codigoPaisDefault)) {
+      telfLimpio = codigoPaisDefault + telfLimpio;
+    }
+    
+    pacientes.push({
+      volante: fila[5],
+      id: fila[6],
+      paciente: paciente,
+      telfRaw: telfRaw,
+      telfLimpio: telfLimpio,
+      estadoSondeo: fila[10],
+      comproLentes: fila[25] ? fila[25].toString().trim().toUpperCase() : "",
+      tipoLente: fila[27],
+      saldo: fila[35]
+    });
+  }
+  
+  return pacientes;
+}
+Flujo de Operación Final
+Al transcurrir la hora de espera, obtienes el ID de teléfono y Token en Meta.
+
+Reemplazas esos dos datos en las variables idTelefono y token del script.
+
+En Google Sheets ejecutas 🟢 Gestión WhatsApp > 🚀 Generar Ambos Reportes.
+
+Te ubicas en la pestaña de envíos (Recordatorio Consulta WS o Recordatorio entrega WS) y ejecutas 🟢 Gestión WhatsApp > 📲 ENVIAR MENSAJES (Meta API).
+
+Las casillas de la columna "Estado Envío" se actualizarán a Enviado ✅ conforme se entreguen los mensajes.
+
+Integrar Google Sheets con el panel web de Óptica Angelus Visión es la mejor arquitectura, ya que traslada el control operativo a tu plataforma mientras usas Google Sheets como base de datos o motor de procesamiento.
+
+Arquitectura General del Flujo
+[Google Sheets (ATENCION)] ──(1. Apps Script Endpoint / Google Sheets API)──> [Tu Aplicación Web]
+                                                                                     │
+                                                                   (2. Visualización y Edición de Plantilla)
+                                                                                     │
+[Cliente Final] <──(4. Envío API Meta)── [Servidor Web / Backend] <──(3. Disparo del Envio)
+Flujo Técnico Paso a Paso
+Paso 1: Exponer los datos de Google Sheets hacia la Web
+En lugar de procesar los mensajes en Google Sheets, tu script en Apps Script actúa como una API Web (doGet) que devuelve los datos limpios en formato JSON a tu plataforma:
+
+En el editor de Apps Script, configuras la función doGet(e) para leer la pestaña ATENCION y responder con la lista de pacientes formateada (nombre, teléfono limpio, saldo, tipo de lente).
+
+Publicas el script como Aplicación Web (Deploy > New deployment > Web app).
+
+Tu plataforma web realiza una petición HTTP GET a esa URL para obtener los registros sin necesidad de que el operador abra Google Sheets.
+
+Paso 2: Creación del Módulo en el Panel Web
+En tu sistema web creas una nueva sección (por ejemplo, dentro de Gestión de Lentes o un nuevo menú Mensajería WhatsApp):
+
+Vista de Selección: Permite al operador elegir el tipo de campaña: Recordatorio Consulta o Recordatorio Entrega.
+
+Editor de Plantilla Dinámica: Muestra un área de texto donde el operador ve la estructura de la plantilla oficial de Meta y puede personalizar parámetros secundarios antes de enviar.
+
+Tabla de Previsualización (Datatable): Muestra los pacientes traídos desde Sheets con casillas de verificación para seleccionar a quiénes enviar y a quiénes omitir.
+
+Paso 3: Procesamiento y Envió desde el Backend Web
+Cuando el usuario presiona el botón "Enviar Mensajes Masivos" en el panel web:
+
+El frontend envía la lista de pacientes seleccionados y la plantilla ajustada al backend de tu plataforma (Node.js, PHP, Python, etc.).
+
+El backend procesa cada registro en segundo plano (puedes usar colas como Redis/Bull para evitar bloquear la pantalla).
+
+El backend realiza las llamadas POST hacia la API Oficial de Meta (graph.facebook.com) utilizando el Token Permanente guardado en las variables de entorno de tu servidor.
+
+Paso 4: Actualización de Estado (Retroalimentación)
+Conforme Meta confirma la recepción de cada mensaje (código HTTP 200), el backend actualiza la barra de progreso en el panel web en tiempo real (usando WebSockets o polling).
+
+Opcionalmente, el backend realiza una petición POST de vuelta a tu Apps Script para marcar la celda de la hoja ATENCION con "Enviado ✅" o "Error ❌".
+
+Código para Convertir Google Apps Script en una API Web (Paso 1)
+Agrega este bloque a tu Apps Script para que tu plataforma web pueda consumir la información de Google Sheets:
+
+JavaScript
+/**
+ * Servidor de API en Apps Script para entregar datos a la Web de Óptica Angelus
+ */
+function doGet(e) {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var hojaAtencion = ss.getSheetByName("ATENCION");
+  
+  if (!hojaAtencion) {
+    return ContentService.createTextOutput(JSON.stringify({ error: "Hoja ATENCION no encontrada" }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+  
+  // Extraer metadata general
+  var metaData = {
+    empresa: hojaAtencion.getRange("P1").getDisplayValue(),
+    municipio: hojaAtencion.getRange("F1").getDisplayValue(),
+    lugar: hojaAtencion.getRange("G4").getDisplayValue(),
+    direccion: hojaAtencion.getRange("G7").getDisplayValue(),
+    referencia: hojaAtencion.getRange("G9").getDisplayValue(),
+    fechaAtencion: hojaAtencion.getRange("K6").getDisplayValue(),
+    fechaEntrega: hojaAtencion.getRange("K7").getDisplayValue()
+  };
+  
+  var pacientes = obtenerPacientesBase(hojaAtencion);
+  
+  var respuesta = {
+    meta: metaData,
+    pacientes: pacientes
+  };
+  
+  return ContentService.createTextOutput(JSON.stringify(respuesta))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+Ventajas de esta Arquitectura
+Seguridad de Credenciales: El Token de Meta y el ID de Teléfono nunca quedan expuestos en Google Sheets ni en el navegador del cliente; se guardan protegidos en tu servidor web.
+
+Control Operativo: El equipo de la óptica trabaja dentro de la interfaz nativa del sistema en lugar de manipular celdas manualmente.
+
+Escalabilidad: Te permite guardar un historial de envíos directamente en la base de datos de tu plataforma web.
