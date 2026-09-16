@@ -28,7 +28,22 @@ var ADMIN_RUTAS = {
 };
 
 var ADMIN_RUTAS_COORDINADOR = ['documentos', 'nominaPromotor', 'contabilidadDiaria'];
-var ADMIN_RUTAS_SECRETARIA  = ['ingresarNomina', 'nominaPromotor', 'reportes', 'atencionMunicipio'];
+var ADMIN_RUTAS_SECRETARIA  = ['documentos', 'atencionMunicipio', 'recordatorios', 'recordatorioMasivo'];
+var ADMIN_RUTAS_ATENCION    = ['atencionMunicipio', 'catalogos'];
+var ADMIN_RUTAS_EJECUTIVO   = ['dashboard', 'documentos', 'ingresarNomina', 'nominaPromotor', 'contabilidadDiaria', 'oficina', 'reportes', 'cargaLentes', 'catalogos', 'atencionMunicipio'];
+
+var ADMIN_PERFILES_RUTAS = {
+  'Administrador': Object.keys(ADMIN_RUTAS),
+  'Coordinador': ADMIN_RUTAS_COORDINADOR,
+  'Secretaria': ADMIN_RUTAS_SECRETARIA,
+  'Atención': ADMIN_RUTAS_ATENCION,
+  'Ejecutivo': ADMIN_RUTAS_EJECUTIVO
+};
+
+function adminTieneAccesoRuta(perfil, seccion) {
+  var rutas = ADMIN_PERFILES_RUTAS[perfil] || [];
+  return rutas.indexOf(seccion) !== -1;
+}
 
 /** Sección activa actual */
 var _adminRutaActual = '';
@@ -41,7 +56,7 @@ var _adminRutaActual = '';
  */
 function adminNavegar(seccion) {
   var perfilActual = (typeof getPerfilAdmin === 'function') ? getPerfilAdmin() : 'Administrador';
-  if (perfilActual === 'Coordinador' && ADMIN_RUTAS_COORDINADOR.indexOf(seccion) === -1) {
+  if (!adminTieneAccesoRuta(perfilActual, seccion)) {
     console.warn('[AdminRouter] Ruta no permitida para Coordinador:', seccion);
     return;
   }
@@ -215,7 +230,9 @@ function adminLogout() {
     _aplicarPerfilSidebar(perfil);
   }, 2000);
 
-  adminNavegar(perfil === 'Coordinador' ? 'documentos' : 'dashboard');
+  var rutaInicial = perfil === 'Coordinador' || perfil === 'Secretaria' ? 'documentos' :
+    perfil === 'Atención' ? 'atencionMunicipio' : 'dashboard';
+  adminNavegar(rutaInicial);
 
   // Re-validar sesión cada 30 minutos
   setInterval(function () {
@@ -231,59 +248,29 @@ function adminLogout() {
  * Aplica visibilidad del sidebar según el perfil del usuario.
  *
  * Reglas:
- *   Administrador → ve todo
- *   Secretaria    → ve "Ingresar Nómina" pero NO Catálogos ni Configuración
- *   Coordinador   → no ve ningún ítem data-solo-admin="true"
+ *   Cada perfil usa ADMIN_PERFILES_RUTAS como fuente única de permisos.
  *
  * @param {string} perfil
  */
 function _aplicarPerfilSidebar(perfil) {
-  if (perfil === 'Coordinador') {
-    document.querySelectorAll('.admin-menu-item').forEach(function (el) {
-      var ruta = el.getAttribute('data-ruta') || '';
-      var permitido = ADMIN_RUTAS_COORDINADOR.indexOf(ruta) !== -1;
-      if (!permitido) el.style.display = 'none';
-    });
-    document.querySelectorAll('.admin-menu-section').forEach(function (sec) {
-      sec.style.display = sec.textContent.trim() === 'Gestion' ? '' : 'none';
-    });
-  } else if (perfil === 'Secretaria') {
-    document.querySelectorAll('[data-solo-coordinador="true"]').forEach(function (el) {
-      el.style.display = 'none';
-    });
-    // Ocultar ítems data-solo-admin que NO sean ingresarNomina NI data-secretaria
-    document.querySelectorAll('[data-solo-admin="true"]').forEach(function (el) {
-      var ruta = el.getAttribute('data-ruta') || '';
-      if (ruta !== 'ingresarNomina') {
-        el.style.display = 'none';
-      }
-    });
-    // Ocultar sección "Sistema" (Catálogos / Configuración)
-    document.querySelectorAll('.admin-menu-section').forEach(function (sec) {
-      if (sec.textContent.trim() === 'Sistema') {
-        sec.style.display = 'none';
-      }
-    });
-    // Ocultar ítems de Herramientas que NO sean atencionMunicipio
-    document.querySelectorAll('.admin-menu-item').forEach(function (el) {
-      var ruta = el.getAttribute('data-ruta') || '';
-      var esHerramienta = ['recordatorios', 'recordatorioMasivo'].indexOf(ruta) !== -1;
-      if (esHerramienta) el.style.display = 'none';
-    });
-    // Si todos los ítems de Herramientas están ocultos menos atencionMunicipio
-    // la sección sigue visible — correcto
+  var rutasPermitidas = ADMIN_PERFILES_RUTAS[perfil] || [];
+  document.querySelectorAll('.admin-menu-item').forEach(function (el) {
+    var ruta = el.getAttribute('data-ruta') || '';
+    el.style.display = rutasPermitidas.indexOf(ruta) !== -1 ? '' : 'none';
+  });
 
-  } else if (perfil !== 'Administrador') {
-    // Coordinador y cualquier otro: ocultar todos los ítems solo-admin
-    document.querySelectorAll('[data-solo-admin="true"]').forEach(function (el) {
-      el.style.display = 'none';
-    });
-    document.querySelectorAll('.admin-menu-section').forEach(function (sec) {
-      if (sec.textContent.trim() === 'Sistema') {
-        sec.style.display = 'none';
+  document.querySelectorAll('.admin-menu-section').forEach(function (sec) {
+    var siguiente = sec.nextElementSibling;
+    var visible = false;
+    while (siguiente && !siguiente.classList.contains('admin-menu-section')) {
+      if (siguiente.classList.contains('admin-menu-item') && siguiente.style.display !== 'none') {
+        visible = true;
+        break;
       }
-    });
-  }
+      siguiente = siguiente.nextElementSibling;
+    }
+    sec.style.display = visible ? '' : 'none';
+  });
 
   // Mostrar perfil en el footer del sidebar
   var perfilLabel = document.getElementById('sidebar-perfil-label');

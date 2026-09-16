@@ -206,6 +206,7 @@ function _amRenderRutas(lista) {
 
 function _amCardHtml(m) {
   var esAdmin   = _amPerfil === 'Administrador';
+  var puedeCambiarEstado = ['Administrador', 'Secretaria', 'Ejecutivo'].indexOf(_amPerfil) !== -1;
   var badgeInfo = _amBadgeEstado(m.estado);
   var fecha     = m.fechaAtencion
     ? new Date(m.fechaAtencion).toLocaleDateString('es-VE', { day: '2-digit', month: 'short', year: 'numeric' })
@@ -232,15 +233,17 @@ function _amCardHtml(m) {
       '</button>' +
 
       // Selector de estado
-      '<div class="mt-3">' +
-        '<select onchange="amCambiarEstado(\'' + _amEsc(m.id) + '\', this.value)" ' +
-          'class="w-full text-xs font-semibold rounded-lg px-2.5 py-1.5 border-0 outline-none cursor-pointer ' + badgeInfo.select + '" ' +
-          'title="Cambiar estado">' +
-          AtencionMunicipioService.ESTADOS.map(function (e) {
-            return '<option value="' + e + '"' + (m.estado === e ? ' selected' : '') + '>' + e + '</option>';
-          }).join('') +
-        '</select>' +
-      '</div>' +
+      (puedeCambiarEstado
+        ? '<div class="mt-3">' +
+          '<select onchange="amCambiarEstado(\'' + _amEsc(m.id) + '\', this.value)" ' +
+            'class="w-full text-xs font-semibold rounded-lg px-2.5 py-1.5 border-0 outline-none cursor-pointer ' + badgeInfo.select + '" ' +
+            'title="Cambiar estado">' +
+            AtencionMunicipioService.ESTADOS.map(function (e) {
+              return '<option value="' + e + '"' + (m.estado === e ? ' selected' : '') + '>' + e + '</option>';
+            }).join('') +
+          '</select>' +
+        '</div>'
+        : '<div class="mt-3 text-xs font-semibold text-slate-500">Estado: ' + _amEsc(m.estado || 'Sin Digitalizar') + '</div>') +
 
       // Acciones admin
       (esAdmin
@@ -270,6 +273,8 @@ function _amBadgeEstado(estado) {
 // ══════════════════════════════════════════════════════════════
 
 function amCambiarEstado(id, nuevoEstado) {
+  if (['Administrador', 'Secretaria', 'Ejecutivo'].indexOf(_amPerfil) === -1) return;
+
   // Actualizar localmente de inmediato (optimista)
   var m = _amMunicipios.find(function (x) { return x.id === id; });
   if (m) m.estado = nuevoEstado;
@@ -361,6 +366,8 @@ function _amModalHtml() {
 }
 
 function amAbrirModalCrear() {
+  if (_amPerfil !== 'Administrador') return;
+
   _amEditandoId = null;
   var titulo = document.getElementById('am-modal-titulo');
   var form   = document.getElementById('am-form');
@@ -378,6 +385,8 @@ function amAbrirModalCrear() {
 }
 
 function amAbrirModalEditar(id) {
+  if (_amPerfil !== 'Administrador') return;
+
   var m = _amMunicipios.find(function (x) { return x.id === id; });
   if (!m) return;
   _amEditandoId = id;
@@ -411,6 +420,7 @@ function amCerrarModal(event) {
 
 function amGuardar(event) {
   event.preventDefault();
+  if (_amPerfil !== 'Administrador') return;
   var esEdicion = !!_amEditandoId;
   var btn = document.getElementById('am-btn-guardar');
   var err = document.getElementById('am-modal-error');
@@ -455,6 +465,8 @@ function amGuardar(event) {
 }
 
 function amConfirmarEliminar(id, nombre) {
+  if (_amPerfil !== 'Administrador') return;
+
   if (!confirm('¿Eliminar el municipio "' + nombre + '"?\nEsta acción no se puede deshacer.')) return;
   AtencionMunicipioService.eliminarMunicipio(id)
     .then(function () { _amCargarMunicipios(true); })

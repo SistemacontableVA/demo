@@ -164,7 +164,7 @@ async function autenticarAdmin(usuario, password) {
     var data = await res.json();
 
     if (data.ok) {
-      var PERFILES_VALIDOS = ['Administrador', 'Coordinador', 'Secretaria'];
+      var PERFILES_VALIDOS = ['Administrador', 'Coordinador', 'Secretaria', 'Atención', 'Ejecutivo'];
       var perfil = (data.perfil || 'Administrador').trim();
       if (PERFILES_VALIDOS.indexOf(perfil) === -1) {
         return { ok: false, error: 'Perfil de usuario no reconocido.' };
@@ -186,7 +186,7 @@ async function autenticarAdmin(usuario, password) {
  * @returns {string}
  */
 function getPerfilAdmin() {
-  var PERFILES_VALIDOS = ['Administrador', 'Coordinador', 'Secretaria'];
+  var PERFILES_VALIDOS = ['Administrador', 'Coordinador', 'Secretaria', 'Atención', 'Ejecutivo'];
 
   // Intentar extraer perfil del token (fuente de verdad — firmado por el GAS)
   var token = localStorage.getItem(ADMIN_TOKEN_KEY) || sessionStorage.getItem(ADMIN_TOKEN_KEY);

@@ -67,6 +67,30 @@
         "ver_reportes"
       ]
     },
+    "atencion": {
+      "descripcion": "Atención - consulta de municipios y catálogos",
+      "permisos": [
+        "ver_atencion_municipio",
+        "ver_catalogos",
+        "ver_hojas_municipio"
+      ]
+    },
+    "ejecutivo": {
+      "descripcion": "Ejecutivo - operación administrativa y seguimiento",
+      "permisos": [
+        "ver_dashboard",
+        "ver_documentos",
+        "ingresar_nominas",
+        "ver_nomina_promotor",
+        "ver_contabilidad_diaria",
+        "ver_nomina_oficina",
+        "ver_reportes",
+        "ver_gestion_lentes",
+        "ver_catalogos",
+        "ver_atencion_municipio",
+        "cambiar_estado_municipio"
+      ]
+    },
     "coordinador": {
       "descripcion": "Coordinador - gestión de brigadas",
       "permisos": [
