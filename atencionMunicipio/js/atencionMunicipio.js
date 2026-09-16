@@ -547,8 +547,6 @@ function amCargarIframe() {
 }
 
 function amCambiarZoomMovil(direccion) {
-  if (!_amEsMovil()) return;
-
   var niveles = [0.8, 0.9, 1, 1.1, 1.2, 1.3, 1.4];
   var actual = niveles.indexOf(_amZoomMovil);
   var siguiente = Math.max(0, Math.min(niveles.length - 1, actual + direccion));

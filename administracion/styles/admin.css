@@ -1100,7 +1100,51 @@
 }
 
 .am-mobile-zoom {
-  display: none;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px;
+  border: 1px solid #e2e8f0;
+  border-radius: 9px;
+  background: #f8fafc;
+}
+
+.am-mobile-zoom-btn {
+  width: 32px;
+  height: 30px;
+  border: 0;
+  border-radius: 7px;
+  background: #083f4a;
+  color: #fff;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.am-mobile-zoom-btn:active {
+  background: #0b5969;
+  transform: scale(0.95);
+}
+
+.am-mobile-zoom-valor {
+  min-width: 42px;
+  color: #334155;
+  font-size: 11px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.am-iframe-panel {
+  overflow: auto;
+}
+
+.am-iframe {
+  --am-zoom: 1;
+  width: calc(100% / var(--am-zoom));
+  height: calc(100% / var(--am-zoom));
+  transform: scale(var(--am-zoom));
+  transform-origin: top left;
 }
 
 /* ── Botón volver en el visor ───────────────────────────────── */
@@ -1183,53 +1227,9 @@
 
 /* ── Responsive ─────────────────────────────────────────────── */
 @media (max-width: 768px) {
-  .am-mobile-zoom {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    padding: 2px;
-    border: 1px solid #e2e8f0;
-    border-radius: 9px;
-    background: #f8fafc;
-  }
-
-  .am-mobile-zoom-btn {
-    width: 32px;
-    height: 30px;
-    border: 0;
-    border-radius: 7px;
-    background: #083f4a;
-    color: #fff;
-    font-size: 20px;
-    line-height: 1;
-    cursor: pointer;
-    touch-action: manipulation;
-  }
-
-  .am-mobile-zoom-btn:active {
-    background: #0b5969;
-    transform: scale(0.95);
-  }
-
-  .am-mobile-zoom-valor {
-    min-width: 42px;
-    color: #334155;
-    font-size: 11px;
-    font-weight: 700;
-    text-align: center;
-  }
-
   .am-iframe-panel {
     overflow: auto;
     touch-action: pan-x pan-y;
-  }
-
-  .am-iframe {
-    --am-zoom: 1;
-    width: calc(100% / var(--am-zoom));
-    height: calc(100% / var(--am-zoom));
-    transform: scale(var(--am-zoom));
-    transform-origin: top left;
   }
 
   .am-btn-inmersivo {

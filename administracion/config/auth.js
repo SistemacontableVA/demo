@@ -169,9 +169,9 @@ async function autenticarAdmin(usuario, password) {
       if (PERFILES_VALIDOS.indexOf(perfil) === -1) {
         return { ok: false, error: 'Perfil de usuario no reconocido.' };
       }
-      sessionStorage.setItem(ADMIN_TOKEN_KEY,  data.token);
-      sessionStorage.setItem(ADMIN_EXPIRA_KEY, data.expira);
-      sessionStorage.setItem('admin_perfil',   perfil);
+      localStorage.setItem(ADMIN_TOKEN_KEY,  data.token);
+      localStorage.setItem(ADMIN_EXPIRA_KEY, data.expira);
+      localStorage.setItem('admin_perfil',   perfil);
     }
 
     return data;
@@ -189,7 +189,7 @@ function getPerfilAdmin() {
   var PERFILES_VALIDOS = ['Administrador', 'Coordinador', 'Secretaria'];
 
   // Intentar extraer perfil del token (fuente de verdad — firmado por el GAS)
-  var token = sessionStorage.getItem(ADMIN_TOKEN_KEY);
+  var token = localStorage.getItem(ADMIN_TOKEN_KEY) || sessionStorage.getItem(ADMIN_TOKEN_KEY);
   if (token) {
     try {
       var pad     = token.replace(/-/g, '+').replace(/_/g, '/');
@@ -207,7 +207,7 @@ function getPerfilAdmin() {
   }
 
   // Fallback sessionStorage — si alguien lo manipuló sin token válido, no sirve de nada
-  var perfilStorage = (sessionStorage.getItem('admin_perfil') || '').trim();
+  var perfilStorage = (localStorage.getItem('admin_perfil') || sessionStorage.getItem('admin_perfil') || '').trim();
   if (PERFILES_VALIDOS.indexOf(perfilStorage) !== -1) return perfilStorage;
 
   // Perfil más restrictivo por defecto
@@ -219,8 +219,8 @@ function getPerfilAdmin() {
  * @returns {boolean}
  */
 function estaAutenticado() {
-  var token  = sessionStorage.getItem(ADMIN_TOKEN_KEY);
-  var expira = parseInt(sessionStorage.getItem(ADMIN_EXPIRA_KEY) || '0');
+  var token  = localStorage.getItem(ADMIN_TOKEN_KEY) || sessionStorage.getItem(ADMIN_TOKEN_KEY);
+  var expira = parseInt(localStorage.getItem(ADMIN_EXPIRA_KEY) || sessionStorage.getItem(ADMIN_EXPIRA_KEY) || '0');
   if (!token || !expira) return false;
   return new Date().getTime() < expira;
 }
@@ -229,8 +229,12 @@ function estaAutenticado() {
  * Cierra la sesión del administrador.
  */
 function cerrarSesionAdmin() {
+  localStorage.removeItem(ADMIN_TOKEN_KEY);
+  localStorage.removeItem(ADMIN_EXPIRA_KEY);
+  localStorage.removeItem('admin_perfil');
   sessionStorage.removeItem(ADMIN_TOKEN_KEY);
   sessionStorage.removeItem(ADMIN_EXPIRA_KEY);
+  sessionStorage.removeItem('admin_perfil');
 }
 
 /**
@@ -238,5 +242,5 @@ function cerrarSesionAdmin() {
  * @returns {string|null}
  */
 function getTokenAdmin() {
-  return sessionStorage.getItem(ADMIN_TOKEN_KEY);
+  return localStorage.getItem(ADMIN_TOKEN_KEY) || sessionStorage.getItem(ADMIN_TOKEN_KEY);
 }

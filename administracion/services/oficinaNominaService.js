@@ -29,7 +29,7 @@ var OficinaNominaService = (function () {
   function _usuario() {
     // Obtener usuario del token de sesión admin si está disponible
     if (typeof getPerfilAdmin === 'function') {
-      return sessionStorage.getItem('admin_perfil') || 'sistema';
+      return localStorage.getItem('admin_perfil') || sessionStorage.getItem('admin_perfil') || 'sistema';
     }
     return 'sistema';
   }
