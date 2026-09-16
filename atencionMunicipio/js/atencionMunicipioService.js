@@ -26,9 +26,9 @@ var AtencionMunicipioService = (function () {
    * GAS responde: callback({ ... })
    */
   function _jsonp(params, timeoutMs) {
-    timeoutMs = timeoutMs || 15000;
+    timeoutMs = timeoutMs || 30000;
     return new Promise(function (resolve, reject) {
-      var cbName = '__amCb_' + Date.now() + '_' + Math.floor(Math.random() * 9999);
+      var cbName = 'amCb' + Date.now() + Math.floor(Math.random() * 9999);
       var script = null;
       var timer  = null;
 
@@ -58,6 +58,7 @@ var AtencionMunicipioService = (function () {
       script = document.createElement('script');
       script.async = true;
       script.charset = 'utf-8';
+      script.referrerPolicy = 'no-referrer';
       script.src = url;
       script.onerror = function () {
         clearTimeout(timer);
