@@ -29,6 +29,7 @@ function renderAtencionMunicipio() {
   var contenedor = document.getElementById('admin-content');
   if (!contenedor) return;
 
+  _amRestaurarMenuLateral();
   _amPerfil     = (typeof getPerfilAdmin === 'function') ? getPerfilAdmin() : 'Administrador';
   _amInmersivo  = false;
   _amZoomMovil  = 1;
@@ -464,6 +465,7 @@ function amAbrirVisor(id) {
   if (!contenedor) return;
 
   contenedor.innerHTML = _amVisorHtml(m);
+  _amOcultarMenuLateral();
 
   // Cargar iframe de inmediato en modo editar (con barra de herramientas)
   setTimeout(function () { amCargarIframe(); }, 100);
@@ -558,6 +560,16 @@ function amCambiarZoomMovil(direccion) {
   if (valor) valor.textContent = Math.round(_amZoomMovil * 100) + '%';
 }
 
+function _amOcultarMenuLateral() {
+  var sidebar = document.getElementById('admin-sidebar');
+  if (sidebar) sidebar.style.display = 'none';
+}
+
+function _amRestaurarMenuLateral() {
+  var sidebar = document.getElementById('admin-sidebar');
+  if (sidebar) sidebar.style.display = '';
+}
+
 // ══════════════════════════════════════════════════════════════
 // MODO INMERSIVO
 // ══════════════════════════════════════════════════════════════
@@ -570,10 +582,8 @@ function amEntrarInmersivo() {
   _amInmersivo = true;
   var iframe = document.getElementById('am-iframe');
   var solicitarFullscreen = iframe && (iframe.requestFullscreen || iframe.webkitRequestFullscreen);
-  var sidebar  = document.getElementById('admin-sidebar');
   var topbar   = document.getElementById('admin-topbar');
   var amTopbar = document.querySelector('.am-topbar');
-  if (sidebar)  sidebar.style.display  = 'none';
   if (topbar)   topbar.style.display   = 'none';
   if (amTopbar) amTopbar.style.display = 'none';
 
@@ -593,10 +603,8 @@ function amSalirInmersivo() {
     document.exitFullscreen().catch(function () {});
   }
   _amInmersivo = false;
-  var sidebar  = document.getElementById('admin-sidebar');
   var topbar   = document.getElementById('admin-topbar');
   var amTopbar = document.querySelector('.am-topbar');
-  if (sidebar)  sidebar.style.display  = '';
   if (topbar)   topbar.style.display   = '';
   if (amTopbar) amTopbar.style.display = '';
 
