@@ -491,10 +491,6 @@ function _amVisorHtml(m) {
       '</div>' +
 
       '<div class="am-topbar-right">' +
-        // Abrir en nueva pestaña
-        '<a href="' + _amEsc(m.linkHoja) + '" target="_blank" rel="noopener noreferrer" title="Abrir en Google Sheets" class="am-btn-icon">' +
-          '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>' +
-        '</a>' +
         // Pantalla completa
         '<button id="am-btn-inmersivo" onclick="amToggleInmersivo()" title="Pantalla completa" class="am-btn-inmersivo">' +
           '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">' +
@@ -553,6 +549,8 @@ function amToggleInmersivo() {
 
 function amEntrarInmersivo() {
   _amInmersivo = true;
+  var iframe = document.getElementById('am-iframe');
+  var solicitarFullscreen = iframe && (iframe.requestFullscreen || iframe.webkitRequestFullscreen);
   var sidebar  = document.getElementById('admin-sidebar');
   var topbar   = document.getElementById('admin-topbar');
   var amTopbar = document.querySelector('.am-topbar');
@@ -560,11 +558,21 @@ function amEntrarInmersivo() {
   if (topbar)   topbar.style.display   = 'none';
   if (amTopbar) amTopbar.style.display = 'none';
 
-  _amCrearFAB();
+  if (_amEsMovil() && solicitarFullscreen) {
+    Promise.resolve(solicitarFullscreen.call(iframe)).catch(function () {
+      _amInmersivo = false;
+      amSalirInmersivo();
+    });
+  } else {
+    _amCrearFAB();
+  }
   _amActualizarBtnInmersivo();
 }
 
 function amSalirInmersivo() {
+  if (_amEsMovil() && document.fullscreenElement && document.exitFullscreen) {
+    document.exitFullscreen().catch(function () {});
+  }
   _amInmersivo = false;
   var sidebar  = document.getElementById('admin-sidebar');
   var topbar   = document.getElementById('admin-topbar');
@@ -578,6 +586,18 @@ function amSalirInmersivo() {
 
   _amActualizarBtnInmersivo();
 }
+
+function _amEsMovil() {
+  return window.matchMedia && window.matchMedia('(max-width: 768px)').matches;
+}
+
+document.addEventListener('fullscreenchange', function () {
+  var visor = document.getElementById('am-visor-root');
+  if (!visor || !_amEsMovil()) return;
+  if (!document.fullscreenElement && _amInmersivo) {
+    amSalirInmersivo();
+  }
+});
 
 function _amCrearFAB() {
   var prev = document.getElementById('am-fab-salir');

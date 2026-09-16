@@ -1179,6 +1179,17 @@
 
 /* ── Responsive ─────────────────────────────────────────────── */
 @media (max-width: 768px) {
+  #am-iframe:fullscreen,
+  #am-iframe:-webkit-full-screen {
+    width: 100vw;
+    height: 100vh;
+    background: #fff;
+  }
+
+  .am-iframe {
+    touch-action: auto;
+  }
+
   .am-topbar {
     flex-wrap: wrap;
     padding: 8px 12px;
