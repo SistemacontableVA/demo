@@ -20,6 +20,7 @@ var _amInmersivo     = false;
 var _amModoVisor     = 'ver';    // 'ver' | 'editar'
 var _amMunicipioVisor = null;    // municipio activo en el visor
 var _amZoomMovil     = 1;
+var _amDatosCargados  = false;
 
 // ══════════════════════════════════════════════════════════════
 // PUNTO DE ENTRADA
@@ -78,7 +79,7 @@ function _amShellListaHtml() {
     '<div id="am-lista-error" class="hidden bg-red-50 border border-red-200 rounded-xl px-5 py-4 text-red-700 text-sm flex items-center gap-3">' +
       '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>' +
       '<span id="am-lista-error-txt">Error al cargar.</span>' +
-      '<button onclick="_amCargarMunicipios()" class="ml-auto text-xs font-semibold underline">Reintentar</button>' +
+      '<button onclick="_amCargarMunicipios(true)" class="ml-auto text-xs font-semibold underline">Reintentar</button>' +
     '</div>' +
 
     // Contenido (rutas + cards)
@@ -105,9 +106,16 @@ function _amShellListaHtml() {
 // CARGA DE DATOS
 // ══════════════════════════════════════════════════════════════
 
-function _amCargarMunicipios() {
+function _amCargarMunicipios(forzar) {
   if (_amCargando) return;
+
+  if (_amDatosCargados && !forzar) {
+    _amMostrarMunicipios();
+    return;
+  }
+
   _amCargando = true;
+  _amDatosCargados = false;
 
   var spinner   = document.getElementById('am-lista-spinner');
   var errorEl   = document.getElementById('am-lista-error');
@@ -121,19 +129,10 @@ function _amCargarMunicipios() {
 
   AtencionMunicipioService.listarMunicipios()
     .then(function (lista) {
-      _amMunicipios = lista;
+      _amMunicipios = Array.isArray(lista) ? lista : [];
+      _amDatosCargados = true;
       _amCargando   = false;
-      if (spinner) spinner.classList.add('hidden');
-
-      if (!lista || lista.length === 0) {
-        if (vacio) vacio.classList.remove('hidden');
-        return;
-      }
-
-      if (contenido) {
-        contenido.innerHTML = _amRenderRutas(lista);
-        contenido.classList.remove('hidden');
-      }
+      _amMostrarMunicipios();
     })
     .catch(function (err) {
       _amCargando = false;
@@ -144,6 +143,21 @@ function _amCargarMunicipios() {
         errorEl.classList.remove('hidden');
       }
     });
+}
+
+function _amMostrarMunicipios() {
+  var spinner   = document.getElementById('am-lista-spinner');
+  var errorEl   = document.getElementById('am-lista-error');
+  var contenido = document.getElementById('am-lista-contenido');
+  var vacio     = document.getElementById('am-lista-vacio');
+
+  if (spinner) spinner.classList.add('hidden');
+  if (errorEl) errorEl.classList.add('hidden');
+  if (vacio) vacio.classList.toggle('hidden', _amMunicipios.length !== 0);
+  if (contenido) {
+    contenido.innerHTML = _amMunicipios.length ? _amRenderRutas(_amMunicipios) : '';
+    contenido.classList.toggle('hidden', _amMunicipios.length === 0);
+  }
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -264,7 +278,7 @@ function amCambiarEstado(id, nuevoEstado) {
     .catch(function (err) {
       console.warn('[AtencionMunicipio] Error al cambiar estado:', err.message);
       // Recargar para sincronizar
-      _amCargarMunicipios();
+      _amCargarMunicipios(true);
     });
 }
 
@@ -427,7 +441,7 @@ function amGuardar(event) {
       _amEditandoId = null;
       var overlay = document.getElementById('am-modal-overlay');
       if (overlay) overlay.classList.add('hidden');
-      _amCargarMunicipios(); // recargar lista desde la hoja
+      _amCargarMunicipios(true); // actualizar cache desde la hoja
     })
     .catch(function (e) {
       if (err) { err.textContent = e.message || 'Error al guardar.'; err.classList.remove('hidden'); }
@@ -443,7 +457,7 @@ function amGuardar(event) {
 function amConfirmarEliminar(id, nombre) {
   if (!confirm('¿Eliminar el municipio "' + nombre + '"?\nEsta acción no se puede deshacer.')) return;
   AtencionMunicipioService.eliminarMunicipio(id)
-    .then(function () { _amCargarMunicipios(); })
+    .then(function () { _amCargarMunicipios(true); })
     .catch(function (e) { alert('Error al eliminar: ' + e.message); });
 }
 
