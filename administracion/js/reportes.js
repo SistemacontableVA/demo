@@ -1,10 +1,4 @@
-﻿/* ============================================================
-   REPORTES.JS — Módulo de Reportes de Lentes y Desempeño
-   Módulo Administración · Óptica Visión de Águila
-   Consume ReportesService.obtenerReporteLentes(filtros)
-   ============================================================ */
-
-/* ── Estado local del módulo ── */
+﻿/* ── Estado local del módulo ── */
 var _rptFiltros          = { fechaInicio: '', fechaFin: '', municipio: '', asesor: '' };
 var _rptMunicipios       = [];
 var _rptAsesores         = [];

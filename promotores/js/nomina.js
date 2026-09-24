@@ -1,8 +1,3 @@
-/* ============================================================
-   NOMINA.JS — Lógica principal del módulo Nómina
-   Promotores · Portal de Nómina · Óptica Visión de Águila
-   ============================================================ */
-
 // Usar var para que la re-ejecución del script no lance
 // "SyntaxError: Identifier already declared" en navegadores.
 // API_URL también se define en assets/js/utils.js para el módulo Admin.
@@ -45,8 +40,13 @@ function abrirPlantillaNomina() {
   fetch('administracion/documentos/templates/nomina-impresion.html?ts=' + Date.now(), { cache: 'no-store' })
     .then(function(response) { return response.text(); })
     .then(function(html) {
+      var logoUrl = new URL('assets/images/logomenu.png', document.baseURI).href;
+      var configUrl = new URL('empresa-config.json', document.baseURI).href;
       var scriptTag = '<script>window.__nominaData = ' + JSON.stringify(nominaActual) + ';</script>';
-      var htmlConDatos = html.replace('</head>', scriptTag + '</head>');
+      var htmlConDatos = html
+        .replace(/\.\.\/\.\.\/\.\.\/assets\/images\/logomenu\.png/g, logoUrl)
+        .replace(/fetch\(['"]empresa-config\.json/g, 'fetch(' + JSON.stringify(configUrl))
+        .replace('</head>', scriptTag + '</head>');
       popup.document.write(htmlConDatos);
       popup.document.close();
       setTimeout(function() {

@@ -1,8 +1,3 @@
-/* ============================================================
-   NOMINA-RENDER.JS — Funciones de renderizado del módulo Nómina
-   Promotores · Portal de Nómina · Óptica Visión de Águila
-   ============================================================ */
-
 /**
  * Renderiza la tabla principal de movimientos diarios.
  * Aplica el filtro activo antes de construir el HTML. Paleta V6.

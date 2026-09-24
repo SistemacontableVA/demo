@@ -1,11 +1,3 @@
-/* ============================================================
-   RECORDATORIOS.JS — Controlador del módulo Recordatorios
-   Módulo independiente · Óptica Visión de Águila
-
-   Patrón: renderRecordatorios() inyecta HTML en #admin-content
-   directamente (igual que dashboard.js, reportes.js, etc.)
-   ============================================================ */
-
 // ── Estado interno ─────────────────────────────────────────
 var _recMunicipios      = [];
 var _recMunicipioActivo = null;

@@ -1,15 +1,3 @@
-/* ============================================================
-   RECORDATORIOMASIVO.JS — Controlador del módulo
-   Recordatorio Masivo · Óptica Visión de Águila
-
-   Patrón idéntico a recordatorios.js pero con:
-   - Prefijo _rm en todas las variables/funciones internas
-   - Columna "Estado Envío" en la tabla de pacientes
-   - Botón "🚀 Envío General (Masivo)"
-   - Botón individual que llama MetaService en vez de abrir wa.me
-   - Estado de envío por paciente persistido en sesión (_rmEstados)
-   ============================================================ */
-
 // ── Estado interno (prefijo _rm) ───────────────────────────
 var _rmMunicipios      = [];
 var _rmMunicipioActivo = null;

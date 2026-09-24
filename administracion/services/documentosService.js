@@ -1,13 +1,3 @@
-/* ============================================================
-   DOCUMENTOSSERVICE.JS — Servicio de generación de documentos
-   Módulo Administración · Óptica Visión de Águila
-
-   ESTADO: Solicitud Institucional lista para conectar GAS.
-   Los demás tipos siguen como stub.
-
-   Para activar un documento real:
-   1. Desplegar su Code.gs como Web App en Google Apps Script
-   2. Copiar la URL del Web App en GAS_URLS[tipo]
    ============================================================ */
 
 var DocumentosService = {

@@ -1,16 +1,3 @@
-/* ============================================================
-   RECORDATORIOSSERVICE.JS — Capa de servicio del módulo Recordatorios
-   Módulo independiente · Óptica Visión de Águila
-
-   Responsabilidades:
-     - Persistir municipios en localStorage
-     - Consultar el Apps Script Web App mediante el spreadsheetId
-     - Normalizar la respuesta JSON para el módulo
-
-   Endpoint Apps Script:
-     https://script.google.com/macros/s/AKfycbxlHPqIhMSIlYCXpDBQu1LiPwZb26MZO1cKVoVsXB1g7QNggFY_2xNBy3xsPJQ6Jq7jUA/exec
-   ============================================================ */
-
 var RecordatoriosService = (function () {
 
   // ── Constantes ────────────────────────────────────────────

@@ -1,11 +1,3 @@
-/* ============================================================
-   AUTH.JS — Sistema de autenticación y licencias
-   Módulo Administración · Óptica Visión de Águila
-
-   Las credenciales NO están aquí.
-   La validación ocurre en el servidor KS-Licencias (GAS).
-   ============================================================ */
-
 // URL del GAS de licencias (tuyo, no del cliente)
 var KS_LICENCIAS_URL = 'https://script.google.com/macros/s/AKfycbyDBpp-Lef4vFWCblQyRNnWUdD2gi1MaCacu1Qv-y5axZLImEvSeDyhd1_mDnrt-NDPZQ/exec';
 

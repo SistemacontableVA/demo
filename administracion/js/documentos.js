@@ -1,12 +1,4 @@
-﻿/* ============================================================
-   DOCUMENTOS.JS — Centro de Gestión Documental
-   Módulo Administración · Óptica Visión de Águila
-
-   Fase 3 — Solicitud Institucional operativa.
-   Los demás tipos muestran "Próximamente".
-   ============================================================ */
-
-/* ──────────────────────────────────────────────────────────────
+﻿/* ──────────────────────────────────────────────────────────────
    VISTA PRINCIPAL — Lista de tipos de documento
 ────────────────────────────────────────────────────────────── */
 

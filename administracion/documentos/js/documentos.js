@@ -1,16 +1,4 @@
-﻿/* ============================================================
-   DOCUMENTOS.JS — Lógica del módulo Documentos
-   Administración > Documentos · Óptica Visión de Águila
-
-   Gestiona la navegación entre tipos de documentos.
-   Para agregar un nuevo documento:
-     1. Crea su vista en administracion/documentos/views/
-     2. Agrégalo a MODULOS en assets/js/app.js
-     3. Agrega su tarjeta en documentos.html
-   No se modifica este archivo.
-   ============================================================ */
-
-/**
+﻿/**
  * Navega hacia un formulario de documento específico.
  * Wrapper sobre mostrarModulo() del router principal (app.js).
  * @param {string} tipoDoc - clave del documento en MODULOS (app.js)

@@ -1,9 +1,4 @@
-﻿/* ============================================================
-   CONFIGURACION.JS — Vista de Configuración del sistema
-   Módulo Administración · Óptica Visión de Águila
-   ============================================================ */
-
-function renderConfiguracion() {
+﻿function renderConfiguracion() {
   var contenedor = document.getElementById('admin-content');
   if (!contenedor) return;
 

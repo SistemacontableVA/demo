@@ -2,7 +2,6 @@
  * ═══════════════════════════════════════════════════════════════
  * API-CONFIG.JS — Configuración Centralizada de APIs y Endpoints
  * 
- * Óptica Visión de Águila · Sistema de Nómina y Gestión de Brigadas
  * ═══════════════════════════════════════════════════════════════
  * 
  * SEGURIDAD:

@@ -1,8 +1,3 @@
-/* ============================================================
-   CONTABILIDAD DIARIA — Integración del módulo en el shell admin
-   Fase 1: planilla local con impresión/PDF.
-   ============================================================ */
-
 function renderContabilidadDiaria() {
   var contenedor = document.getElementById('admin-content');
   if (!contenedor) return;

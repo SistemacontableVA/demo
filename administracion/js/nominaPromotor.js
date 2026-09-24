@@ -1,21 +1,36 @@
-﻿/* ============================================================
-   NOMINAPROMOTOR.JS — Integración de consulta de nómina
-   Módulo Administración · Óptica Visión de Águila
-
-   Reutiliza la lógica existente del módulo de Promotor.
-   ============================================================ */
-
-function renderNominaPromotor() {
+﻿function renderNominaPromotor() {
   var contenedor = document.getElementById('admin-content');
   if (!contenedor) return;
 
   contenedor.innerHTML = [
     '<div class="fade-in">',
+    '  <div id="admin-nomina-modal" class="fixed inset-0 z-[100] flex min-h-screen items-center justify-center overflow-y-auto bg-[#082c4a]/90 px-4 py-8 backdrop-blur-sm">',
+    '    <div class="relative w-full max-w-2xl overflow-hidden rounded-3xl border border-white/70 bg-white shadow-2xl">',
+    '      <div class="bg-gradient-to-br from-[#082c4a] via-[#0c5360] to-[#008a69] px-6 py-8 text-white sm:px-10">',
+    '        <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white/15 text-2xl ring-1 ring-white/30">$</div>',
+    '        <h3 class="mt-4 text-center text-2xl font-extrabold tracking-tight text-white">Consulta de Nóminas</h3>',
+    '        <p class="mx-auto mt-2 max-w-md text-center text-sm text-white/80">Elige una vista para revisar una nómina individual o consultar todas en una sola carga.</p>',
+    '      </div>',
+    '      <div class="grid grid-cols-1 gap-4 p-6 sm:grid-cols-2 sm:p-8">',
+    '        <button type="button" onclick="seleccionarModoNomina(\'individual\')" class="group rounded-2xl border border-slate-200 bg-slate-50 p-5 text-left shadow-soft transition hover:-translate-y-1 hover:border-verde-medio hover:shadow-card">',
+    '          <span class="mb-3 flex h-11 w-11 items-center justify-center rounded-xl bg-verde-suave text-xl font-bold text-verde-oscuro transition group-hover:bg-verde-medio group-hover:text-white">1</span>',
+    '          <strong class="block text-base text-verde-oscuro">Consulta Individual</strong>',
+    '          <span class="mt-1 block text-xs text-slate-500">Selecciona un promotor y consulta su nómina.</span>',
+    '        </button>',
+    '        <button type="button" onclick="seleccionarModoNomina(\'general\')" class="group rounded-2xl border border-verde-medio/30 bg-emerald-50/40 p-5 text-left shadow-soft transition hover:-translate-y-1 hover:border-verde-medio hover:shadow-card">',
+    '          <span class="mb-3 flex h-11 w-11 items-center justify-center rounded-xl bg-verde-medio text-xl font-bold text-white transition group-hover:bg-verde-oscuro">2</span>',
+    '          <strong class="block text-base text-verde-oscuro">Consulta Nómina General</strong>',
+    '          <span class="mt-1 block text-xs text-slate-500">Carga todas las nóminas para revisarlas rápidamente.</span>',
+    '        </button>',
+    '      </div>',
+    '    </div>',
+    '  </div>',
+    '  <div id="admin-nomina-workspace" class="hidden">',
     '  <div class="mb-6">',
     '    <h3 class="text-verde-oscuro font-bold text-lg">Consulta de Nómina</h3>',
-    '    <p class="text-gris-medio text-sm mt-0.5">Selecciona un promotor y consulta su nómina usando la misma lógica del módulo de promotores.</p>',
+    '    <p class="text-gris-medio text-sm mt-0.5">Selecciona un promotor y consulta su nómina.</p>',
     '  </div>',
-    '  <div class="bg-white rounded-xl shadow-soft p-5 max-w-2xl mb-6 border border-slate-200">',
+    '  <div id="admin-nomina-selector" class="bg-white rounded-xl shadow-soft p-5 max-w-2xl mb-6 border border-slate-200">',
     '    <div class="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-3 items-end">',
     '      <div>',
     '        <label class="block text-xs font-semibold text-gris-medio uppercase tracking-wide mb-1.5">Promotor</label>',
@@ -27,19 +42,28 @@ function renderNominaPromotor() {
     '        <span id="admin-btn-consultar-spinner" class="hidden inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full" style="animation: spin .7s linear infinite;"></span>',
     '      </button>',
     '    </div>',
-    '    <div class="flex justify-end mt-3">',
-    '      <button onclick="consultarNominasGenerales()" id="admin-btn-consultar-generales" class="nomina-general-btn" type="button">',
-    '        Consultar nóminas en general',
-    '      </button>',
-    '    </div>',
     '    <div id="admin-nomina-error" class="hidden mt-4 text-sm text-rojo"></div>',
     '  </div>',
+    '  </div>',
     '  <div id="admin-nomina-view"></div>',
-  '  <div id="admin-nominas-generales-view"></div>',
+    '  <div id="admin-nominas-generales-view"></div>',
+    '  </div>',
     '</div>'
   ].join('');
 
   cargarPromotoresAdmin();
+}
+
+function seleccionarModoNomina(modo) {
+  var modal = document.getElementById('admin-nomina-modal');
+  var workspace = document.getElementById('admin-nomina-workspace');
+  var selector = document.getElementById('admin-nomina-selector');
+  var general = document.getElementById('admin-nominas-generales-view');
+  if (modal) modal.classList.add('hidden');
+  if (workspace) workspace.classList.remove('hidden');
+  if (selector) selector.classList.toggle('hidden', modo !== 'individual');
+  if (general) general.classList.toggle('hidden', modo !== 'general');
+  if (modo === 'general') consultarNominasGenerales();
 }
 
 function cargarPromotoresAdmin() {
@@ -109,9 +133,13 @@ function consultarNominaPromotor() {
     })
     .then(function () {
       var resultado = wrapper.querySelector('#resultado');
-      if (resultado) {
+      if (resultado && nominaActual) {
         resultado.classList.remove('hidden');
         resultado.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else if (!nominaActual) {
+        wrapper.innerHTML = '';
+        errorEl.textContent = 'No se puede mostrar la nómina porque este promotor no tiene datos de AFF.';
+        errorEl.classList.remove('hidden');
       }
     })
     .catch(function (err) {
@@ -132,103 +160,237 @@ function consultarNominaPromotor() {
 
 async function consultarNominasGenerales() {
   var resultado = document.getElementById('admin-nominas-generales-view');
-  var boton = document.getElementById('admin-btn-consultar-generales');
-  if (!resultado || !boton) return;
+  if (!resultado) return;
 
-  boton.disabled = true;
-  boton.textContent = 'Cargando nóminas...';
   resultado.innerHTML = '<div class="flex items-center gap-2 py-8 text-slate-400 text-sm"><div class="spinner"></div> Consultando todos los promotores...</div>';
 
   try {
-    var promotores = await PromotoresService.getAll();
-    if (!promotores || !promotores.length) {
+    var respuesta = await fetch(window.API_URL + '?action=listar-nominas-generales', { cache: 'no-store' });
+    if (!respuesta.ok) throw new Error('HTTP ' + respuesta.status);
+    var payload = await respuesta.json();
+    var nominas = Array.isArray(payload) ? payload : (payload.nominas || []);
+    if (!nominas.length) {
       resultado.innerHTML = '<div class="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-xl text-xs text-blue-700">No hay promotores disponibles.</div>';
       return;
     }
-
-    var consultas = promotores.map(function(promotor) {
-      var cedula = (promotor.cedula || '').toString().trim();
-      return fetch(window.API_URL + '?cedula=' + encodeURIComponent(cedula))
-        .then(function(res) { return res.json(); })
-        .then(function(data) {
-          return {
-            nombre: (promotor.nombre || 'Promotor').toString().trim(),
-            resumen: data.resumen || {},
-            lentesDetalle: data.lentesDetalle || [],
-            registros: data.error ? [] : (data.logDiario || []),
-            error: data.error || ''
-          };
-        })
-        .catch(function() {
-          return {
-            nombre: (promotor.nombre || 'Promotor').toString().trim(),
-            resumen: {},
-            lentesDetalle: [],
-            registros: [],
-            error: 'No se pudo consultar esta nómina.'
-          };
-        });
+    _adminNominasGenerales = nominas.map(function(nomina) {
+      var resumen = nomina.resumen || {};
+      var resumenPago = nomina.resumenPago || {};
+      return {
+        nombre: nomina.nombre || 'Promotor',
+        resumen: resumen,
+        resumenPago: {
+          afiliaciones: resumenPago.afiliaciones || resumen.totalAff || 0,
+          lentesVendidos: resumenPago.lentesVendidos || resumen.totalVentaLentes || 0,
+          totalPagar: resumenPago.totalPagar || resumen.neto || 0
+        },
+        lentesDetalle: nomina.lentesDetalle || [],
+        registros: nomina.logDiario || [],
+        error: nomina.error || ''
+      };
     });
-
-    _adminNominasGenerales = await Promise.all(consultas);
     renderNominasGenerales(_adminNominasGenerales);
   } catch (err) {
     resultado.innerHTML = '<div class="mt-3 p-3 bg-red-50 border border-red-200 rounded-xl text-xs text-red-700">No se pudieron cargar las nóminas generales.</div>';
   } finally {
-    boton.disabled = false;
-    boton.textContent = 'Consultar nóminas en general';
   }
 }
 
 var _adminNominasGenerales = [];
+var _adminNominasResumenPago = [];
+var _adminNominaPlantillaHtml = '';
+var _adminNominaGeneralActiva = -1;
 
 function renderNominasGenerales(nominas) {
   var resultado = document.getElementById('admin-nominas-generales-view');
   if (!resultado) return;
 
-  var tabs = nominas.map(function(nomina, idx) {
-    return '<button type="button" onclick="mostrarNominaGeneral(' + idx + ')" id="admin-nomina-tab-' + idx + '" class="admin-nomina-tab shrink-0 px-4 py-2.5 text-xs font-semibold border-b-2 transition-colors ' +
-      (idx === 0 ? 'text-verde-oscuro border-verde-oscuro tab-activo font-bold' : 'text-slate-500 border-transparent hover:text-verde-oscuro') + '" data-activo="' + (idx === 0 ? 'true' : 'false') + '">' +
-      escaparNominaAdmin(nomina.nombre) + '</button>';
-  }).join('');
+  var nominasDisponibles = nominas.filter(function(nomina) { return !nomina.error; });
+  var nominasSinHoja = nominas.filter(function(nomina) { return !!nomina.error; });
+  _adminNominasResumenPago = nominas;
+  _adminNominasGenerales = nominasDisponibles;
 
-  var paneles = nominas.map(function(nomina, idx) {
+  if (!nominasDisponibles.length) {
+    resultado.innerHTML = '<div class="mt-5"><button type="button" onclick="abrirResumenPagoNominas()" class="mb-4 inline-flex items-center gap-2 rounded-xl bg-verde-oscuro px-4 py-2.5 text-sm font-semibold text-white shadow-soft">Resumen de Pago</button><div class="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">No hay promotores con información de nómina disponible.</div></div>' +
+      listaNominasSinHojaAdmin(nominasSinHoja);
+    return;
+  }
+
+  var paneles = nominasDisponibles.map(function(nomina, idx) {
     return '<div id="admin-nomina-panel-' + idx + '" class="' + (idx === 0 ? '' : 'hidden') + '">' +
-      '<div class="flex items-center justify-between mb-3">' +
-        '<p class="text-sm font-semibold text-verde-oscuro">' + escaparNominaAdmin(nomina.nombre) + '</p>' +
-        '<span class="text-xs text-slate-400">' + nomina.registros.length + ' registros</span>' +
-      '</div>' +
       (nomina.error
         ? '<div class="p-3 bg-blue-50 border border-blue-200 rounded-xl text-xs text-blue-700">' + escaparNominaAdmin(nomina.error) + '</div>'
-        : resumenNominaGeneralAdmin(nomina) + tablaNominaGeneralAdmin(nomina.registros)) +
+        : '<div id="admin-nomina-detalle-' + idx + '"></div>') +
     '</div>';
   }).join('');
 
   resultado.innerHTML =
-    '<div class="mt-5 bg-white rounded-md-plus shadow-card p-5 border border-slate-200">' +
-      '<div class="flex items-center justify-between mb-3">' +
-        '<h4 class="text-sm font-bold text-verde-oscuro">Nóminas generales</h4>' +
-        '<span class="text-xs text-slate-500">' + nominas.length + ' promotores</span>' +
+    '<div class="mt-5">' +
+      '<div class="mb-4 rounded-xl border border-slate-200 bg-white p-4 shadow-soft">' +
+        '<div class="mb-1.5 flex items-center justify-between gap-3">' +
+          '<label for="admin-promotor-general-select" class="block text-xs font-semibold uppercase tracking-wide text-gris-medio">Promotor</label>' +
+          '<button type="button" onclick="abrirResumenPagoNominas()" class="inline-flex shrink-0 items-center gap-2 rounded-lg bg-verde-oscuro px-4 py-2.5 text-sm font-semibold text-white shadow-soft transition hover:shadow-card">Resumen de Pago</button>' +
+        '</div>' +
+        '<select id="admin-promotor-general-select" onchange="mostrarNominaGeneral(this.value)" class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-gris-oscuro focus:outline-none input-foco-verde">' +
+          nominasDisponibles.map(function(nomina, idx) { return '<option value="' + idx + '">' + escaparNominaAdmin(nomina.nombre) + '</option>'; }).join('') +
+        '</select>' +
+        '<p class="mt-2 text-xs text-slate-400">' + nominasDisponibles.length + ' promotores con información cargados. El cambio de selección es instantáneo.</p>' +
       '</div>' +
-      '<div class="overflow-x-auto border-b border-slate-200 mb-4"><div class="flex gap-1 min-w-max">' + tabs + '</div></div>' +
       paneles +
-    '</div>';
+    '</div>' +
+    listaNominasSinHojaAdmin(nominasSinHoja);
+
+  cargarPlantillaNominaGeneral().then(function() {
+    mostrarNominaGeneral(0);
+  });
+}
+
+function abrirResumenPagoNominas() {
+  var existente = document.getElementById('admin-resumen-pago-modal');
+  if (existente) existente.remove();
+
+  var totalPagoPositivo = _adminNominasResumenPago.reduce(function(total, nomina) {
+    var valor = Number((nomina.resumenPago || {}).totalPagar) || 0;
+    return total + (valor > 0 ? valor : 0);
+  }, 0);
+
+  var filas = _adminNominasResumenPago.map(function(nomina, indice) {
+    var resumen = nomina.resumenPago || {};
+    return '<tr class="border-b border-slate-100 last:border-0 ' + (indice % 2 === 0 ? 'bg-white' : 'bg-slate-50') + '">' +
+      '<td class="w-[44%] px-3 py-2.5 text-left text-sm font-semibold text-slate-700">' + escaparNominaAdmin(nomina.nombre) + '</td>' +
+      '<td class="w-[20%] border-l border-slate-100 px-3 py-2.5 text-right text-sm font-semibold text-verde-oscuro">$' + fmt(resumen.totalPagar || 0) + '</td>' +
+      '<td class="w-[18%] border-l border-slate-100 px-3 py-2.5 text-center text-sm text-slate-600">' + escaparNominaAdmin(resumen.afiliaciones || 0) + '</td>' +
+      '<td class="w-[18%] border-l border-slate-100 px-3 py-2.5 text-center text-sm text-slate-600">' + escaparNominaAdmin(resumen.lentesVendidos || 0) + '</td>' +
+    '</tr>';
+  }).join('');
+
+  var modal = document.createElement('div');
+  modal.id = 'admin-resumen-pago-modal';
+  modal.className = 'fixed inset-0 z-[110] flex min-h-screen items-center justify-center overflow-y-auto bg-[#082c4a]/70 px-4 py-8 backdrop-blur-sm';
+  modal.innerHTML = '<div class="w-full max-w-4xl overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl" role="dialog" aria-modal="true" aria-labelledby="admin-resumen-pago-titulo">' +
+    '<div class="flex items-center justify-between bg-verde-oscuro px-5 py-4 text-white">' +
+      '<div><h3 id="admin-resumen-pago-titulo" class="text-lg font-bold text-verde-medio">Resumen de Pago</h3><p class="mt-0.5 text-xs text-white/75">Afiliaciones, lentes vendidos y total a pagar</p></div>' +
+      '<button type="button" onclick="cerrarResumenPagoNominas()" class="rounded-lg px-3 py-1 text-xl leading-none text-white/80 hover:bg-white/10 hover:text-white" aria-label="Cerrar">&times;</button>' +
+    '</div>' +
+    '<div class="max-h-[70vh] overflow-auto p-4">' +
+      '<div class="overflow-x-auto rounded-xl border border-slate-200"><table class="w-full min-w-[620px] table-fixed text-sm">' +
+        '<colgroup><col class="w-[44%]"><col class="w-[20%]"><col class="w-[18%]"><col class="w-[18%]"></colgroup>' +
+        '<thead><tr class="bg-slate-50 text-xs uppercase tracking-wide text-slate-600"><th class="px-3 py-2.5 text-left">Promotor</th><th class="border-l border-slate-200 px-3 py-2.5 text-right">Total a pagar</th><th class="border-l border-slate-200 px-3 py-2.5 text-center">Afiliaciones</th><th class="border-l border-slate-200 px-3 py-2.5 text-center">Lentes vendidos</th></tr></thead>' +
+        '<tbody>' + filas + '</tbody>' +
+        '<tfoot><tr class="border-t-2 border-slate-200 bg-slate-100 font-bold text-slate-700"><td class="px-3 py-3 text-left text-sm">Total a Pagar</td><td class="border-l border-slate-200 px-3 py-3 text-right text-sm text-verde-oscuro">$' + fmt(totalPagoPositivo) + '</td><td class="border-l border-slate-200 px-3 py-3"></td><td class="border-l border-slate-200 px-3 py-3"></td></tr></tfoot>' +
+      '</table></div>' +
+    '</div>' +
+  '</div>';
+  document.body.appendChild(modal);
+}
+
+function cerrarResumenPagoNominas() {
+  var modal = document.getElementById('admin-resumen-pago-modal');
+  if (modal) modal.remove();
+}
+
+function listaNominasSinHojaAdmin(nominas) {
+  if (!nominas.length) return '';
+
+  return '<div class="mt-4 rounded-xl border border-slate-200 bg-slate-50 p-4">' +
+    '<h5 class="text-sm font-bold text-slate-700">Promotores sin datos de AFF</h5>' +
+    '<p class="mt-1 text-xs text-slate-500">No aparecen en el selector porque no tienen información disponible.</p>' +
+    '<ul class="mt-3 space-y-1.5">' +
+      nominas.map(function(nomina) {
+        return '<li class="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700">' + escaparNominaAdmin(nomina.nombre) +
+          '<span class="ml-1 font-normal text-slate-500">(' + escaparNominaAdmin(nomina.error) + ')</span></li>';
+      }).join('') +
+    '</ul>' +
+  '</div>';
+}
+
+function cargarPlantillaNominaGeneral() {
+  if (_adminNominaPlantillaHtml) return Promise.resolve(_adminNominaPlantillaHtml);
+  return fetch('promotores/views/nomina.tpl?t=' + Date.now(), { cache: 'no-store' })
+    .then(function(res) {
+      if (!res.ok) throw new Error('No se pudo cargar la vista de nómina.');
+      return res.text();
+    })
+    .then(function(html) {
+      _adminNominaPlantillaHtml = html;
+      return html;
+    });
 }
 
 function mostrarNominaGeneral(idx) {
-  document.querySelectorAll('.admin-nomina-tab').forEach(function(tab, tabIdx) {
-    var activo = tabIdx === idx;
-    tab.classList.toggle('text-verde-oscuro', activo);
-    tab.classList.toggle('border-verde-oscuro', activo);
-    tab.classList.toggle('font-bold', activo);
-    tab.classList.toggle('tab-activo', activo);
-    tab.classList.toggle('text-slate-500', !activo);
-    tab.classList.toggle('border-transparent', !activo);
-    tab.setAttribute('data-activo', activo ? 'true' : 'false');
-  });
+  idx = Number(idx) || 0;
   document.querySelectorAll('[id^="admin-nomina-panel-"]').forEach(function(panel, panelIdx) {
     panel.classList.toggle('hidden', panelIdx !== idx);
   });
+
+  var select = document.getElementById('admin-promotor-general-select');
+  if (select && select.value !== String(idx)) select.value = String(idx);
+
+  var nomina = _adminNominasGenerales[idx];
+  if (nomina && !nomina.error) {
+    _adminNominaGeneralActiva = idx;
+    cargarPlantillaNominaGeneral().then(function() {
+      renderDetalleNominaGeneral(nomina);
+    });
+  }
+}
+
+function renderDetalleNominaGeneral(nomina) {
+  var detalle = document.getElementById('admin-nomina-detalle-' + _adminNominaGeneralActiva);
+  if (!detalle || !_adminNominaPlantillaHtml) return;
+
+  document.querySelectorAll('[id^="admin-nomina-detalle-"]').forEach(function(contenedor) {
+    if (contenedor !== detalle) contenedor.innerHTML = '';
+  });
+  detalle.innerHTML = _adminNominaPlantillaHtml;
+  var header = detalle.querySelector('.mb-6.lg\\:mb-8.fade-in.no-print');
+  if (header) header.style.display = 'none';
+
+  var resultado = detalle.querySelector('#resultado');
+  if (resultado) resultado.classList.remove('hidden');
+
+  var data = {
+    nombre: nomina.nombre,
+    resumen: nomina.resumen || {},
+    logDiario: nomina.registros || [],
+    lentesDetalle: nomina.lentesDetalle || []
+  };
+  nominaActual = data;
+  logDiarioActual = data.logDiario;
+
+  detalle.querySelector('#txt-nombre').innerText = data.nombre || 'Asesor';
+  detalle.querySelector('#avatar-inicial').innerText = (data.nombre || 'A').trim().charAt(0).toUpperCase();
+  asignarValoresNominaGeneral(data, detalle);
+  renderDeducciones();
+  renderBrigadas();
+  renderLentes(data);
+  filtrar('todos');
+  showVista('nomina');
+}
+
+function asignarValoresNominaGeneral(data, detalle) {
+  var resumen = data.resumen || {};
+  function texto(id, valor) {
+    var elemento = detalle.querySelector('#' + id);
+    if (elemento) elemento.textContent = valor;
+  }
+  texto('res-bc', resumen.brigCampo !== undefined ? resumen.brigCampo : 0);
+  texto('res-ba', resumen.brigAtend !== undefined ? resumen.brigAtend : 0);
+  texto('res-lent', resumen.cantLenteEsp !== undefined ? resumen.cantLenteEsp : (resumen.lenteEspecial || 0));
+  texto('res-lent-sencillo', resumen.cantLenteSen !== undefined ? resumen.cantLenteSen : (resumen.lenteSencillo || 0));
+  texto('res-total-ingresos', Number(resumen.totalVentaLentes || 0).toLocaleString('es-CO', { maximumFractionDigits: 0 }));
+  texto('res-promedio-venta', Number(resumen.promedioVenta || 0).toLocaleString('es-CO', { minimumFractionDigits: 1, maximumFractionDigits: 1 }));
+  texto('ingCantidadAff', resumen.totalAff || 0);
+  texto('ingTotalAff', '$' + fmt(resumen.totalAffMonto || 0));
+  texto('ingLenteEsp', '$' + fmt(resumen.montoLenteEsp || 0));
+  texto('ingLenteSen', '$' + fmt(resumen.montoLenteSen || 0));
+  texto('ingPagoAsistencia', '$' + fmt(resumen.pagoAsistencia || 0));
+  texto('ingTotalIngresos', '$' + fmt((resumen.totalIngresos || 0) + (resumen.pagoAsistencia || 0)));
+  texto('dedComida', '$' + fmt(resumen.deducComida || 0));
+  texto('dedPrestamo', '$' + fmt(resumen.deducPrestamo || 0));
+  texto('dedDescuento', '$' + fmt(resumen.deducDescuento || 0));
+  texto('dedTotalDeducciones', '$' + fmt(resumen.totalDeducciones || 0));
+  texto('res-neto', '$' + fmt(resumen.neto || 0));
 }
 
 function resumenNominaGeneralAdmin(nomina) {
@@ -308,6 +470,31 @@ function tablaNominaGeneralAdmin(registros) {
       '<tbody>' + filas + '</tbody>' +
     '</table>' +
   '</div>';
+}
+
+function tablaLentesGeneralAdmin(lentes) {
+  if (!lentes.length) {
+    return '<div class="mt-4 p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-500">Este promotor no tiene registros de lentes.</div>';
+  }
+
+  var filas = lentes.map(function(lente) {
+    return '<tr class="border-b border-slate-100 last:border-0 hover:bg-slate-50/50">' +
+      '<td class="px-3 py-2 text-xs font-semibold text-slate-700 whitespace-nowrap">' + escaparNominaAdmin(lente.fecha || '') + '</td>' +
+      '<td class="px-3 py-2 text-xs text-slate-600 whitespace-nowrap">' + escaparNominaAdmin(lente.municipio || '') + '</td>' +
+      '<td class="px-3 py-2 text-xs text-slate-600 whitespace-nowrap">' + escaparNominaAdmin(lente.asesor || '') + '</td>' +
+      '<td class="px-3 py-2 text-xs text-center font-semibold text-verde-oscuro">' + escaparNominaAdmin(lente.cProm || 0) + '</td>' +
+      '<td class="px-3 py-2 text-xs text-center font-semibold text-verde-oscuro">' + escaparNominaAdmin(lente.asist || 0) + '</td>' +
+      '<td class="px-3 py-2 text-xs text-right font-semibold text-verde-oscuro">$' + fmt(lente.totalVenta || 0) + '</td>' +
+      '<td class="px-3 py-2 text-xs text-center text-slate-600">' + escaparNominaAdmin(lente.brigada || 0) + '</td>' +
+    '</tr>';
+  }).join('');
+
+  return '<div class="mt-4 overflow-x-auto rounded-xl border border-slate-200">' +
+    '<div class="bg-verde-oscuro text-white text-xs uppercase tracking-wide font-bold px-3 py-2.5">Relación de lentes vendidos</div>' +
+    '<table class="w-full min-w-[720px] text-sm"><thead><tr class="bg-slate-50 text-slate-600 text-[10px] uppercase tracking-wide">' +
+      '<th class="px-3 py-2 text-left">Fecha</th><th class="px-3 py-2 text-left">Municipio</th><th class="px-3 py-2 text-left">Asesor</th>' +
+      '<th class="px-3 py-2 text-center">C. Prom.</th><th class="px-3 py-2 text-center">Asist.</th><th class="px-3 py-2 text-right">Venta</th><th class="px-3 py-2 text-center">Brigada</th>' +
+    '</tr></thead><tbody>' + filas + '</tbody></table></div>';
 }
 
 function escaparNominaAdmin(valor) {

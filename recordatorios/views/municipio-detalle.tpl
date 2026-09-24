@@ -1,8 +1,3 @@
-<!-- ============================================================
-     MUNICIPIO-DETALLE.TPL — Vista de datos de un municipio
-     Módulo Recordatorios · Óptica Visión de Águila
-     ============================================================ -->
-
 <div class="mt-6 fade-in" id="rec-detalle-contenedor">
 
   <!-- Header del municipio -->

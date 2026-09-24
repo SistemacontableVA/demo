@@ -1,16 +1,3 @@
-/* ============================================================
-   REPORTESSERVICE.JS — Servicio de Reportes de Lentes y Desempeño
-   Módulo Administración · Óptica Visión de Águila
-
-   Consume la acción ?action=obtener-reporte-lentes del mismo
-   Web App de nómina (API_URL), añadiendo filtros opcionales.
-
-   Parámetros de filtro:
-     fechaInicio  {string}  'YYYY-MM-DD'
-     fechaFin     {string}  'YYYY-MM-DD'
-     municipio    {string}  texto parcial
-   ============================================================ */
-
 var ReportesService = {
 
   /**

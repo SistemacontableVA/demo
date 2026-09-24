@@ -1,15 +1,4 @@
-﻿<!-- ============================================================
-     DOCUMENTOS.HTML — Vista principal del módulo Documentos
-     Administración > Documentos · Óptica Visión de Águila
-
-     Para agregar un nuevo tipo de documento:
-       1. Agrega una tarjeta aquí con onclick="abrirDocumento('clave')"
-       2. Crea el archivo views/clave.html
-       3. Registra la ruta en MODULOS dentro de assets/js/app.js
-     Solo esos 3 pasos. Nada más cambia.
-     ============================================================ -->
-
-<div class="max-w-2xl lg:max-w-5xl mx-auto px-4 py-8 fade-in">
+﻿<div class="max-w-2xl lg:max-w-5xl mx-auto px-4 py-8 fade-in">
 
   <!-- Encabezado con breadcrumb -->
   <div class="mb-2">

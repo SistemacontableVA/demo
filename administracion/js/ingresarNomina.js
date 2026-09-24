@@ -1,13 +1,3 @@
-/* ============================================================
-   INGRESARNOMINA.JS — Módulo de ingreso y edición de jornadas
-   Módulo Administración · Óptica Visión de Águila
-
-   Flujo wizard (3 pasos tipo acordeón):
-     Paso 1 — Datos de la jornada (fecha, coordinador, municipio)
-     Paso 2 — Selección de promotores (checkboxes)
-     Paso 3 — Tabla de conceptos por promotor + botón Cargar
-   ============================================================ */
-
 var _inPromotoresTodos = [];
 var _inSeleccionados   = [];
 var _inModo            = 'cargar';

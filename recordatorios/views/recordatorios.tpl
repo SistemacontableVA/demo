@@ -1,8 +1,3 @@
-<!-- ============================================================
-     RECORDATORIOS.TPL — Vista principal del módulo Recordatorios
-     Módulo independiente · Óptica Visión de Águila
-     ============================================================ -->
-
 <div class="max-w-5xl mx-auto px-4 py-8 fade-in">
 
   <!-- Encabezado -->

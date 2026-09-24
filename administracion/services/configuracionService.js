@@ -1,10 +1,3 @@
-/* ============================================================
-   CONFIGURACIONSERVICE.JS — Servicio de configuración del sistema
-   Módulo Administración · Óptica Visión de Águila
-
-   ESTADO: Stub base. Implementar cuando se integre backend.
-   ============================================================ */
-
 var ConfiguracionService = {
 
   /**

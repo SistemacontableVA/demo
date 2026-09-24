@@ -1,12 +1,3 @@
-/* ============================================================
-   APP.JS — Router principal de la aplicación
-   Portal de Nómina · Óptica Visión de Águila
-
-   NOTA: Las vistas usan extensión .tpl (no .html) para evitar
-   que Live Server inyecte su script de recarga automática dentro
-   del fragmento, lo cual truncaba el HTML y rompía el DOM.
-   ============================================================ */
-
 // ═══════════════════════════════════════════════════════════════
 // FASE 3: Helper global para construir URLs de API
 // ═══════════════════════════════════════════════════════════════

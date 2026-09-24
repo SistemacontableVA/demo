@@ -1,9 +1,4 @@
-﻿<!-- ============================================================
-     COORDINADOR.HTML — Vista del perfil Coordinador de Campo
-     Coordinador · Portal de Nómina · Óptica Angelus Visión
-     ============================================================ -->
-
-<div class="min-h-[70vh] flex items-center justify-center px-4 fade-in">
+﻿<div class="min-h-[70vh] flex items-center justify-center px-4 fade-in">
   <div class="w-full max-w-2xl">
     <div class="text-center mb-8">
       <div class="w-16 h-16 mx-auto rounded-full bg-verde-suave flex items-center justify-center mb-4">

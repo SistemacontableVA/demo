@@ -1,12 +1,3 @@
-/* ============================================================
-   RECORDATORIOMASIVOSERVICE.JS — Capa de datos del módulo
-   Recordatorio Masivo · Óptica Visión de Águila
-
-   Idéntica al RecordatoriosService pero con:
-   - STORAGE_KEY propio (no comparte datos con Recordatorios)
-   - Mismo endpoint JSONP para leer hojas de Google
-   ============================================================ */
-
 var RecordatorioMasivoService = (function () {
 
   var STORAGE_KEY   = 'ks_recordatorio_masivo_municipios';  // clave separada

@@ -1,11 +1,3 @@
-/* ============================================================
-   PROMOTORESSERVICE.JS — Servicio de datos de promotores (centralizado)
-   Módulo Administración · Óptica Visión de Águila
-
-   Provee cache, deduplicación de peticiones y API simple para
-   obtener la lista de promotores desde Apps Script.
-   ============================================================ */
-
 var PromotoresService = {
   _cache: { data: null, expires: 0 },
   _inFlight: null,

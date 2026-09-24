@@ -1,15 +1,3 @@
-/* ============================================================
-   ROUTER.JS — Sub-router interno del módulo Administración
-   Óptica Visión de Águila
-
-   Gestiona la navegación entre secciones del panel admin.
-   Opera dentro de #admin-content sin afectar el router
-   principal de app.js ni el módulo Promotores.
-
-   Rutas internas: dashboard | documentos | reportes |
-                   catalogos | configuracion
-   ============================================================ */
-
 /** Mapa de secciones: clave → { titulo, scripts[], renderFn } */
 var ADMIN_RUTAS = {
   'dashboard':      { titulo: 'Dashboard',            scripts: ['administracion/services/dashboardService.js', 'administracion/js/dashboard.js'] },

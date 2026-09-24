@@ -1,11 +1,4 @@
-﻿/* ============================================================
-   CATALOGOS.JS — Vista de Catálogos del sistema
-   Módulo Administración · Óptica Visión de Águila
-   Fase 5 — Arquitectura base. Administrará: instituciones,
-   empresas, cargos, ciudades, tipos de documento, plantillas.
-   ============================================================ */
-
-function renderCatalogos() {
+﻿function renderCatalogos() {
   var contenedor = document.getElementById('admin-content');
   if (!contenedor) return;
 

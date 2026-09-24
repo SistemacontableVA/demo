@@ -1,11 +1,3 @@
-/* ============================================================
-   LOGIN.JS — Lógica de la pantalla de acceso administrativo
-   Módulo Administración · Óptica Visión de Águila
-
-   Las credenciales se validan en el servidor (GAS KS-Licencias).
-   No hay contraseñas en este archivo ni en el frontend.
-   ============================================================ */
-
 /**
  * Maneja el submit del formulario de login.
  * Llama a autenticarAdmin() definida en config/auth.js.

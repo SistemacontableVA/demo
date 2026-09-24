@@ -1,7 +1,3 @@
-/* ============================================================
-   NOMINA-FILTROS.JS — Lógica de filtros del panel Nómina
-   Promotores · Portal de Nómina · Óptica Visión de Águila
-   ============================================================ */
 
 /**
  * Aplica un filtro a la tabla de movimientos y actualiza el estado visual

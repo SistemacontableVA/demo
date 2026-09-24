@@ -1,8 +1,3 @@
-/* ============================================================
-   OFICINA.JS — Módulo Nómina de Oficina
-   Panel Administrativo · Óptica Visión de Águila
-   ============================================================ */
-
 var _ofTab       = 'relaciones';
 var _ofEmpleados = [];
 var _ofPeriodos  = [];

@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=850, initial-scale=1.0, minimum-scale=0.1">
   <title>Nómina de Promotor </title>
   <style>
     @page {
@@ -57,6 +57,7 @@
 
     .hoja {
       max-width: 850px;
+      min-width: 850px;
       margin: 0 auto;
       background: var(--card);
       padding: 20px;
@@ -796,30 +797,9 @@
     }
 
     @media screen and (max-width: 768px) {
-      body {
-        padding: 8px 4px;
-      }
-
-      .top-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .stat-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      .fila-resumen {
-        grid-template-columns: 1fr;
-      }
-
-      .footer {
-        flex-direction: column;
-        text-align: center;
-      }
-
-      .footer .item:last-child {
-        justify-content: center;
-      }
+      /* Bloque vacío — esta plantilla es para popup/impresión.
+         El layout NO debe cambiar en móvil. El usuario hace scroll horizontal.
+         Todo el control de ancho lo hace min-width: 850px en .hoja */
     }
   </style>
 </head>

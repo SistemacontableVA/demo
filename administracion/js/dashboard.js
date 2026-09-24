@@ -1,9 +1,3 @@
-/* ============================================================
-   DASHBOARD.JS — Vista del Dashboard Administrativo
-   Módulo Administración · Óptica Visión de Águila
-   KPIs reales desde Google Apps Script via DashboardService.
-   ============================================================ */
-
 /* ── Centro de Recursos: datos configurables ────────────────
    Edita estas constantes para actualizar el contenido del
    card sin tocar la lógica de renderizado.

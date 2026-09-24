@@ -1,22 +1,3 @@
-/* ============================================================
-   METACONFIG.JS — Configuración de la API de Meta (WhatsApp)
-   Módulo Recordatorio Masivo · Óptica Visión de Águila
-
-   ESTADO ACTUAL: MODO SIMULADO (credenciales pendientes)
-
-   Cuando tengas las credenciales reales de Meta:
-     1. Reemplaza META_PHONE_NUMBER_ID con el ID numérico
-        obtenido en Meta Developers > WhatsApp > Configuración de la API
-     2. Reemplaza META_ACCESS_TOKEN con el token permanente
-        generado desde el Administrador de Sistema de Meta
-     3. Cambia META_MODO_SIMULADO a false
-
-   Con META_MODO_SIMULADO = true:
-     - No se realizan llamadas reales a Meta
-     - Cada paciente se marca como "Enviado (Simulado) ✅" tras 500ms
-     - No se consume cuota de mensajes
-   ============================================================ */
-
 var MetaConfig = {
 
   // ── Credenciales de la API ─────────────────────────────────

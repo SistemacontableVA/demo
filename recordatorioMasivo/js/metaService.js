@@ -1,13 +1,3 @@
-/* ============================================================
-   METASERVICE.JS — Servicio de envío vía API de Meta (WhatsApp)
-   Módulo Recordatorio Masivo · Óptica Visión de Águila
-
-   Responsabilidades:
-     - Construir el payload JSON para las plantillas de Meta
-     - Enviar mensajes individuales (real o simulado)
-     - Procesar envío masivo con control de progreso y estado
-   ============================================================ */
-
 var MetaService = (function () {
 
   // ── Envío individual ────────────────────────────────────────

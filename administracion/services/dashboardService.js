@@ -1,11 +1,3 @@
-/* ============================================================
-   DASHBOARDSERVICE.JS — Servicio de datos del Dashboard
-   Módulo Administración · Óptica Visión de Águila
-
-   obtenerMetricas() consume el endpoint real del GAS.
-   El resto de funciones retorna datos estáticos de soporte.
-   ============================================================ */
-
 var DashboardService = {
   _cache: { data: null, expires: 0 },
   _inFlight: null,

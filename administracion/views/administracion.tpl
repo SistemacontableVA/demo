@@ -1,9 +1,4 @@
-﻿<!-- ============================================================
-     ADMINISTRACION.HTML — Shell del panel Administrativo
-     Administración · Portal de Nómina · Óptica Visión de Águila
-     ============================================================ -->
-
-<div class="max-w-2xl lg:max-w-5xl mx-auto px-4 py-8 fade-in">
+﻿<div class="max-w-2xl lg:max-w-5xl mx-auto px-4 py-8 fade-in">
 
   <!-- Encabezado -->
   <div class="mb-8 text-center lg:text-left">

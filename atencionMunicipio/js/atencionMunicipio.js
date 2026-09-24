@@ -1,16 +1,3 @@
-/* ============================================================
-   ATENCIONMUNICIPIO.JS — Módulo Atención Municipio v2
-   Óptica Visión de Águila
-
-   Vistas:
-     LISTA   → municipios agrupados por Ruta (cards)
-     VISOR   → iframe pantalla completa de la hoja del municipio
-
-   Perfiles:
-     Administrador → lista + crear/editar/eliminar + cambiar estado + visor
-     Secretaria    → lista + cambiar estado + visor
-   ============================================================ */
-
 // ── Estado global ───────────────────────────────────────────
 var _amPerfil        = 'Administrador';
 var _amMunicipios    = [];

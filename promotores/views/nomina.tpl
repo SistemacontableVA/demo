@@ -1,8 +1,3 @@
-<!-- ============================================================
-     NOMINA.TPL — Vista del módulo Nómina (Asesor de Campo) · V6
-     Promotores · Portal de Nómina · Óptica Visión de Águila
-     ============================================================ -->
-
 <style>
   .fila-resumen {
     display: grid;

@@ -1,19 +1,3 @@
-/* ============================================================
-   DOCUMENTOSSERVICE.JS — Capa de servicio para Google Apps Script
-   Administración > Documentos · Óptica Visión de Águila
-
-   ESTADO: Arquitectura preparada — comunicación pendiente.
-
-   Este archivo es el único punto de contacto entre el módulo
-   Documentos y el proyecto de Google Apps Script existente
-   (Code.gs + Formulario.html).
-
-   Para implementar la integración real, solo debes:
-   1. Completar DOCS_API_URL con la URL del Web App publicado.
-   2. Implementar el cuerpo de generarDocumento().
-   3. No es necesario modificar ningún otro archivo.
-   ============================================================ */
-
 // ── URL del Web App de Google Apps Script ──
 // Reemplaza este valor con la URL real al publicar el proyecto GAS.
 const DOCS_API_URL = '';
