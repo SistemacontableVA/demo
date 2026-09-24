@@ -3,7 +3,6 @@ var _rptFiltros          = { fechaInicio: '', fechaFin: '', municipio: '', aseso
 var _rptMunicipios       = [];
 var _rptAsesores         = [];
 var _rptUltimaRespuesta  = null;
-var _rptContabilidadSeleccionada = null;
 
 /* ════════════════════════════════════════════════════════════
    PUNTO DE ENTRADA — llamado por el router del admin
@@ -103,102 +102,6 @@ function _rptCargar() {
     });
 }
 
-async function _rptCargarContabilidadCerrada() {
-  var fecha = document.getElementById('rpt-contabilidad-fecha') ? document.getElementById('rpt-contabilidad-fecha').value : '';
-  if (!fecha) {
-    alert('Selecciona una fecha antes de cargar la contabilidad cerrada.');
-    return;
-  }
-
-  var draft = null;
-  try {
-    if (window.ContabilidadDiariaService) {
-      if (typeof window.ContabilidadDiariaService.loadRemoteDraftByFecha === 'function') {
-        draft = await window.ContabilidadDiariaService.loadRemoteDraftByFecha(fecha);
-      }
-      if (!draft && typeof window.ContabilidadDiariaService.loadDraft === 'function') {
-        draft = window.ContabilidadDiariaService.loadDraft(fecha);
-      }
-    }
-
-    if (!draft) {
-      var raw = localStorage.getItem('contabilidad_diaria_draft_v1');
-      var current = raw ? JSON.parse(raw) : null;
-      if (current && String(current.fecha || '').slice(0, 10) === fecha) {
-        draft = current;
-      }
-    }
-  } catch (error) {
-    console.warn('[Reportes] Error cargando contabilidad cerrada:', error);
-  }
-
-  if (!draft) {
-    alert('No se encontró una contabilidad cerrada para esa fecha.');
-    _rptContabilidadSeleccionada = null;
-    var detalle = document.getElementById('rpt-contabilidad-detalle');
-    if (detalle) {
-      detalle.classList.add('hidden');
-      detalle.innerHTML = '';
-    }
-    return;
-  }
-
-  _rptContabilidadSeleccionada = draft;
-  var detalle = document.getElementById('rpt-contabilidad-detalle');
-  if (!detalle) return;
-
-  var saldo = Number(draft.totales && draft.totales.saldoFinal ? draft.totales.saldoFinal : 0) || 0;
-  var ingresos = Number(draft.totales && draft.totales.totalIngresos ? draft.totales.totalIngresos : 0) || 0;
-  var egresos = Number(draft.totales && draft.totales.totalEgresos ? draft.totales.totalEgresos : 0) || 0;
-  var deduccion = Number(draft.totales && draft.totales.totalDeduccion ? draft.totales.totalDeduccion : 0) || 0;
-
-  detalle.innerHTML = [
-    '<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">',
-      '<div class="bg-white rounded-lg border border-slate-200 p-3"><div class="text-[10px] uppercase tracking-wide text-slate-500 font-bold">Fecha</div><div class="mt-1 font-bold text-slate-700">' + (draft.fecha || fecha) + '</div></div>',
-      '<div class="bg-white rounded-lg border border-slate-200 p-3"><div class="text-[10px] uppercase tracking-wide text-slate-500 font-bold">Municipio</div><div class="mt-1 font-bold text-slate-700">' + (draft.municipio || '—') + '</div></div>',
-      '<div class="bg-white rounded-lg border border-slate-200 p-3"><div class="text-[10px] uppercase tracking-wide text-slate-500 font-bold">Coordinador</div><div class="mt-1 font-bold text-slate-700">' + (draft.coordinador || '—') + '</div></div>',
-      '<div class="bg-white rounded-lg border border-slate-200 p-3"><div class="text-[10px] uppercase tracking-wide text-slate-500 font-bold">Estado</div><div class="mt-1 font-bold text-emerald-700">' + (draft.estado || 'borrador') + '</div></div>',
-    '</div>',
-    '<div class="mt-4 grid grid-cols-1 md:grid-cols-4 gap-3">',
-      '<div class="bg-white rounded-lg border border-slate-200 p-3"><div class="text-[10px] uppercase tracking-wide text-slate-500 font-bold">Afiliaciones</div><div class="mt-1 font-bold text-slate-700">' + (Array.isArray(draft.afiliaciones) ? draft.afiliaciones.length : 0) + '</div></div>',
-      '<div class="bg-white rounded-lg border border-slate-200 p-3"><div class="text-[10px] uppercase tracking-wide text-slate-500 font-bold">Ingresos</div><div class="mt-1 font-bold text-slate-700">$' + Number(ingresos).toLocaleString('es-VE', { maximumFractionDigits: 2 }) + '</div></div>',
-      '<div class="bg-white rounded-lg border border-slate-200 p-3"><div class="text-[10px] uppercase tracking-wide text-slate-500 font-bold">Egresos</div><div class="mt-1 font-bold text-slate-700">$' + Number(egresos).toLocaleString('es-VE', { maximumFractionDigits: 2 }) + '</div></div>',
-      '<div class="bg-white rounded-lg border border-slate-200 p-3"><div class="text-[10px] uppercase tracking-wide text-slate-500 font-bold">Saldo final</div><div class="mt-1 font-bold text-slate-700">$' + Number(saldo).toLocaleString('es-VE', { maximumFractionDigits: 2 }) + '</div></div>',
-    '</div>',
-    '<div class="mt-4 text-xs text-slate-500">Deducción: $' + Number(deduccion).toLocaleString('es-VE', { maximumFractionDigits: 2 }) + ' · Carga válida para revisión administrativa.</div>'
-  ].join('');
-
-  detalle.classList.remove('hidden');
-}
-
-function _rptValidarContabilidadSeleccionada() {
-  if (!_rptContabilidadSeleccionada) {
-    alert('Primero carga la contabilidad cerrada de una fecha.');
-    return;
-  }
-
-  var draft = JSON.parse(JSON.stringify(_rptContabilidadSeleccionada));
-  draft.estado = 'validada';
-  draft.actualizadoEn = new Date().toISOString();
-
-  if (window.ContabilidadDiariaService && typeof window.ContabilidadDiariaService.saveDraft === 'function') {
-    var saved = window.ContabilidadDiariaService.saveDraft(draft);
-    if (saved && saved.ok) {
-      _rptContabilidadSeleccionada = draft;
-      var detalle = document.getElementById('rpt-contabilidad-detalle');
-      if (detalle) {
-        detalle.innerHTML = detalle.innerHTML.replace(/>borrador<|>cerrada<|>pendiente_de_validacion<|>validada</, '');
-      }
-      alert('La contabilidad fue validada correctamente y queda disponible para la siguiente etapa.');
-      return;
-    }
-  }
-
-  localStorage.setItem('contabilidad_diaria_draft_v1', JSON.stringify(draft));
-  _rptContabilidadSeleccionada = draft;
-  alert('La contabilidad fue validada correctamente.');
-}
-
 /* ════════════════════════════════════════════════════════════
    SHELL HTML — Estructura base de la vista
 ════════════════════════════════════════════════════════════ */
@@ -281,25 +184,6 @@ function _rptShellHtml() {
       '<div id="rpt-periodo-badge" class="hidden mt-3 flex items-center gap-2">',
         '<span class="text-[10px] font-bold text-verde-oscuro bg-verde-suave px-2.5 py-1 rounded-full" id="rpt-periodo-texto"></span>',
       '</div>',
-    '</div>',
-
-    /* ── Bloque de contabilidad cerrada (administrador) ── */
-    '<div class="bg-white rounded-xl shadow-soft p-4 mb-5 border border-emerald-100">',
-      '<div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-3">',
-        '<div>',
-          '<h4 class="text-verde-oscuro font-bold text-base">Validación de cierre contable</h4>',
-          '<p class="text-slate-400 text-sm mt-0.5">Selecciona la fecha de la jornada cerrada por el coordinador y valida el reporte administrativo.</p>',
-        '</div>',
-        '<div class="flex flex-col sm:flex-row gap-2 items-end">',
-          '<div>',
-            '<label class="block text-[10px] font-bold uppercase tracking-wide text-slate-500 mb-1">Fecha del cierre</label>',
-            '<input type="date" id="rpt-contabilidad-fecha" class="w-full sm:w-48 px-3 py-2 border border-slate-200 rounded-lg text-sm text-slate-700 bg-slate-50 focus:outline-none focus:border-verde-oscuro focus:ring-2 focus:ring-verde-oscuro/10 focus:bg-white transition-all">',
-          '</div>',
-          '<button onclick="_rptCargarContabilidadCerrada()" class="btn-primario hover:bg-verde-oscuro active:scale-95 transition-all text-white font-semibold text-sm px-4 py-2 rounded-lg">Cargar cierre</button>',
-          '<button onclick="_rptValidarContabilidadSeleccionada()" class="bg-emerald-600 hover:bg-emerald-700 active:scale-95 transition-all text-white font-semibold text-sm px-4 py-2 rounded-lg">Validar cierre</button>',
-        '</div>',
-      '</div>',
-      '<div id="rpt-contabilidad-detalle" class="hidden mt-4 rounded-xl border border-slate-200 bg-slate-50 p-4"></div>',
     '</div>',
 
     /* ── Zona dinámica ── */

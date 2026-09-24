@@ -1,7 +1,7 @@
 /** Mapa de secciones: clave → { titulo, scripts[], renderFn } */
 var ADMIN_RUTAS = {
   'dashboard':      { titulo: 'Dashboard',            scripts: ['administracion/services/dashboardService.js', 'administracion/js/dashboard.js'] },
-  'documentos':     { titulo: 'Gestión Documental',   scripts: ['administracion/js/documentos.js'] },
+  'documentos':     { titulo: 'Gestión Documental',   scripts: ['administracion/services/documentosService.js', 'administracion/js/documentos.js'] },
   'ingresarNomina': { titulo: 'Ingresar Nómina',      scripts: ['assets/js/utils.js', 'administracion/js/ingresarNomina.js'] },
   'nominaPromotor': { titulo: 'Nómina Promotor',      scripts: ['assets/js/utils.js', 'promotores/js/nomina-render.js', 'promotores/js/nomina-filtros.js', 'promotores/js/nomina.js', 'administracion/js/nominaPromotor.js'] },
   'oficina':        { titulo: 'Nómina Oficina',       scripts: ['administracion/services/oficinaNominaService.js', 'administracion/js/oficina.js'] },

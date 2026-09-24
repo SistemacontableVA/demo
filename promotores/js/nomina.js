@@ -51,6 +51,11 @@ function abrirPlantillaNomina() {
       popup.document.close();
       setTimeout(function() {
         if (popup && popup.window) {
+          var logo = popup.document.querySelector('.logo');
+          if (logo) {
+            logo.onerror = function() { this.src = logoUrl; };
+            logo.src = logoUrl;
+          }
           popup.window.__nominaData = nominaActual;
           if (popup.window.renderNominaImpresion) {
             popup.window.renderNominaImpresion(nominaActual);

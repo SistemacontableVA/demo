@@ -23,6 +23,21 @@
     return DEFAULT_BRAND;
   }
 
+  function getAppRootUrl() {
+    var base = document.baseURI || window.location.href;
+    var path = window.location.pathname || '';
+    if (/\/coordinador\/views\//i.test(path) || /\/administracion\/views\//i.test(path)) {
+      return new URL('../../', base).href;
+    }
+    return new URL('./', base).href;
+  }
+
+  function resolveAppUrl(value) {
+    if (!value) return value;
+    if (/^(?:[a-z]+:)?\/\//i.test(value) || value.indexOf('data:') === 0) return value;
+    return new URL(value.replace(/^\//, ''), getAppRootUrl()).href;
+  }
+
   function getBrandData() {
     const source = getBrandSource();
     const empresa = source.empresa || {};
@@ -48,7 +63,7 @@
     });
 
     document.querySelectorAll('[data-empresa-logo]').forEach(function (el) {
-      const src = el.dataset.empresaLogo || logo;
+      const src = resolveAppUrl(el.dataset.empresaLogo || logo);
       el.setAttribute('src', src);
       if (!el.hasAttribute('alt')) {
         el.setAttribute('alt', nombre);
@@ -81,7 +96,7 @@
 
   async function cargarBrandDesdeConfig() {
     try {
-      const response = await fetch('empresa-config.json', { cache: 'no-store' });
+      const response = await fetch(new URL('empresa-config.json', getAppRootUrl()).href, { cache: 'no-store' });
       if (!response.ok) {
         throw new Error('No se pudo cargar empresa-config.json');
       }
