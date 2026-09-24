@@ -5,6 +5,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=850, initial-scale=1.0, minimum-scale=0.1">
   <title>Nómina de Promotor </title>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
   <style>
     @page {
       size: letter portrait;
@@ -53,6 +55,33 @@
       font-size: 13px;
       -webkit-print-color-adjust: exact;
       print-color-adjust: exact;
+    }
+
+    .acciones-impresion {
+      max-width: 850px;
+      margin: 0 auto 12px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .accion-impresion {
+      border: 0;
+      border-radius: 7px;
+      padding: 9px 13px;
+      color: #fff;
+      background: var(--navy-800);
+      font: 600 12px 'Segoe UI', Arial, sans-serif;
+      cursor: pointer;
+    }
+
+    .accion-impresion.secundaria {
+      background: var(--teal-600);
+    }
+
+    .accion-impresion:disabled {
+      cursor: wait;
+      opacity: .65;
     }
 
     .hoja {
@@ -714,7 +743,7 @@
 
     /* ===================== IMPRESIÓN ===================== */
     @media print {
-      #btnImprimir {
+      .no-print {
         display: none !important;
       }
 
@@ -805,6 +834,15 @@
 </head>
 
 <body>
+
+  <div class="acciones-impresion no-print" aria-label="Acciones de la nómina">
+    <button type="button" class="accion-impresion" onclick="descargarNominaComoPdf()">
+      Descargar PDF
+    </button>
+    <button type="button" class="accion-impresion secundaria" onclick="descargarNominaComoImagen()">
+      Descargar en Imagen
+    </button>
+  </div>
 
   <div class="hoja">
 
@@ -1113,6 +1151,86 @@
     function num(value, fallback) {
       const safeFallback = fallback === undefined ? "-" : fallback;
       return (value === "" || value === null || value === undefined || value === 0) ? safeFallback : value;
+    }
+
+    function nombreArchivoNomina(extension) {
+      const nombre = (document.getElementById("asesorNombre")?.textContent || "promotor")
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/gi, "-")
+        .replace(/^-+|-+$/g, "");
+      return `nomina-${nombre || "promotor"}.${extension}`;
+    }
+
+    async function capturarNomina() {
+      const hoja = document.querySelector(".hoja");
+      if (!hoja || typeof window.html2canvas !== "function") {
+        throw new Error("No se pudo preparar la captura de la nómina.");
+      }
+
+      return window.html2canvas(hoja, {
+        backgroundColor: "#ffffff",
+        scale: Math.min(window.devicePixelRatio || 1, 2),
+        useCORS: true,
+        logging: false
+      });
+    }
+
+    async function descargarNominaComoPdf() {
+      const boton = document.querySelector(".accion-impresion:not(.secundaria)");
+      if (!window.jspdf || typeof window.jspdf.jsPDF !== "function") {
+        alert("No se pudo preparar la descarga del PDF.");
+        return;
+      }
+
+      if (boton) {
+        boton.disabled = true;
+        boton.textContent = "Preparando PDF...";
+      }
+
+      try {
+        const canvas = await capturarNomina();
+        const pdf = new window.jspdf.jsPDF({
+          orientation: canvas.width > canvas.height ? "landscape" : "portrait",
+          unit: "px",
+          format: [canvas.width, canvas.height],
+          hotfixes: ["px_scaling"]
+        });
+        pdf.addImage(canvas.toDataURL("image/png"), "PNG", 0, 0, canvas.width, canvas.height, undefined, "FAST");
+        pdf.save(nombreArchivoNomina("pdf"));
+      } catch (error) {
+        console.error("[Nómina] Error descargando el PDF:", error);
+        alert("No se pudo descargar el PDF de la nómina.");
+      } finally {
+        if (boton) {
+          boton.disabled = false;
+          boton.textContent = "Descargar PDF";
+        }
+      }
+    }
+
+    async function descargarNominaComoImagen() {
+      const boton = document.querySelector(".accion-impresion.secundaria");
+      if (boton) {
+        boton.disabled = true;
+        boton.textContent = "Preparando imagen...";
+      }
+
+      try {
+        const canvas = await capturarNomina();
+        const enlace = document.createElement("a");
+        enlace.download = nombreArchivoNomina("png");
+        enlace.href = canvas.toDataURL("image/png");
+        enlace.click();
+      } catch (error) {
+        console.error("[Nómina] Error descargando la imagen:", error);
+        alert("No se pudo descargar la imagen de la nómina.");
+      } finally {
+        if (boton) {
+          boton.disabled = false;
+          boton.textContent = "Descargar en Imagen";
+        }
+      }
     }
 
     function setEmptyState() {
