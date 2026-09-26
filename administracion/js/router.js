@@ -8,7 +8,7 @@ var ADMIN_RUTAS = {
   'reportes':       { titulo: 'Reportes',             scripts: ['administracion/services/reportesService.js', 'administracion/js/reportes.js'] },
   'cargaLentes':    { titulo: 'Gestión de Lentes',    scripts: ['administracion/services/lentesCargaService.js', 'administracion/js/lentesCarga.js'] },
   'recordatorios':      { titulo: 'Recordatorios',          scripts: ['recordatorios/js/recordatoriosService.js', 'recordatorios/js/recordatorios.js'] },
-  'recordatorioMasivo': { titulo: 'Recordatorio Masivo',    scripts: ['recordatorioMasivo/js/metaConfig.js', 'recordatorioMasivo/js/metaService.js', 'recordatorioMasivo/js/recordatorioMasivoService.js', 'recordatorioMasivo/js/recordatorioMasivo.js'] },
+  'recordatorioMasivo': { titulo: 'Recordatorio Masivo',    scripts: ['assets/js/api-config.js', 'atencionMunicipio/js/atencionMunicipioService.js', 'recordatorioMasivo/js/metaConfig.js', 'recordatorioMasivo/js/metaService.js', 'recordatorioMasivo/js/recordatorioMasivoService.js', 'recordatorioMasivo/js/recordatorioMasivo.js'] },
   'atencionMunicipio':  { titulo: 'Atención Municipio',      scripts: ['assets/js/api-config.js', 'atencionMunicipio/js/atencionMunicipioService.js', 'atencionMunicipio/js/atencionMunicipio.js'] },
   'catalogos':      { titulo: 'Catálogos',            scripts: ['administracion/js/catalogos.js'] },
   'configuracion':  { titulo: 'Configuración',        scripts: ['administracion/js/configuracion.js'] },

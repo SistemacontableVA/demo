@@ -11,38 +11,46 @@ var MetaService = (function () {
    * @param {Object} meta      - metadata de la hoja (empresa, municipio, etc.)
    * @returns {Promise<Object>} { ok: true } | { ok: false, error: '...' }
    */
-  function enviarMensaje(tipo, paciente, meta) {
-    if (!paciente.telfLimpio) {
-      return Promise.resolve({ ok: false, error: 'Sin número de teléfono' });
+  function enviarMensaje(tipo, paciente, meta, spreadsheetId) {
+    if (tipo !== 'consulta' && tipo !== 'entrega') {
+      return Promise.resolve({ ok: false, error: 'Tipo de recordatorio no válido' });
+    }
+
+    var telefono = String(paciente && paciente.telfLimpio || '').replace(/\D/g, '');
+    if (!/^[1-9][0-9]{7,14}$/.test(telefono)) {
+      return Promise.resolve({ ok: false, error: 'El teléfono debe incluir el código de país, sin +' });
     }
 
     if (MetaConfig.MODO_SIMULADO) {
       return _simularEnvio();
     }
 
-    if (!MetaConfig.credencialesListas()) {
-      return Promise.resolve({ ok: false, error: 'Credenciales de Meta no configuradas' });
-    }
+    var proxyUrl = MetaConfig.getProxyUrl();
+    var adminToken = typeof getTokenAdmin === 'function' ? getTokenAdmin() : '';
+    if (!proxyUrl) return Promise.resolve({ ok: false, error: 'Proxy seguro de Meta no configurado' });
+    if (!adminToken) return Promise.resolve({ ok: false, error: 'Inicia sesión como administrador para enviar' });
+    if (!spreadsheetId) return Promise.resolve({ ok: false, error: 'Falta identificar la hoja de atención' });
 
+    paciente = Object.assign({}, paciente, { telfLimpio: telefono });
     var payload = tipo === 'consulta'
       ? _buildPayloadConsulta(paciente, meta)
       : _buildPayloadEntrega(paciente, meta);
 
-    return fetch(MetaConfig.getEndpointUrl(), {
-      method:  'POST',
-      headers: {
-        'Content-Type':  'application/json',
-        'Authorization': 'Bearer ' + MetaConfig.ACCESS_TOKEN
-      },
-      body: JSON.stringify(payload)
+    var parametros = new URLSearchParams();
+    parametros.set('action', 'send-whatsapp-template');
+    parametros.set('adminToken', adminToken);
+    parametros.set('spreadsheetId', spreadsheetId);
+    parametros.set('payload', JSON.stringify(payload));
+
+    return fetch(proxyUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+      body: parametros.toString()
     })
     .then(function (res) {
-      if (res.ok) return { ok: true };
       return res.json().then(function (data) {
-        return {
-          ok:    false,
-          error: (data.error && data.error.message) || ('HTTP ' + res.status)
-        };
+        if (!res.ok && data.ok) return { ok: false, error: 'HTTP ' + res.status };
+        return data;
       });
     })
     .catch(function (err) {

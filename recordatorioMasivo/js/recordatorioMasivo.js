@@ -6,6 +6,9 @@ var _rmTabActiva       = 'consulta';
 var _rmEditandoId      = null;
 var _rmEnviando        = false;   // bloquea doble clic en envío masivo
 var _rmEstados         = {};      // { telfLimpio: 'pendiente'|'enviado'|'error' }
+var _rmPerfil          = 'Coordinador';
+var _rmCargandoMunicipios = false;
+var _rmErrorCarga      = '';
 
 // ══════════════════════════════════════════════════════════════
 // PUNTO DE ENTRADA
@@ -15,16 +18,18 @@ function renderRecordatorioMasivo() {
   var contenedor = document.getElementById('admin-content');
   if (!contenedor) return;
 
-  _rmMunicipios      = RecordatorioMasivoService.listarMunicipios();
+  _rmMunicipios      = [];
   _rmMunicipioActivo = null;
   _rmDatosActivos    = null;
   _rmTabActiva       = 'consulta';
   _rmEditandoId      = null;
   _rmEnviando        = false;
   _rmEstados         = {};
+  _rmPerfil          = typeof getPerfilAdmin === 'function' ? getPerfilAdmin() : 'Coordinador';
 
   contenedor.innerHTML = _rmShellHtml();
   _rmRenderizarTabla();
+  rmCargarMunicipios();
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -50,13 +55,13 @@ function _rmShellHtml() {
           '</h1>' +
           '<p class="text-slate-500 text-sm mt-1">Envío masivo de recordatorios por WhatsApp vía API de Meta.</p>' +
         '</div>' +
-        '<button onclick="rmAbrirModalAgregar()" ' +
+        (_rmPerfil === 'Administrador' ? '<button onclick="rmAbrirModalAgregar()" ' +
           'class="btn-primario flex items-center gap-2 px-4 py-2.5 rounded-md-plus text-white text-sm font-semibold hover:bg-verde-oscuro active:scale-95 transition-all">' +
           '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">' +
             '<path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>' +
           '</svg>' +
           'Agregar Municipio' +
-        '</button>' +
+        '</button>' : '') +
       '</div>' +
     '</div>' +
 
@@ -67,10 +72,16 @@ function _rmShellHtml() {
             '<path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>' +
           '</svg>' +
           '<div><strong>Modo Simulado activo.</strong> Los mensajes NO se envían a Meta. ' +
-          'Para activar el envío real, actualiza las credenciales en <code class="font-mono bg-amber-100 px-1 rounded">metaConfig.js</code> ' +
-          'y cambia <code class="font-mono bg-amber-100 px-1 rounded">MODO_SIMULADO: false</code>.</div>' +
+          'Antes de activar el envío real, configura <code class="font-mono bg-amber-100 px-1 rounded">SECRET_KEY</code>, ' +
+          '<code class="font-mono bg-amber-100 px-1 rounded">META_PHONE_NUMBER_ID</code>, ' +
+          '<code class="font-mono bg-amber-100 px-1 rounded">META_ACCESS_TOKEN</code> y ' +
+          '<code class="font-mono bg-amber-100 px-1 rounded">META_API_VERSION</code> en las propiedades seguras del GAS de licencias; ' +
+          'después cambia <code class="font-mono bg-amber-100 px-1 rounded">MODO_SIMULADO: false</code>.</div>' +
         '</div>'
       : '') +
+
+    '<div id="rm-aviso-migracion" class="hidden mb-4 bg-blue-50 border border-blue-200 rounded-xl px-4 py-3 text-sm text-blue-800"></div>' +
+    '<div id="rm-error-carga" class="hidden mb-4 bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-sm text-red-700"></div>' +
 
     // Estado vacío
     '<div id="rm-estado-vacio" class="hidden">' +
@@ -97,6 +108,7 @@ function _rmShellHtml() {
           '<table class="w-full text-sm">' +
             '<thead>' +
               '<tr class="bg-slate-50 text-[11px] uppercase text-slate-400 font-semibold tracking-wide">' +
+                    '<th class="text-left px-5 py-3">Ruta</th>' +
                 '<th class="text-left px-5 py-3">Municipio</th>' +
                 '<th class="text-left px-5 py-3">Fecha de Atención</th>' +
                 '<th class="text-left px-5 py-3">ID Hoja</th>' +
@@ -117,7 +129,7 @@ function _rmShellHtml() {
     '<div id="rm-modal-overlay" ' +
       'class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm hidden" ' +
       'onclick="rmCerrarModal(event)">' +
-      '<div class="bg-white rounded-xl shadow-xl w-full max-w-md mx-4 p-6" onclick="event.stopPropagation()">' +
+      '<div class="bg-white rounded-xl shadow-xl w-full max-w-lg mx-4 p-6" onclick="event.stopPropagation()">' +
         '<div class="flex items-center justify-between mb-5">' +
           '<h2 id="rm-modal-titulo" class="font-bold text-verde-oscuro text-base">Agregar Municipio</h2>' +
           '<button onclick="rmCerrarModal()" class="w-7 h-7 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors">' +
@@ -127,21 +139,35 @@ function _rmShellHtml() {
           '</button>' +
         '</div>' +
         '<form id="rm-form-municipio" onsubmit="rmGuardarMunicipio(event)" novalidate>' +
-          '<div class="mb-4">' +
-            '<label class="block text-[11px] uppercase text-slate-400 font-semibold mb-1.5">Nombre / Identificador <span class="text-red-400">*</span></label>' +
-            '<input type="text" id="rm-input-municipio" required placeholder="Ej: Maracaibo..." ' +
+          '<div class="grid grid-cols-2 gap-4 mb-4">' +
+            '<div>' +
+            '<label class="block text-[11px] uppercase text-slate-400 font-semibold mb-1.5">Ruta <span class="text-red-400">*</span></label>' +
+            '<input type="number" id="rm-input-ruta" required min="1" placeholder="1" ' +
               'class="w-full px-4 py-2.5 rounded-[12px] border border-slate-200 text-sm outline-none focus:ring-2 focus:ring-verde-oscuro/30 focus:border-verde-oscuro transition-all">' +
+            '</div>' +
+            '<div>' +
+            '<label class="block text-[11px] uppercase text-slate-400 font-semibold mb-1.5">Municipio <span class="text-red-400">*</span></label>' +
+            '<input type="text" id="rm-input-municipio" required placeholder="Maracaibo" ' +
+              'class="w-full px-4 py-2.5 rounded-[12px] border border-slate-200 text-sm outline-none focus:ring-2 focus:ring-verde-oscuro/30 focus:border-verde-oscuro transition-all">' +
+            '</div>' +
           '</div>' +
-          '<div class="mb-4">' +
+          '<div class="grid grid-cols-2 gap-4 mb-4">' +
+            '<div>' +
             '<label class="block text-[11px] uppercase text-slate-400 font-semibold mb-1.5">Fecha de Atención <span class="text-red-400">*</span></label>' +
             '<input type="date" id="rm-input-fecha" required ' +
               'class="w-full px-4 py-2.5 rounded-[12px] border border-slate-200 text-sm outline-none focus:ring-2 focus:ring-verde-oscuro/30 focus:border-verde-oscuro transition-all">' +
+            '</div>' +
+            '<div>' +
+            '<label class="block text-[11px] uppercase text-slate-400 font-semibold mb-1.5">Fecha de Entrega</label>' +
+            '<input type="date" id="rm-input-fecha-entrega" ' +
+              'class="w-full px-4 py-2.5 rounded-[12px] border border-slate-200 text-sm outline-none focus:ring-2 focus:ring-verde-oscuro/30 focus:border-verde-oscuro transition-all">' +
+            '</div>' +
           '</div>' +
           '<div class="mb-5">' +
-            '<label class="block text-[11px] uppercase text-slate-400 font-semibold mb-1.5">ID de la Hoja de Cálculo <span class="text-red-400">*</span></label>' +
-            '<input type="text" id="rm-input-spreadsheetid" required placeholder="1BxiMVs0XRA5nFMd..." ' +
+            '<label class="block text-[11px] uppercase text-slate-400 font-semibold mb-1.5">Enlace o ID de la Hoja de Atención <span class="text-red-400">*</span></label>' +
+            '<input type="text" id="rm-input-link" required placeholder="https://docs.google.com/spreadsheets/d/..." ' +
               'class="w-full px-4 py-2.5 rounded-[12px] border border-slate-200 text-sm font-mono outline-none focus:ring-2 focus:ring-verde-oscuro/30 focus:border-verde-oscuro transition-all">' +
-            '<p class="text-[11px] text-slate-400 mt-1.5">URL: docs.google.com/spreadsheets/d/<strong class="text-verde-oscuro">ID</strong>/edit</p>' +
+            '<p class="text-[11px] text-slate-400 mt-1.5">Se guardará en el registro central de Atención Municipio.</p>' +
           '</div>' +
           '<div id="rm-modal-error" class="hidden mb-4 text-sm text-center font-medium rounded-lg px-4 py-2 bg-red-50 text-red-600"></div>' +
           '<div class="flex gap-3">' +
@@ -173,6 +199,14 @@ function _rmRenderizarTabla() {
   if (!tbody) return;
   if (panel) { panel.classList.add('hidden'); panel.innerHTML = ''; }
 
+  if (_rmCargandoMunicipios) {
+    if (vacio) vacio.classList.add('hidden');
+    if (wrap) wrap.classList.remove('hidden');
+    if (counter) counter.textContent = 'Cargando registro central…';
+    tbody.innerHTML = '<tr><td colspan="6" class="px-5 py-8 text-center text-sm text-slate-400"><span class="spinner inline-block mr-2"></span>Consultando Atención Municipio…</td></tr>';
+    return;
+  }
+
   if (_rmMunicipios.length === 0) {
     if (vacio) vacio.classList.remove('hidden');
     if (wrap)  wrap.classList.add('hidden');
@@ -184,9 +218,12 @@ function _rmRenderizarTabla() {
 
   tbody.innerHTML = _rmMunicipios.map(function (m) {
     var fecha   = m.fechaAtencion ? new Date(m.fechaAtencion + 'T00:00:00').toLocaleDateString('es-VE', { day: '2-digit', month: 'long', year: 'numeric' }) : '—';
-    var idCorto = m.spreadsheetId.length > 22 ? m.spreadsheetId.substring(0, 22) + '…' : m.spreadsheetId;
+    var spreadsheetId = String(m.spreadsheetId || '');
+    var idCorto = spreadsheetId.length > 22 ? spreadsheetId.substring(0, 22) + '…' : spreadsheetId;
+    var estado = m.estado || 'Sin Digitalizar';
 
     return '<tr class="hover:bg-slate-50 transition-colors">' +
+      '<td class="px-5 py-3 text-slate-500">' + _rmEsc(String(m.ruta || '—')) + '</td>' +
       '<td class="px-5 py-3"><div class="flex items-center gap-2">' +
         '<div class="w-7 h-7 rounded-full bg-verde-suave flex items-center justify-center flex-shrink-0">' +
           '<svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-verde-oscuro" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">' +
@@ -194,21 +231,68 @@ function _rmRenderizarTabla() {
           '</svg></div>' +
         '<span class="font-semibold text-slate-700">' + _rmEsc(m.nombre) + '</span></div></td>' +
       '<td class="px-5 py-3 text-slate-500">' + fecha + '</td>' +
-      '<td class="px-5 py-3"><span class="font-mono text-[11px] text-slate-400 bg-slate-50 px-2 py-0.5 rounded" title="' + _rmEsc(m.spreadsheetId) + '">' + _rmEsc(idCorto) + '</span></td>' +
-      '<td class="px-5 py-3"><span class="inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-verde-suave text-verde-oscuro"><span class="w-1.5 h-1.5 rounded-full bg-verde-oscuro"></span>Activo</span></td>' +
+      '<td class="px-5 py-3"><span class="font-mono text-[11px] text-slate-400 bg-slate-50 px-2 py-0.5 rounded" title="' + _rmEsc(spreadsheetId) + '">' + _rmEsc(idCorto) + '</span></td>' +
+      '<td class="px-5 py-3"><span class="inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-verde-suave text-verde-oscuro">' + _rmEsc(estado) + '</span></td>' +
       '<td class="px-5 py-3 text-right"><div class="flex items-center justify-end gap-2">' +
         '<button onclick="rmVerMunicipio(\'' + m.id + '\')" class="text-xs font-semibold text-verde-oscuro hover:underline flex items-center gap-1">' +
           '<svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>Ver' +
         '</button>' +
-        '<button onclick="rmAbrirModalEditar(\'' + m.id + '\')" title="Editar" class="w-7 h-7 flex items-center justify-center rounded-full hover:bg-blue-50 text-slate-300 hover:text-blue-500 transition-colors">' +
+        (_rmPerfil === 'Administrador' ? '<button onclick="rmAbrirModalEditar(\'' + m.id + '\')" title="Editar" class="w-7 h-7 flex items-center justify-center rounded-full hover:bg-blue-50 text-slate-300 hover:text-blue-500 transition-colors">' +
           '<svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>' +
         '</button>' +
         '<button onclick="rmConfirmarEliminar(\'' + m.id + '\',\'' + _rmEsc(m.nombre) + '\')" title="Eliminar" class="w-7 h-7 flex items-center justify-center rounded-full hover:bg-red-50 text-slate-300 hover:text-red-400 transition-colors">' +
           '<svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>' +
-        '</button>' +
+        '</button>' : '') +
       '</div></td>' +
     '</tr>';
   }).join('');
+}
+
+function rmCargarMunicipios() {
+  _rmCargandoMunicipios = true;
+  _rmErrorCarga = '';
+  _rmRenderizarTabla();
+  var errorEl = document.getElementById('rm-error-carga');
+  if (errorEl) errorEl.classList.add('hidden');
+
+  return RecordatorioMasivoService.listarMunicipios()
+    .then(function (lista) {
+      _rmMunicipios = lista;
+      _rmMostrarAvisoMigracion();
+    })
+    .catch(function (error) {
+      _rmErrorCarga = error.message || 'No se pudo cargar el registro central.';
+      if (errorEl) {
+        errorEl.textContent = _rmErrorCarga;
+        errorEl.classList.remove('hidden');
+      }
+    })
+    .finally(function () {
+      _rmCargandoMunicipios = false;
+      _rmRenderizarTabla();
+    });
+}
+
+function _rmMostrarAvisoMigracion() {
+  var aviso = document.getElementById('rm-aviso-migracion');
+  if (!aviso) return;
+
+  var locales = RecordatorioMasivoService.listarMunicipiosLocales();
+  var pendientes = locales.filter(function (local) {
+    return !_rmMunicipios.some(function (central) {
+      return central.spreadsheetId === local.spreadsheetId &&
+        central.fechaAtencion === local.fechaAtencion;
+    });
+  });
+
+  if (!pendientes.length) {
+    aviso.classList.add('hidden');
+    aviso.textContent = '';
+    return;
+  }
+
+  aviso.textContent = pendientes.length + ' registro(s) anterior(es) siguen guardados solo en este navegador. No se borraron; vuelve a registrarlos en Atención Municipio para centralizarlos.';
+  aviso.classList.remove('hidden');
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -216,6 +300,7 @@ function _rmRenderizarTabla() {
 // ══════════════════════════════════════════════════════════════
 
 function rmAbrirModalAgregar() {
+  if (_rmPerfil !== 'Administrador') return;
   _rmEditandoId = null;
   var titulo = document.getElementById('rm-modal-titulo');
   var btn    = document.getElementById('rm-btn-guardar');
@@ -235,6 +320,7 @@ function rmAbrirModalAgregar() {
 }
 
 function rmAbrirModalEditar(id) {
+  if (_rmPerfil !== 'Administrador') return;
   var m = _rmMunicipios.find(function (x) { return x.id === id; });
   if (!m) return;
   _rmEditandoId = id;
@@ -247,11 +333,15 @@ function rmAbrirModalEditar(id) {
   if (err)    err.classList.add('hidden');
 
   var n = document.getElementById('rm-input-municipio');
+  var r = document.getElementById('rm-input-ruta');
   var f = document.getElementById('rm-input-fecha');
-  var s = document.getElementById('rm-input-spreadsheetid');
+  var fe = document.getElementById('rm-input-fecha-entrega');
+  var s = document.getElementById('rm-input-link');
   if (n) n.value = m.nombre;
+  if (r) r.value = m.ruta || '';
   if (f) f.value = m.fechaAtencion;
-  if (s) s.value = m.spreadsheetId;
+  if (fe) fe.value = m.fechaEntrega || '';
+  if (s) s.value = m.linkHoja || '';
 
   var overlay = document.getElementById('rm-modal-overlay');
   if (overlay) { overlay.classList.remove('hidden'); setTimeout(function () { if (n) n.focus(); }, 80); }
@@ -264,18 +354,21 @@ function rmCerrarModal(event) {
   _rmEditandoId = null;
 }
 
-function rmGuardarMunicipio(event) {
+async function rmGuardarMunicipio(event) {
+  if (_rmPerfil !== 'Administrador') return;
   event.preventDefault();
   var btn    = document.getElementById('rm-btn-guardar');
   var errEl  = document.getElementById('rm-modal-error');
   var nombre = (document.getElementById('rm-input-municipio').value || '').trim();
+  var ruta   = (document.getElementById('rm-input-ruta').value || '').trim();
   var fecha  = (document.getElementById('rm-input-fecha').value || '').trim();
-  var sheet  = (document.getElementById('rm-input-spreadsheetid').value || '').trim();
+  var fechaEntrega = (document.getElementById('rm-input-fecha-entrega').value || '').trim();
+  var linkHoja = (document.getElementById('rm-input-link').value || '').trim();
   var esEd   = !!_rmEditandoId;
 
   if (errEl) errEl.classList.add('hidden');
-  if (!nombre || !fecha || !sheet) {
-    if (errEl) { errEl.textContent = 'Completa todos los campos.'; errEl.classList.remove('hidden'); }
+  if (!ruta || !nombre || !fecha || !linkHoja) {
+    if (errEl) { errEl.textContent = 'Completa Ruta, Municipio, Fecha de Atención y enlace de la hoja.'; errEl.classList.remove('hidden'); }
     return;
   }
 
@@ -283,19 +376,26 @@ function rmGuardarMunicipio(event) {
 
   try {
     if (esEd) {
-      RecordatorioMasivoService.actualizarMunicipio(_rmEditandoId, { nombre: nombre, fechaAtencion: fecha, spreadsheetId: sheet });
-      _rmMunicipios = RecordatorioMasivoService.listarMunicipios();
-      if (_rmMunicipioActivo && _rmMunicipioActivo.id === _rmEditandoId) {
-        _rmMunicipioActivo = _rmMunicipios.find(function (m) { return m.id === _rmEditandoId; }) || null;
-      }
+      await RecordatorioMasivoService.actualizarMunicipio(_rmEditandoId, {
+        ruta: ruta,
+        nombre: nombre,
+        fechaAtencion: fecha,
+        fechaEntrega: fechaEntrega,
+        linkHoja: linkHoja
+      });
     } else {
-      var nuevo = RecordatorioMasivoService.guardarMunicipio({ nombre: nombre, fechaAtencion: fecha, spreadsheetId: sheet });
-      _rmMunicipios.push(nuevo);
+      await RecordatorioMasivoService.guardarMunicipio({
+        ruta: ruta,
+        nombre: nombre,
+        fechaAtencion: fecha,
+        fechaEntrega: fechaEntrega,
+        linkHoja: linkHoja
+      });
     }
-    _rmRenderizarTabla();
     _rmEditandoId = null;
     var ov = document.getElementById('rm-modal-overlay');
     if (ov) ov.classList.add('hidden');
+    await rmCargarMunicipios();
   } catch (e) {
     if (errEl) { errEl.textContent = e.message || 'Error al guardar.'; errEl.classList.remove('hidden'); }
   } finally {
@@ -604,7 +704,7 @@ function rmEnviarIndividual(key, idx, tipo) {
   var btn = document.getElementById('rm-btn-ind-' + key);
   if (btn) { btn.disabled = true; }
 
-  MetaService.enviarMensaje(tipo, paciente, _rmDatosActivos.meta)
+  MetaService.enviarMensaje(tipo, paciente, _rmDatosActivos.meta, _rmMunicipioActivo.spreadsheetId)
     .then(function (res) {
       if (res.ok) {
         _rmActualizarEstadoFila(key, 'enviado');
@@ -690,7 +790,7 @@ function rmEnvioMasivo() {
     var item = lista[i];
     _rmActualizarEstadoFila(item.key, 'enviando');
 
-    MetaService.enviarMensaje(_rmTabActiva, item.paciente, _rmDatosActivos.meta)
+    MetaService.enviarMensaje(_rmTabActiva, item.paciente, _rmDatosActivos.meta, _rmMunicipioActivo.spreadsheetId)
       .then(function (res) {
         procesados++;
         _rmActualizarEstadoFila(item.key, res.ok ? 'enviado' : 'error');
@@ -712,11 +812,16 @@ function rmEnvioMasivo() {
 // ══════════════════════════════════════════════════════════════
 
 function rmConfirmarEliminar(id, nombre) {
+  if (_rmPerfil !== 'Administrador') return;
   if (!confirm('¿Eliminar el municipio "' + nombre + '"?')) return;
-  RecordatorioMasivoService.eliminarMunicipio(id);
-  _rmMunicipios = RecordatorioMasivoService.listarMunicipios();
-  if (_rmMunicipioActivo && _rmMunicipioActivo.id === id) rmCerrarDetalle();
-  _rmRenderizarTabla();
+  RecordatorioMasivoService.eliminarMunicipio(id)
+    .then(function () {
+      if (_rmMunicipioActivo && _rmMunicipioActivo.id === id) rmCerrarDetalle();
+      return rmCargarMunicipios();
+    })
+    .catch(function (error) {
+      alert(error.message || 'No se pudo eliminar el municipio del registro central.');
+    });
 }
 
 function rmCerrarDetalle() {
