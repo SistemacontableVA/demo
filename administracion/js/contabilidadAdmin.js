@@ -8,7 +8,7 @@ function renderContabilidadDiaria() {
         '<div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">',
           '<div>',
             '<h3 class="text-verde-oscuro font-bold text-lg">Contabilidad diaria cerrada</h3>',
-            '<p class="text-slate-500 text-sm mt-1">Selecciona la fecha de la jornada cerrada por el coordinador para revisar y validar el cierre.</p>',
+            '<p class="text-slate-500 text-sm mt-1">Selecciona una jornada cerrada por el coordinador para revisar y validar el cierre.</p>',
           '</div>',
           '<div class="flex flex-col sm:flex-row gap-2 items-end">',
             '<div>',
@@ -62,28 +62,19 @@ async function cargarContabilidadesDisponiblesAdmin() {
   ocultarErrorContabilidadAdmin();
 
   try {
-    var fechas = [];
-    if (window.ContabilidadDiariaService && typeof window.ContabilidadDiariaService.loadRemoteDraftHistory === 'function') {
-      var history = await window.ContabilidadDiariaService.loadRemoteDraftHistory();
-      fechas = (history || []).map(function (item) {
-        var valor = item && (item.fecha || item.FECHA) ? String(item.fecha || item.FECHA) : '';
-        return valor ? valor.slice(0, 10) : '';
-      }).filter(Boolean).sort(function (a, b) { return new Date(b) - new Date(a); });
-    }
-
-    if (!fechas.length && window.ContabilidadDiariaService && typeof window.ContabilidadDiariaService.getDraftHistory === 'function') {
-      var localHistory = window.ContabilidadDiariaService.getDraftHistory();
-      fechas = Object.keys(localHistory || {}).map(function (key) {
-        return String(key).slice(0, 10);
-      }).filter(Boolean).sort(function (a, b) { return new Date(b) - new Date(a); });
-    }
+    var history = await window.ContabilidadDiariaService.loadRemoteDraftHistory();
+    var fechas = history.filter(function (item) {
+      return item && (item.estado === 'cerrada' || item.estado === 'validada');
+    }).map(function (item) {
+      return item.fecha ? String(item.fecha).slice(0, 10) : '';
+    }).filter(Boolean).sort(function (a, b) { return new Date(b) - new Date(a); });
 
     var select = document.getElementById('contabilidad-admin-fecha');
     if (!select) return;
 
     if (!fechas.length) {
-      select.innerHTML = '<option value="">No hay contabilidades cerradas</option>';
-      setLoadingContabilidadAdmin(false, 'No hay contabilidades cerradas.');
+      select.innerHTML = '<option value="">No hay jornadas cerradas</option>';
+      setLoadingContabilidadAdmin(false, 'No hay jornadas cerradas.');
       return;
     }
 
@@ -112,14 +103,7 @@ async function cargarContabilidadAdminSeleccionada() {
   setLoadingContabilidadAdmin(true, 'Cargando contabilidad de ' + fecha + '...');
 
   try {
-    var draft = null;
-    if (window.ContabilidadDiariaService && typeof window.ContabilidadDiariaService.loadRemoteDraftByFecha === 'function') {
-      draft = await window.ContabilidadDiariaService.loadRemoteDraftByFecha(fecha);
-    }
-
-    if (!draft && window.ContabilidadDiariaService && typeof window.ContabilidadDiariaService.loadDraft === 'function') {
-      draft = window.ContabilidadDiariaService.loadDraft(fecha);
-    }
+    var draft = await window.ContabilidadDiariaService.loadRemoteDraftByFecha(fecha);
 
     if (!draft) {
       throw new Error('No existe la contabilidad para esa fecha.');
@@ -130,7 +114,7 @@ async function cargarContabilidadAdminSeleccionada() {
     setLoadingContabilidadAdmin(false, 'Contabilidad cargada.');
   } catch (error) {
     console.warn('[ContabilidadAdmin] Error al cargar contabilidad:', error);
-    mostrarErrorContabilidadAdmin(error && error.message ? error.message : 'No se pudo cargar la contabilidad seleccionada.');
+    mostrarErrorContabilidadAdmin('No se pudo cargar la contabilidad seleccionada.');
     setLoadingContabilidadAdmin(false, 'Error al cargar');
   }
 }
@@ -262,22 +246,16 @@ async function validarContabilidadAdminSeleccionada() {
     return;
   }
 
+  try {
+    await window.ContabilidadDiariaService.cambiarEstado(draft.id, 'validada');
+  } catch (error) {
+    console.error('[ContabilidadAdmin] No se pudo validar el cierre:', error);
+    mostrarErrorContabilidadAdmin('No se pudo validar el cierre. Reintenta o contacta con soporte.');
+    return;
+  }
+
   draft.estado = 'validada';
   draft.actualizadoEn = new Date().toISOString();
-
-  if (window.ContabilidadDiariaService && typeof window.ContabilidadDiariaService.saveDraft === 'function') {
-    window.ContabilidadDiariaService.saveDraft(draft);
-  }
-
-  if (window.ContabilidadDiariaService && typeof window.ContabilidadDiariaService.syncDraft === 'function') {
-    var syncResult = await window.ContabilidadDiariaService.syncDraft(draft);
-    if (!syncResult || !syncResult.ok) {
-      mostrarErrorContabilidadAdmin('La validación quedó guardada localmente, pero no pudo sincronizarse con Google Sheets.');
-      return;
-    }
-  }
-
-  localStorage.setItem('contabilidad_diaria_draft_v1', JSON.stringify(draft));
   window.__CONTABILIDAD_ADMIN_SELECCIONADA = draft;
   renderDetalleContabilidadAdmin(draft);
   alert('La contabilidad seleccionada fue validada correctamente por administración.');

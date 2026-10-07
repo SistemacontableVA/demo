@@ -3,6 +3,8 @@ var _ofEmpleados = [];
 var _ofPeriodos  = [];
 var _ofNovedades = [];
 var _ofPagos     = [];
+var _ofPagosCargados = false;
+var _ofResumenControl = null;
 
 /* ════════════════════════════════════════════════════════════
    PUNTO DE ENTRADA
@@ -12,6 +14,7 @@ function renderOficina() {
   var root = document.getElementById('admin-content');
   if (!root) return;
 
+  _ofTab = getPerfilAdmin() === 'Administrador' ? 'control' : 'relaciones';
   root.innerHTML =
     '<div class="oficina-module fade-in">' +
     '<div class="oficina-header flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">' +
@@ -21,6 +24,7 @@ function renderOficina() {
       '</div>' +
     '</div>' +
     '<nav class="oficina-nav flex flex-wrap gap-2 mb-5">' +
+      (getPerfilAdmin() === 'Administrador' ? _ofTabBtn('control', 'Control de pagos') : '') +
       _ofTabBtn('relaciones', 'Relaciones') +
       _ofTabBtn('empleados',  'Empleados') +
       _ofTabBtn('novedades',  'Novedades') +
@@ -45,7 +49,9 @@ function renderOficina() {
     });
   });
 
-  _ofCargarBase().then(function() { _ofRenderPanel(); });
+  _ofCargarBase().then(function() { _ofRenderPanel(); }).catch(function(error) {
+    console.error('[Nómina Oficina] No se pudo iniciar el módulo:', error);
+  });
 }
 
 function _ofTabBtn(id, label) {
@@ -68,23 +74,164 @@ function _ofCargarBase() {
     OficinaNominaService.listarEmpleados(),
     OficinaNominaService.listarPeriodos(),
     OficinaNominaService.listarNovedades(),
-    OficinaNominaService.listarPagosHistoricos()
+    OficinaNominaService.obtenerResumenControl()
   ]).then(function(res) {
     _ofEmpleados = res[0];
     _ofPeriodos  = res[1];
     _ofNovedades = res[2];
-    _ofPagos     = res[3];
+    _ofResumenControl = res[3];
+    _ofPagosCargados = false;
   }).catch(function(err) {
     _ofMostrarError('of-panel', 'Error cargando datos: ' + err.message);
+    throw err;
   });
 }
 
 function _ofRenderPanel() {
+  if (_ofTab === 'control') return _ofRenderControl();
+  if (_ofTab === 'pagos') return _ofRenderPagos();
   if (_ofTab === 'empleados') return _ofRenderEmpleados();
   if (_ofTab === 'novedades') return _ofRenderNovedades();
   if (_ofTab === 'periodos')  return _ofRenderPeriodos();
-  if (_ofTab === 'pagos')     return _ofRenderPagos();
   _ofRenderRelaciones();
+}
+
+function _ofRenderControl() {
+  var panel = document.getElementById('of-panel');
+  if (!panel) return;
+  if (!_ofResumenControl || !_ofResumenControl.ok) {
+    _ofMostrarError('of-panel', 'No se pudo cargar el resumen de pagos.');
+    return;
+  }
+
+  var resumen = _ofResumenControl.totales || {};
+  var pendientes = _ofResumenControl.pendientes || [];
+  var meses = _ofResumenControl.meses || [];
+  var periodos = (_ofResumenControl.periodos || []).slice(0, 6);
+  var maxMes = Math.max.apply(null, meses.map(function(m) {
+    return Number(m.pagado || 0) + Number(m.pendiente || 0);
+  }).concat([1]));
+  var maxPeriodo = Math.max.apply(null, periodos.map(function(p) {
+    return Number(p.monto_pendiente || 0);
+  }).concat([1]));
+
+  var graficoMeses = meses.length ? meses.map(function(mes) {
+    var pagado = Number(mes.pagado || 0);
+    var pendiente = Number(mes.pendiente || 0);
+    return '<div class="grid grid-cols-[64px_1fr_120px] items-center gap-3 py-2">' +
+      '<span class="text-xs font-semibold text-slate-500">' + _esc(mes.mes) + '</span>' +
+      '<div class="h-5 flex rounded overflow-hidden bg-slate-100" role="img" aria-label="' +
+        _esc(mes.mes + ': pagado ' + OficinaNominaService.formatMoney(pagado) + ', pendiente ' + OficinaNominaService.formatMoney(pendiente)) + '">' +
+        (pagado ? '<span class="h-full bg-emerald-500" style="width:' + Math.max(1, pagado / maxMes * 100) + '%"></span>' : '') +
+        (pendiente ? '<span class="h-full bg-amber-400" style="width:' + Math.max(1, pendiente / maxMes * 100) + '%"></span>' : '') +
+      '</div>' +
+      '<span class="text-right text-[11px] text-slate-500">' + OficinaNominaService.formatMoney(pagado + pendiente) + '</span>' +
+    '</div>';
+  }).join('') : '<p class="text-sm text-slate-400 py-6 text-center">Aún no hay pagos para graficar.</p>';
+
+  var graficoPeriodos = periodos.length ? periodos.map(function(periodo) {
+    var monto = Number(periodo.monto_pendiente || 0);
+    return '<div class="py-2">' +
+      '<div class="flex justify-between gap-3 mb-1"><span class="text-xs font-semibold text-slate-600">' +
+        _esc(periodo.nombre) + '</span><span class="text-[11px] text-slate-500">' +
+        _esc(periodo.pagos_pendientes) + ' pendiente(s) · ' + OficinaNominaService.formatMoney(monto) + '</span></div>' +
+      '<div class="h-2.5 rounded bg-slate-100 overflow-hidden"><div class="h-full rounded bg-amber-400" style="width:' +
+        (monto ? Math.max(1, monto / maxPeriodo * 100) : 0) + '%"></div></div>' +
+    '</div>';
+  }).join('') : '<p class="text-sm text-slate-400 py-4">Aún no hay períodos.</p>';
+
+  var filasPendientes = pendientes.map(function(pago) {
+    var accion = getPerfilAdmin() === 'Administrador'
+      ? '<button data-of-marcar-pagado="' + _esc(pago.id_pago) +
+          '" class="rounded-lg bg-emerald-700 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-800">Marcar pagado</button>'
+      : '<span class="text-xs text-slate-400">Pendiente</span>';
+    var vencido = pago.fecha_pago && pago.fecha_pago < new Date().toISOString().slice(0, 10);
+    return '<tr class="border-b border-slate-100">' +
+      '<td class="px-3 py-2.5 text-sm font-semibold text-slate-700">' + _esc(pago.empleado) + '</td>' +
+      '<td class="px-3 py-2.5 text-xs text-slate-500">' + _esc(pago.periodo_nombre) + '</td>' +
+      '<td class="px-3 py-2.5 text-xs ' + (vencido ? 'font-semibold text-red-600' : 'text-slate-500') + '">' +
+        _esc(_ofFechaVisible(pago.fecha_pago) || 'Sin fecha programada') + (vencido ? ' · Vencido' : '') + '</td>' +
+      '<td class="px-3 py-2.5 text-right text-sm font-bold text-slate-700">' +
+        OficinaNominaService.formatMoney(pago.neto_pagar) + '</td>' +
+      '<td class="px-3 py-2.5 text-right">' + accion + '</td>' +
+    '</tr>';
+  }).join('');
+
+  panel.innerHTML =
+    '<div class="grid grid-cols-2 xl:grid-cols-6 gap-3 mb-4">' +
+      _ofControlMetrica('Pagos pendientes', Number(resumen.cantidad_pendiente || 0), 'bg-amber-50 text-amber-800') +
+      _ofControlMetrica('Monto por pagar', OficinaNominaService.formatMoney(resumen.monto_pendiente), 'bg-amber-50 text-amber-800') +
+      _ofControlMetrica('Pagos vencidos', Number(resumen.cantidad_vencido || 0), 'bg-red-50 text-red-700') +
+      _ofControlMetrica('Monto vencido', OficinaNominaService.formatMoney(resumen.monto_vencido), 'bg-red-50 text-red-700') +
+      _ofControlMetrica('Pagos confirmados', Number(resumen.cantidad_pagado || 0), 'bg-emerald-50 text-emerald-800') +
+      _ofControlMetrica('Total desembolsado', OficinaNominaService.formatMoney(resumen.monto_pagado), 'bg-emerald-50 text-emerald-800') +
+    '</div>' +
+    '<div class="grid grid-cols-1 xl:grid-cols-2 gap-4 mb-4">' +
+      '<section class="bg-white rounded-2xl shadow-soft p-5">' +
+        '<h4 class="font-bold text-verde-oscuro">Pagos por mes</h4>' +
+        '<p class="text-xs text-slate-400 mt-1">Comparación de desembolsado y pendiente por fecha programada.</p>' +
+        '<div class="flex gap-4 mt-4 mb-2 text-[11px] text-slate-500">' +
+          '<span><i class="inline-block w-2.5 h-2.5 rounded-sm bg-emerald-500 mr-1"></i>Pagado</span>' +
+          '<span><i class="inline-block w-2.5 h-2.5 rounded-sm bg-amber-400 mr-1"></i>Pendiente</span>' +
+        '</div>' + graficoMeses +
+      '</section>' +
+      '<section class="bg-white rounded-2xl shadow-soft p-5">' +
+        '<h4 class="font-bold text-verde-oscuro">Pendientes por período</h4>' +
+        '<p class="text-xs text-slate-400 mt-1">Saldo abierto y cantidad de pagos pendientes.</p>' +
+        '<div class="mt-4">' + graficoPeriodos + '</div>' +
+      '</section>' +
+    '</div>' +
+    '<section class="bg-white rounded-2xl shadow-soft overflow-hidden">' +
+      '<div class="flex items-center justify-between gap-3 px-5 py-4 border-b border-slate-100">' +
+        '<div><h4 class="font-bold text-verde-oscuro">Pagos pendientes</h4>' +
+        '<p class="text-xs text-slate-400 mt-1">Confirma el pago únicamente después de realizar la transferencia.</p></div>' +
+        '<span class="rounded-full bg-amber-100 px-3 py-1 text-xs font-bold text-amber-800">' + pendientes.length + '</span>' +
+      '</div>' +
+      '<div class="overflow-x-auto"><table class="w-full">' +
+        '<thead><tr class="bg-slate-50 text-[10px] uppercase tracking-wide text-slate-400">' +
+          '<th class="px-3 py-2 text-left">Empleado</th><th class="px-3 py-2 text-left">Período</th>' +
+          '<th class="px-3 py-2 text-left">Fecha programada</th><th class="px-3 py-2 text-right">Neto</th>' +
+          '<th class="px-3 py-2 text-right">Acción</th></tr></thead>' +
+        '<tbody>' + (filasPendientes || '<tr><td colspan="5" class="px-3 py-8 text-center text-sm text-emerald-700">No hay pagos pendientes.</td></tr>') +
+        '</tbody></table></div>' +
+    '</section>';
+
+  panel.querySelectorAll('[data-of-marcar-pagado]').forEach(function(button) {
+    button.addEventListener('click', function() {
+      _ofConfirmarPago(button.getAttribute('data-of-marcar-pagado'), button);
+    });
+  });
+}
+
+function _ofConfirmarPago(idPago, button) {
+  var referencia = prompt('Referencia o número de comprobante (opcional):');
+  if (referencia === null) return;
+  button.disabled = true;
+  button.textContent = 'Guardando…';
+  OficinaNominaService.marcarPagoPagado(idPago, referencia)
+    .then(function() { return OficinaNominaService.obtenerResumenControl(); })
+    .then(function(data) {
+      _ofResumenControl = data;
+      _ofPagosCargados = false;
+      _ofRenderPanel();
+    })
+    .catch(function(error) {
+      alert('No se pudo confirmar el pago: ' + error.message);
+      button.disabled = false;
+      button.textContent = 'Marcar pagado';
+    });
+}
+
+function _ofControlMetrica(label, value, color) {
+  return '<div class="rounded-2xl p-4 ' + color + '">' +
+    '<p class="text-[10px] font-bold uppercase tracking-wide opacity-70">' + label + '</p>' +
+    '<p class="mt-2 text-xl font-extrabold">' + value + '</p>' +
+  '</div>';
+}
+
+function _ofFechaVisible(value) {
+  var match = String(value || '').match(/^(\d{4})-(\d{2})-(\d{2})/);
+  return match ? match[3] + '/' + match[2] + '/' + match[1] : value;
 }
 
 /* ════════════════════════════════════════════════════════════
@@ -205,24 +352,16 @@ function _ofCalcular() {
 
   var periodo = _ofPeriodos.find(function(p) { return p.id_periodo === idPer; });
 
-  // Calcular todos en paralelo
-  Promise.all(idsSeleccionados.map(function(idEmp) {
-    return OficinaNominaService.calcularNomina(idPer, idEmp)
-      .then(function(data) {
-        return (data.detalle || [])[0] || null;
-      })
-      .catch(function(err) {
-        return { _error: err.message, empleado: { id_empleado: idEmp, personal: idEmp } };
-      });
-  }))
-  .then(function(resultados) {
+  OficinaNominaService.calcularNominaLote(idPer, idsSeleccionados)
+  .then(function(data) {
+    var resultados = data.detalle || [];
     resultados = resultados.filter(Boolean);
 
     var totalIngresos    = resultados.reduce(function(s, r) { return s + (r._error ? 0 : (r.totalIngresos    || 0)); }, 0);
     var totalDeducciones = resultados.reduce(function(s, r) { return s + (r._error ? 0 : (r.totalDeducciones || 0)); }, 0);
     var totalNeto        = resultados.reduce(function(s, r) { return s + (r._error ? 0 : (r.netoAPagar       || 0)); }, 0);
 
-    var puedeGenerar = periodo && (periodo.estado === 'abierto' || periodo.estado === 'calculado');
+    var puedeGenerar = periodo && periodo.estado === 'abierto' && idsSeleccionados.length > 0;
 
     resEl.innerHTML =
       // Resumen global
@@ -236,12 +375,15 @@ function _ofCalcular() {
             '</p>' +
           '</div>' +
           (puedeGenerar
-            ? '<button id="btn-gen-todos" onclick="_ofGenerarTodos(\'' + _esc(idPer) + '\')" ' +
+            ? '<button id="btn-gen-seleccionados" onclick="_ofGenerarSeleccionados(\'' + _esc(idPer) + '\')" ' +
                 'class="btn-primario text-white font-semibold px-5 py-2.5 rounded-xl text-sm hover:bg-verde-oscuro active:scale-95 transition-all">' +
-                '<span id="btn-gen-todos-txt">Generar todos los pagos</span>' +
+                '<span id="btn-gen-seleccionados-txt">Generar pagos seleccionados</span>' +
               '</button>'
             : '') +
         '</div>' +
+        (puedeGenerar
+          ? '<p class="mb-4 text-xs text-slate-500">Solo se generarán pagos para los empleados seleccionados. El período seguirá abierto; ciérralo desde «Períodos» cuando hayas terminado.</p>'
+          : '') +
         '<div class="grid grid-cols-2 sm:grid-cols-4 gap-3">' +
           _ofMetrica('Empleados',   resultados.length) +
           _ofMetrica('Ingresos',    OficinaNominaService.formatMoney(totalIngresos)) +
@@ -261,7 +403,7 @@ function _ofCalcular() {
         return _ofTarjetaRelacion(item, idPer, periodo ? periodo.estado : '');
       }).join('');
 
-    // Guardar resultados en variable global para el botón "Generar todos"
+    // Guardar los empleados seleccionados para confirmar únicamente esos pagos.
     window._ofUltimosResultados = { idPer: idPer, ids: idsSeleccionados };
   })
   .catch(function(err) {
@@ -274,9 +416,9 @@ function _ofCalcular() {
   });
 }
 
-function _ofGenerarTodos(idPer) {
-  var btn = document.getElementById('btn-gen-todos');
-  var txt = document.getElementById('btn-gen-todos-txt');
+function _ofGenerarSeleccionados(idPer) {
+  var btn = document.getElementById('btn-gen-seleccionados');
+  var txt = document.getElementById('btn-gen-seleccionados-txt');
   if (!window._ofUltimosResultados || window._ofUltimosResultados.idPer !== idPer) return;
 
   var ids = window._ofUltimosResultados.ids;
@@ -286,40 +428,22 @@ function _ofGenerarTodos(idPer) {
   if (txt) { txt.textContent = 'Generando...'; }
   _ofMostrarCarga('Generando pagos');
 
-  Promise.all(ids.map(function(idEmp) {
-    return OficinaNominaService.generarPago(idPer, idEmp)
-      .then(function(d) { return { idEmp: idEmp, ok: true, id_pago: d.id_pago, neto: d.calculo ? d.calculo.netoAPagar : 0 }; })
-      .catch(function(e) { return { idEmp: idEmp, ok: false, error: e.message }; });
-  }))
+  OficinaNominaService.generarPagos(idPer, ids)
   .then(function(res) {
-    var ok  = res.filter(function(r) { return r.ok; });
-    var err = res.filter(function(r) { return !r.ok; });
-    var msg = '✓ ' + ok.length + ' pago' + (ok.length !== 1 ? 's' : '') + ' generado' + (ok.length !== 1 ? 's' : '') + '.';
-    if (err.length) msg += '\n⚠ ' + err.length + ' con error:\n' + err.map(function(r) { return r.idEmp + ': ' + r.error; }).join('\n');
-
-    var finaliza = ok.length === ids.length;
-    if (finaliza) {
-      return OficinaNominaService.cerrarPeriodo(idPer)
-        .then(function() {
-          msg += '\n\nEl período quedó cerrado y listo para crear el siguiente.';
-          alert(msg);
-          if (btn) { btn.disabled = false; }
-          if (txt) { txt.textContent = 'Generar todos los pagos'; }
-          return _ofCargarBase();
-        })
-        .then(function() { _ofRenderPanel(); });
-    }
-
-    alert(msg);
-    if (btn) { btn.disabled = false; }
-    if (txt) { txt.textContent = 'Generar todos los pagos'; }
+    var nuevos = res.nuevos || [];
+    var existentes = res.ya_existentes || [];
+    var mensaje = nuevos.length + ' pago(s) generado(s). ' +
+      existentes.length + ' ya estaban registrados. ';
+    mensaje += 'El período permanece abierto; ciérralo desde «Períodos» cuando termines de generar los pagos.';
+    alert(mensaje);
+    _ofPagosCargados = false;
     return _ofCargarBase();
   })
   .then(function() { _ofRenderPanel(); })
   .catch(function(err) {
     alert('Error finalizando pagos: ' + err.message);
     if (btn) { btn.disabled = false; }
-    if (txt) { txt.textContent = 'Generar todos los pagos'; }
+    if (txt) { txt.textContent = 'Generar pagos seleccionados'; }
   })
   .finally(function() { _ofOcultarCarga(); });
 }
@@ -478,7 +602,7 @@ function _ofRenderEmpleados() {
             : '<button id="btn-react-' + idSafe + '" onclick="_ofReactivarEmpleado(\'' + idSafe + '\')" ' +
                 'class="text-xs text-emerald-600 hover:text-emerald-800 font-semibold mr-2">Reactivar</button>') +
           '<button id="btn-del-' + idSafe + '" onclick="_ofEliminarEmpleado(\'' + idSafe + '\')" ' +
-            'class="text-xs text-red-400 hover:text-red-700 font-semibold">Eliminar</button>' +
+            'class="text-xs text-red-400 hover:text-red-700 font-semibold">Retirar</button>' +
         '</td>' +
       '</tr>' +
       // Fila edición inline
@@ -724,10 +848,8 @@ function _ofEliminarEmpleado(id) {
   if (emp) nombre = emp.personal;
 
   if (!confirm(
-    '¿Eliminar permanentemente a ' + (nombre || id) + '?\n\n' +
-    'Solo es posible si no tiene pagos generados.\n' +
-    'También se eliminarán sus novedades.\n\n' +
-    'Esta acción NO se puede deshacer.'
+    '¿Retirar a ' + (nombre || id) + ' de los empleados activos?\n\n' +
+    'El empleado y sus novedades se conservarán para proteger el historial de nómina.'
   )) return;
 
   var btn = document.getElementById('btn-del-' + id);
@@ -1082,7 +1204,7 @@ function _ofRenderPeriodos() {
     '<div class="bg-white rounded-2xl shadow-soft overflow-hidden">' +
       '<div class="px-5 py-3 border-b border-slate-100 flex items-center justify-between gap-3">' +
         '<h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider">Períodos (' + _ofPeriodos.length + ')</h4>' +
-        '<span class="text-[10px] text-slate-400">El período se cierra al generarse el pago.</span>' +
+        '<span class="text-[10px] text-slate-400">Puedes generar pagos parciales; cierra el período manualmente cuando termines.</span>' +
       '</div>' +
       '<div class="overflow-x-auto">' +
         '<table class="w-full">' +
@@ -1101,7 +1223,21 @@ function _ofRenderPagos() {
   var panel = document.getElementById('of-panel');
   if (!panel) return;
 
-  var pagos = _ofPagos.slice().reverse();
+  if (!_ofPagosCargados) {
+    panel.innerHTML = '<div class="flex items-center justify-center h-32"><div class="spinner"></div></div>';
+    OficinaNominaService.listarPagosHistoricos()
+      .then(function(pagos) {
+        _ofPagos = pagos;
+        _ofPagosCargados = true;
+        if (_ofTab === 'pagos') _ofRenderPagos();
+      })
+      .catch(function(error) {
+        _ofMostrarError('of-panel', 'Error cargando el historial: ' + error.message);
+      });
+    return;
+  }
+
+  var pagos = _ofPagos.slice();
 
   var filas = pagos.map(function(p) {
     var emp = _ofEmpleados.find(function(e) { return e.id_empleado === p.id_empleado; }) || {};
@@ -1109,15 +1245,26 @@ function _ofRenderPagos() {
     var estado = (p.estado || 'pagado').toString().trim();
     var badge = estado === 'anulado'
       ? 'bg-red-100 text-red-600'
-      : 'bg-emerald-100 text-emerald-700';
+      : (estado === 'pendiente' ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700');
 
     return '<tr class="border-b border-slate-100 hover:bg-slate-50/50 transition-colors">' +
-      '<td class="px-3 py-2.5 text-xs text-slate-700">' + _esc(emp.personal || p.id_empleado || '—') + '</td>' +
+      '<td class="px-3 py-2.5 text-xs text-slate-700">' + _esc(p.empleado || emp.personal || p.id_empleado || '—') + '</td>' +
       '<td class="px-3 py-2.5 text-xs text-slate-500">' + _esc(p.id_periodo || '—') + '</td>' +
-      '<td class="px-3 py-2.5 text-xs text-slate-500">' + _esc(p.fecha_pago || p.fecha_generacion || '—') + '</td>' +
+      '<td class="px-3 py-2.5 text-xs text-slate-500">' + _esc(p.fecha_pago || '—') +
+        (p.fecha_pagado ? '<span class="block text-[10px] text-emerald-700">Pagado: ' + _esc(p.fecha_pagado.slice(0, 10)) + '</span>' : '') +
+      '</td>' +
       '<td class="px-3 py-2.5 text-xs text-right font-semibold text-slate-700">' + OficinaNominaService.formatMoney(neto) + '</td>' +
       '<td class="px-3 py-2.5 text-center">' +
-        '<span class="inline-block text-[10px] font-bold px-2 py-0.5 rounded-full ' + badge + '">' + _esc(estado === 'generado' ? 'Pagado' : (estado === 'anulado' ? 'Anulado' : estado)) + '</span>' +
+        '<span class="inline-block text-[10px] font-bold px-2 py-0.5 rounded-full ' + badge + '">' +
+          _esc(estado === 'generado' ? 'Pendiente de pago' : (estado === 'pendiente' ? 'Pendiente de pago' : (estado === 'pagado' ? 'Pagado' : 'Anulado'))) +
+        '</span>' +
+      '</td>' +
+      '<td class="px-3 py-2.5 text-right whitespace-nowrap">' +
+        '<button data-of-ver-pago="' + _esc(p.id_pago) + '" class="text-xs text-verde-oscuro hover:underline font-semibold mr-2">Ver relación</button>' +
+        (estado === 'pendiente' && getPerfilAdmin() === 'Administrador'
+          ? '<button data-of-marcar-pagado="' + _esc(p.id_pago) + '" class="text-xs text-emerald-700 hover:underline font-semibold mr-2">Marcar pagado</button>' +
+            '<button data-of-anular-pago="' + _esc(p.id_pago) + '" class="text-xs text-red-600 hover:underline font-semibold">Anular</button>'
+          : '') +
       '</td>' +
     '</tr>';
   }).join('');
@@ -1134,12 +1281,94 @@ function _ofRenderPagos() {
         '<table class="w-full">' +
           '<thead><tr class="bg-slate-50 text-[10px] uppercase tracking-wide text-slate-400 border-b border-slate-200">' +
             '<th class="px-3 py-2 text-left">Empleado</th><th class="px-3 py-2 text-left">Período</th>' +
-            '<th class="px-3 py-2 text-left">Fecha pago</th><th class="px-3 py-2 text-right">Neto</th><th class="px-3 py-2 text-center">Estado</th>' +
+            '<th class="px-3 py-2 text-left">Fecha programada</th><th class="px-3 py-2 text-right">Neto</th><th class="px-3 py-2 text-center">Estado</th><th class="px-3 py-2 text-right">Acciones</th>' +
           '</tr></thead>' +
-          '<tbody>' + (filas || '<tr><td colspan="5" class="px-3 py-6 text-center text-slate-400 text-sm">Sin pagos registrados aún</td></tr>') + '</tbody>' +
+          '<tbody>' + (filas || '<tr><td colspan="6" class="px-3 py-6 text-center text-slate-400 text-sm">Sin pagos registrados aún</td></tr>') + '</tbody>' +
         '</table>' +
       '</div>' +
     '</div>';
+
+  panel.querySelectorAll('[data-of-marcar-pagado]').forEach(function(button) {
+    button.addEventListener('click', function() {
+      _ofConfirmarPago(button.getAttribute('data-of-marcar-pagado'), button);
+    });
+  });
+  panel.querySelectorAll('[data-of-ver-pago]').forEach(function(button) {
+    button.addEventListener('click', function() {
+      _ofImprimirPagoHistorico(button.getAttribute('data-of-ver-pago'));
+    });
+  });
+  panel.querySelectorAll('[data-of-anular-pago]').forEach(function(button) {
+    button.addEventListener('click', function() {
+      var motivo = prompt('Indica el motivo para anular este pago:');
+      if (motivo === null || !motivo.trim()) return;
+      button.disabled = true;
+      button.textContent = 'Anulando…';
+      OficinaNominaService.anularPago(button.getAttribute('data-of-anular-pago'), motivo.trim())
+        .then(function() { return _ofCargarBase(); })
+        .then(function() { _ofRenderPanel(); })
+        .catch(function(error) {
+          alert('No se pudo anular el pago: ' + error.message);
+          button.disabled = false;
+          button.textContent = 'Anular';
+        });
+    });
+  });
+}
+
+function _ofImprimirPagoHistorico(idPago) {
+  _ofMostrarCarga('Cargando relación histórica');
+  OficinaNominaService.obtenerPago(idPago)
+    .then(function(resultado) {
+      var pago = resultado.pago;
+      var calculo = resultado.calculo;
+      var empleado = pago.empleado_snapshot || {};
+      var periodo = pago.periodo_snapshot || {};
+      if (!calculo || !empleado.personal || !periodo.id_periodo) {
+        throw new Error('El pago no contiene una instantánea completa para imprimir.');
+      }
+      var detalle = (resultado.detalleDiario || []).map(function(dia) {
+        return {
+          fecha: dia.fecha,
+          laborado: dia.laborado,
+          prestamo: Number(dia.prestamo) > 0 ? OficinaNominaService.formatMoney(dia.prestamo) : '',
+          adicionalFestivo: Number(dia.adicionalFestivo) > 0 ? OficinaNominaService.formatMoney(dia.adicionalFestivo) : '',
+          detalle: dia.detalle || ''
+        };
+      });
+      return OficinaNominaService.cargarPlantilla().then(function(template) {
+        return OficinaNominaService.renderTemplate(template, {
+          nombreEmpleado: empleado.personal,
+          bancoPago: empleado.banco || '',
+          identificacionEmpleado: empleado.cedula || '',
+          cargoEmpleado: empleado.cargo || '',
+          telefonoEmpleado: empleado.telefono || '',
+          periodoNombre: periodo.nombre || '',
+          fechaInicio: periodo.fecha_inicio || '',
+          fechaFin: periodo.fecha_fin || '',
+          diasLaborados: calculo.diasLaborados,
+          valorDiasLaborados: OficinaNominaService.formatMoney(calculo.valorDiasLaborados),
+          adicionalFestivos: OficinaNominaService.formatMoney(calculo.adicionalFestivos),
+          totalIngresos: OficinaNominaService.formatMoney(calculo.totalIngresos),
+          prestamosAdelanto: OficinaNominaService.formatMoney(calculo.prestamosAdelanto),
+          penalizacionDeduccion: OficinaNominaService.formatMoney(calculo.penalizacionDeduccion),
+          totalDeducciones: OficinaNominaService.formatMoney(calculo.totalDeducciones),
+          netoAPagar: OficinaNominaService.formatMoney(calculo.netoAPagar),
+          detalleDiario: detalle
+        });
+      });
+    })
+    .then(function(html) {
+      var popup = window.open('', '_blank');
+      if (!popup) throw new Error('Permite ventanas emergentes para imprimir.');
+      popup.document.open();
+      popup.document.write(html);
+      popup.document.close();
+      popup.focus();
+      setTimeout(function() { popup.print(); }, 800);
+    })
+    .catch(function(error) { alert('Error al abrir la relación histórica: ' + error.message); })
+    .finally(_ofOcultarCarga);
 }
 
 function _ofGuardarPeriodo() {
@@ -1180,7 +1409,7 @@ function _ofGuardarPeriodo() {
 }
 
 function _ofCerrarPeriodo(id) {
-  if (!confirm('¿Cerrar el período? Las novedades no podrán modificarse después.')) return;
+  if (!confirm('¿Ya terminaste de generar los pagos correspondientes a este período? Al cerrarlo no podrás modificar sus novedades.')) return;
   var btn = document.getElementById('btn-cerrar-' + id);
   if (btn) { btn.disabled = true; btn.textContent = '...'; }
   _ofMostrarCarga('Cerrando período');

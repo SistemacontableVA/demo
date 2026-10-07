@@ -20,7 +20,7 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
           </svg>
         </div>
-        <input type="text" id="admin-usuario" placeholder="Usuario" autocomplete="username"
+        <input type="email" id="admin-usuario" placeholder="Correo electrónico" autocomplete="username"
                class="w-full bg-transparent px-4 py-3 text-sm font-medium text-slate-700 placeholder-slate-400 focus:outline-none">
       </div>
 
@@ -74,7 +74,7 @@
         </svg>
         <span>Sistema Seguro</span>
       </div>
-      <span class="text-slate-400">v5.0 • 2026</span>
+      <span class="text-slate-400"><span data-sistema-version></span> • 2026</span>
     </div>
   </div>
 </div>

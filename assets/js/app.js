@@ -1,6 +1,23 @@
 // ═══════════════════════════════════════════════════════════════
 // FASE 3: Helper global para construir URLs de API
 // ═══════════════════════════════════════════════════════════════
+window.ADMIN_VERSION = 'v1.2 KG';
+
+function actualizarVersionSistema(contenedor) {
+  var raiz = contenedor || document;
+  raiz.querySelectorAll('[data-sistema-version]').forEach(function (el) {
+    el.textContent = window.ADMIN_VERSION;
+  });
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', function () {
+    actualizarVersionSistema();
+  });
+} else {
+  actualizarVersionSistema();
+}
+
 /**
  * Construye URL completa de API de forma centralizada.
  * Prioridad:
@@ -79,6 +96,7 @@ var MODULOS = {
     scripts: [
       'assets/js/empresa-brand.js',
       'administracion/config/auth.js',
+      'administracion/services/configuracionService.js',
       'administracion/js/login.js'
     ]
   },
@@ -167,6 +185,7 @@ async function mostrarModulo(nombre) {
     var html = await res.text();
 
     contenedor.innerHTML = html;
+    actualizarVersionSistema(contenedor);
 
     if (!window.empresaBrand || typeof window.empresaBrand.applyBrand !== 'function') {
       await cargarScript('assets/js/empresa-brand.js');
@@ -361,12 +380,6 @@ function ingresarAdmin() {
       var res = await fetch('administracion/views/login.tpl?t=' + Date.now(), { cache: 'no-store' });
       if (!res.ok) throw new Error('HTTP ' + res.status);
       login.innerHTML = await res.text();
-
-      // Pre-calentar el GAS de licencias mientras se carga el HTML del login
-      // para reducir el cold start cuando el usuario presione Ingresar
-      var gasUrl = localStorage.getItem('ks_lic_gasurl') || '';
-      var ksUrl  = 'https://script.google.com/macros/s/AKfycbyDBpp-Lef4vFWCblQyRNnWUdD2gi1MaCacu1Qv-y5axZLImEvSeDyhd1_mDnrt-NDPZQ/exec';
-      fetch(ksUrl + '?action=ping', { cache: 'no-store' }).catch(function () {});
 
       if (!window.empresaBrand || typeof window.empresaBrand.applyBrand !== 'function') {
         await cargarScript('assets/js/empresa-brand.js');

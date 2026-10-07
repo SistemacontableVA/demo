@@ -86,12 +86,7 @@
       el.textContent = el.dataset.empresaTelefonosPrincipal || el.textContent || '';
     });
 
-    if (document.title) {
-      const titleText = document.title;
-      if (titleText.includes('Vision de Aguila') || titleText.includes('Óptica Visión de Águila')) {
-        document.title = titleText.replace(/Óptica Visión de Águila|Vision de Aguila/gi, nombre);
-      }
-    }
+    document.title = document.title.replace(/\{\{empresa\}\}/gi, nombre);
   }
 
   async function cargarBrandDesdeConfig() {

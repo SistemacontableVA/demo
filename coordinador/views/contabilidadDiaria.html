@@ -1945,31 +1945,7 @@
 <script>
   const contabilidadPromotores = [];
   const CONTABILIDAD_DRAFT_KEY = 'contabilidad_diaria_draft_v1';
-
-  function syncUrlContabilidad() {
-    const defaultUrl = 'https://script.google.com/macros/s/AKfycbxeNcVqxyVVKPDAWFjj1IQjx8O--o5tPwOL7OP0R5lPX5tDWD1cOlMAMARQl0DKL0Otgg/exec';
-    const configUrl = window.ApiConfig && window.ApiConfig.contabilidad && window.ApiConfig.contabilidad.baseUrl
-      ? window.ApiConfig.contabilidad.baseUrl
-      : defaultUrl;
-    const localUrl = (() => {
-      try {
-        return localStorage.getItem('ks_contabilidad_gas_url') || '';
-      } catch (error) {
-        return '';
-      }
-    })();
-    const apiUrl = (window.API_URL_CONTABILIDAD || configUrl || localUrl || defaultUrl).replace(/\/$/, '');
-
-    if (apiUrl && (!window.API_URL_CONTABILIDAD || window.API_URL_CONTABILIDAD !== apiUrl)) {
-      window.API_URL_CONTABILIDAD = apiUrl;
-    }
-
-    if (!window.API_URL_CONTABILIDAD) {
-      window.API_URL_CONTABILIDAD = defaultUrl;
-    }
-
-    return window.API_URL_CONTABILIDAD || '';
-  }
+  let CONTABILIDAD_ESTADO_ACTUAL = 'borrador';
 
   function obtenerSnapshotContabilidad() {
     const filas = [];
@@ -2004,7 +1980,7 @@
       fecha: fechaInput?.value || '',
       municipio: municipioInput?.value || '',
       coordinador: coordinadorInput?.value || '',
-      estado: 'borrador',
+      estado: CONTABILIDAD_ESTADO_ACTUAL,
       sincronizado: false,
       actualizadoEn: new Date().toISOString(),
       afiliaciones: filas,
@@ -2209,7 +2185,7 @@
     modal.setAttribute('aria-hidden', 'true');
   }
 
-  function validarCierreContabilidad() {
+  async function validarCierreContabilidad() {
     const draft = obtenerSnapshotContabilidad();
     if (!draft.fecha || !draft.municipio || !draft.coordinador) {
       mostrarEstadoContabilidad('Completa la fecha, municipio y coordinador antes de validar el cierre.', 'error');
@@ -2217,32 +2193,29 @@
       return { ok: false, error: 'Faltan metadatos de la jornada.' };
     }
 
-    const resumen = obtenerResumenCierreContabilidad();
-    draft.estado = 'pendiente_de_validacion';
-    draft.actualizadoEn = new Date().toISOString();
-    draft.totales = draft.totales || {};
-    draft.totales.totalIngresos = resumen.totalIngresos;
-    draft.totales.totalDeduccion = resumen.totalDeduccion;
-    draft.totales.totalEgresos = resumen.totalEgresos;
-    draft.totales.saldoInicial = resumen.saldoInicial;
-    draft.totales.saldoFinal = resumen.saldoFinal;
-
-    const result = window.ContabilidadDiariaService && typeof window.ContabilidadDiariaService.saveDraft === 'function'
-      ? window.ContabilidadDiariaService.saveDraft(draft)
-      : { ok: true, draft: draft };
-
-    if (result && result.ok) {
+    try {
+      const saved = await window.ContabilidadDiariaService.syncDraft(draft);
+      if (!saved || !saved.ok || !saved.draft || !saved.draft.id) {
+        throw new Error(saved && saved.error ? saved.error : 'No se pudo guardar la jornada.');
+      }
+      await window.ContabilidadDiariaService.cambiarEstado(saved.draft.id, 'pendiente_de_validacion');
+      CONTABILIDAD_ESTADO_ACTUAL = 'pendiente_de_validacion';
+      saved.draft.estado = CONTABILIDAD_ESTADO_ACTUAL;
+      window.ContabilidadDiariaService.saveDraft(saved.draft);
       actualizarEstadoDraftContabilidad('Pendiente de validación');
       renderResumenCierreContabilidad();
-      mostrarEstadoContabilidad('El cierre quedó pendiente de validación administrativa.', 'info');
+      mostrarEstadoContabilidad('La jornada quedó pendiente de validación administrativa.', 'success');
       setTimeout(ocultarEstadoContabilidad, 1200);
-      return { ok: true, draft: draft };
+      return { ok: true, draft: saved.draft };
+    } catch (error) {
+      console.error('[ContabilidadDiaria] No se pudo enviar la jornada a validación:', error);
+      mostrarEstadoContabilidad('No se pudo enviar la jornada a validación.', 'error');
+      setTimeout(ocultarEstadoContabilidad, 1800);
+      return { ok: false, error: error.message };
     }
-
-    return { ok: false, error: 'No se pudo guardar la validación del cierre.' };
   }
 
-  function cerrarContabilidad() {
+  async function cerrarContabilidad() {
     const draft = obtenerSnapshotContabilidad();
     if (!draft.fecha || !draft.municipio || !draft.coordinador) {
       mostrarEstadoContabilidad('Completa la fecha, municipio y coordinador antes de cerrar la contabilidad.', 'error');
@@ -2250,36 +2223,26 @@
       return { ok: false, error: 'Faltan metadatos de la jornada.' };
     }
 
-    const validado = validarCierreContabilidad();
+    const validado = await validarCierreContabilidad();
     if (!validado.ok) return validado;
 
-    const draftCerrado = obtenerSnapshotContabilidad();
-    draftCerrado.estado = 'cerrada';
-    draftCerrado.actualizadoEn = new Date().toISOString();
-    const result = window.ContabilidadDiariaService && typeof window.ContabilidadDiariaService.saveDraft === 'function'
-      ? window.ContabilidadDiariaService.saveDraft(draftCerrado)
-      : { ok: true, draft: draftCerrado };
-
-    if (result && result.ok) {
+    try {
+      await window.ContabilidadDiariaService.cambiarEstado(validado.draft.id, 'cerrada');
+      CONTABILIDAD_ESTADO_ACTUAL = 'cerrada';
+      validado.draft.estado = CONTABILIDAD_ESTADO_ACTUAL;
+      window.ContabilidadDiariaService.saveDraft(validado.draft);
       actualizarEstadoDraftContabilidad('Cerrada');
       renderResumenCierreContabilidad();
       cerrarReporteCierreContabilidad();
-      mostrarEstadoContabilidad('Contabilidad cerrada localmente. Sincronizando el cierre con Google Sheets...', 'info');
-      const sincronizacion = window.ContabilidadDiariaService && typeof window.ContabilidadDiariaService.syncDraft === 'function'
-        ? window.ContabilidadDiariaService.syncDraft(draftCerrado)
-        : Promise.resolve({ ok: true });
-      Promise.resolve(sincronizacion).then(function (respuesta) {
-        mostrarEstadoContabilidad(respuesta && respuesta.ok
-          ? 'Contabilidad cerrada correctamente. El administrador ya puede revisarla.'
-          : 'Contabilidad cerrada localmente. Quedó pendiente de sincronización.', respuesta && respuesta.ok ? 'success' : 'info');
-        setTimeout(ocultarEstadoContabilidad, 1600);
-      });
-      return { ok: true, draft: draftCerrado };
+      mostrarEstadoContabilidad('Contabilidad cerrada. Administración ya puede revisarla.', 'success');
+      setTimeout(ocultarEstadoContabilidad, 1600);
+      return { ok: true, draft: validado.draft };
+    } catch (error) {
+      console.error('[ContabilidadDiaria] No se pudo cerrar la contabilidad:', error);
+      mostrarEstadoContabilidad('No se pudo cerrar la contabilidad.', 'error');
+      setTimeout(ocultarEstadoContabilidad, 1800);
+      return { ok: false, error: error.message };
     }
-
-    mostrarEstadoContabilidad('No se pudo cerrar la contabilidad.', 'error');
-    setTimeout(ocultarEstadoContabilidad, 1400);
-    return { ok: false, error: 'No se pudo cerrar la contabilidad.' };
   }
 
   function guardarBorradorContabilidad(mostrarFeedback = true) {
@@ -2313,7 +2276,7 @@
     return result;
   }
 
-  function guardarYSincronizarContabilidad() {
+  async function guardarYSincronizarContabilidad() {
     if (!window.ContabilidadDiariaService) {
       return { ok: false, error: 'Servicio de borrador no disponible.' };
     }
@@ -2325,29 +2288,25 @@
       return { ok: false, error: 'Faltan datos obligatorios del borrador.' };
     }
 
-    mostrarEstadoContabilidad('Guardando borrador en Google Sheets...', 'info');
-
-    const result = window.ContabilidadDiariaService.syncDraft(draft);
-
-    if (result && typeof result.then === 'function') {
-      return result.then(function (respuesta) {
-        const estado = document.getElementById('estado-draft-contabilidad');
-        if (estado) {
-          estado.value = respuesta && respuesta.ok ? 'Sincronizado con Google Sheets' : 'Guardado localmente. Pendiente de sincronización';
-        }
-        mostrarEstadoContabilidad(respuesta && respuesta.ok ? 'Borrador sincronizado con Google Sheets.' : 'Guardado localmente. Pendiente de sincronización.', respuesta && respuesta.ok ? 'success' : 'info');
-        setTimeout(ocultarEstadoContabilidad, 1200);
-        return respuesta;
-      });
+    mostrarEstadoContabilidad('Guardando borrador...', 'info');
+    try {
+      const respuesta = await window.ContabilidadDiariaService.syncDraft(draft);
+      if (respuesta && respuesta.ok) {
+        CONTABILIDAD_ESTADO_ACTUAL = respuesta.draft.estado || 'borrador';
+        actualizarEstadoDraftContabilidad('Borrador guardado');
+        mostrarEstadoContabilidad('Borrador guardado correctamente.', 'success');
+      } else {
+        actualizarEstadoDraftContabilidad('Guardado localmente. Pendiente de sincronización');
+        mostrarEstadoContabilidad('Se guardó localmente y se sincronizará cuando vuelva la conexión.', 'info');
+      }
+      setTimeout(ocultarEstadoContabilidad, 1200);
+      return respuesta;
+    } catch (error) {
+      console.error('[ContabilidadDiaria] No se pudo guardar la jornada:', error);
+      mostrarEstadoContabilidad('No se pudo guardar la jornada.', 'error');
+      setTimeout(ocultarEstadoContabilidad, 1800);
+      return { ok: false, error: error.message };
     }
-
-    const estado = document.getElementById('estado-draft-contabilidad');
-    if (estado) {
-      estado.value = result && result.ok ? 'Sincronizado con Google Sheets' : 'Guardado localmente. Pendiente de sincronización';
-    }
-    mostrarEstadoContabilidad(result && result.ok ? 'Borrador sincronizado con Google Sheets.' : 'Guardado localmente. Pendiente de sincronización.', result && result.ok ? 'success' : 'info');
-    setTimeout(ocultarEstadoContabilidad, 1200);
-    return result;
   }
 
   function formatDateInputValue(value) {
@@ -2374,6 +2333,7 @@
 
     const draft = draftOverride || window.ContabilidadDiariaService.loadDraft();
     if (!draft) return false;
+    CONTABILIDAD_ESTADO_ACTUAL = draft.estado || 'borrador';
 
     const metaCampos = [
       ['global-fecha', formatDateInputValue(draft.fecha || '')],
@@ -2433,29 +2393,24 @@
     if (totales.totalDeduccion !== undefined) document.getElementById('total-deduccion').value = totales.totalDeduccion;
     if (totales.totalEgresos !== undefined) document.getElementById('total-egresos').value = totales.totalEgresos;
 
-    if (Array.isArray(gastos.extra) && gastos.extra.length) {
-      const contenedor = document.getElementById('extra-expenses');
-      if (contenedor) {
-        contenedor.querySelectorAll('.extra-expense-row').forEach(function (fila) { fila.remove(); });
-        gastos.extra.forEach(function (item, index) {
-          const monto = item && typeof item === 'object' ? item.monto : item;
-          const detalle = item && typeof item === 'object' ? item.detalle : '';
-          if (index === 0) {
-            document.getElementById('gasto-varios').value = monto;
-            const detalleVarios = document.querySelector('#gasto-varios')?.parentElement?.querySelector('input[type="text"]');
-            if (detalleVarios) detalleVarios.value = detalle || '';
-          } else {
-            agregarGastoExtra();
-            const row = contenedor.querySelectorAll('.extra-expense-row')[index - 1];
-            if (row) {
-              const input = row.querySelector('.expense-amount');
-              if (input) input.value = monto;
-              const descripcion = row.querySelector('.expense-description');
-              if (descripcion) descripcion.value = detalle || '';
-            }
-          }
-        });
-      }
+    const contenedorGastosExtra = document.getElementById('extra-expenses');
+    if (contenedorGastosExtra) {
+      contenedorGastosExtra.querySelectorAll('.extra-expense-row').forEach(function (fila) { fila.remove(); });
+      const extras = Array.isArray(gastos.extra) && gastos.extra.length ? gastos.extra : [null, null, null];
+      extras.forEach(function (item, index) {
+        agregarGastoExtra();
+        const row = contenedorGastosExtra.querySelectorAll('.extra-expense-row')[index];
+        if (!row) return;
+        const monto = item && typeof item === 'object' ? item.monto : item;
+        const detalleExtra = item && typeof item === 'object' ? item.detalle : '';
+        const numero = item && typeof item === 'object' && item.numero ? item.numero : 'Gasto ' + (index + 1);
+        const etiqueta = row.querySelector('.extra-expense-label');
+        const input = row.querySelector('.expense-amount');
+        const descripcion = row.querySelector('.expense-description');
+        if (etiqueta) etiqueta.textContent = numero;
+        if (input && monto !== null && monto !== undefined) input.value = monto;
+        if (descripcion && detalleExtra) descripcion.value = detalleExtra;
+      });
     }
 
     const detalle = draft.detalle || (gastos && gastos.detalle) || {};
@@ -2517,29 +2472,10 @@
     });
   }
 
-  function obtenerBaseApiContabilidad() {
-    const contextos = [window.parent, window.top, window].filter(Boolean);
-    for (const contexto of contextos) {
-      if (contexto && contexto.API_URL_CONTABILIDAD && typeof contexto.API_URL_CONTABILIDAD === 'string') {
-        return contexto.API_URL_CONTABILIDAD.replace(/\/$/, '');
-      }
-      if (contexto && contexto.ApiConfig && contexto.ApiConfig.contabilidad && contexto.ApiConfig.contabilidad.baseUrl) {
-        return contexto.ApiConfig.contabilidad.baseUrl.replace(/\/$/, '');
-      }
-      try {
-        if (contexto && contexto.localStorage) {
-          const gasUrl = contexto.localStorage.getItem('ks_contabilidad_gas_url') || contexto.localStorage.getItem('ks_lic_gasurl');
-          if (gasUrl) return gasUrl.replace(/\/$/, '');
-        }
-      } catch (e) {
-        // Ignorar errores de acceso a localStorage
-      }
-    }
-    return '';
-  }
-
   function obtenerPromotoresContabilidad() {
-    const contextos = [window.parent, window.top, window].filter(Boolean);
+    const contextos = [window.parent, window.top, window].filter(function (contexto, index, lista) {
+      return contexto && lista.indexOf(contexto) === index;
+    });
 
     for (const contexto of contextos) {
       if (!contexto) continue;
@@ -2549,23 +2485,7 @@
       }
     }
 
-    const baseUrl = obtenerBaseApiContabilidad();
-    if (!baseUrl) {
-      return Promise.resolve([]);
-    }
-
-    return fetch(baseUrl + '?action=listar-promotores', { cache: 'no-store' })
-      .then(function (res) {
-        if (!res.ok) throw new Error('HTTP ' + res.status);
-        return res.json();
-      })
-      .then(function (payload) {
-        if (!payload) return [];
-        if (Array.isArray(payload)) return payload;
-        if (Array.isArray(payload.promotores)) return payload.promotores;
-        if (Array.isArray(payload.data)) return payload.data;
-        return [];
-      });
+    return Promise.reject(new Error('No se cargó el servicio de promotores.'));
   }
 
   function buildPromotorOptions(selectedValue) {
@@ -2594,9 +2514,13 @@
         select.innerHTML = buildPromotorOptions(currentValue);
       });
     } catch (error) {
-      console.warn('[ContabilidadDiaria] No se pudieron cargar los promotores:', error && error.message ? error.message : error);
+      const mensaje = error && error.message ? error.message : 'Error desconocido al consultar Google Apps Script.';
+      console.error('[ContabilidadDiaria] No se pudieron cargar los promotores desde Google Sheets:', mensaje);
       document.querySelectorAll('.select-asesor').forEach(function (select) {
-        select.innerHTML = '<option value="">No se pudo cargar</option>';
+        const option = document.createElement('option');
+        option.value = '';
+        option.textContent = 'Error al cargar promotores: ' + mensaje;
+        select.replaceChildren(option);
       });
     }
   }
@@ -2737,6 +2661,7 @@
     if (confirmar) confirmar.classList.add('hidden');
 
     let fechas = [];
+    let errorRemoto = false;
     try {
       if (window.ContabilidadDiariaService && typeof window.ContabilidadDiariaService.loadRemoteDraftHistory === 'function') {
         const history = await window.ContabilidadDiariaService.loadRemoteDraftHistory();
@@ -2746,10 +2671,14 @@
         }).filter(Boolean).sort(function (a, b) { return new Date(b) - new Date(a); });
       }
     } catch (error) {
-      console.warn('[ContabilidadDiaria] No se pudo cargar historial de borradores desde Google Sheets:', error);
+      console.warn('[ContabilidadDiaria] No se pudo cargar el historial de jornadas:', error);
+      errorRemoto = error.status !== 0;
+      if (errorRemoto && loading) {
+        loading.textContent = 'No se pudieron cargar los borradores. Reintenta más tarde.';
+      }
     }
 
-    if (!fechas.length && window.ContabilidadDiariaService && typeof window.ContabilidadDiariaService.getDraftHistory === 'function') {
+    if (!fechas.length && !errorRemoto && window.ContabilidadDiariaService && typeof window.ContabilidadDiariaService.getDraftHistory === 'function') {
       const localHistory = window.ContabilidadDiariaService.getDraftHistory();
       fechas = Object.keys(localHistory || {}).map(function (valor) { return formatDateInputValue(valor); }).filter(Boolean).sort(function (a, b) { return new Date(b) - new Date(a); });
     }
@@ -2764,6 +2693,10 @@
         select.classList.remove('hidden');
         if (confirmar) confirmar.classList.remove('hidden');
         if (loading) loading.textContent = 'Borradores disponibles para cargar.';
+      } else if (errorRemoto) {
+        select.classList.add('hidden');
+        if (confirmar) confirmar.classList.add('hidden');
+        if (loading) loading.textContent = 'No fue posible cargar los borradores. Reintenta cuando tu sesión o conexión estén disponibles.';
       } else {
         select.classList.add('hidden');
         if (confirmar) confirmar.classList.add('hidden');
@@ -2853,7 +2786,7 @@
       document.getElementById('estado-draft-contabilidad').value = 'Borrador cargado';
     }
 
-    mostrarEstadoContabilidad('Borrador cargado correctamente desde Google Sheets.', 'success');
+    mostrarEstadoContabilidad('Borrador cargado correctamente.', 'success');
     setTimeout(ocultarEstadoContabilidad, 1200);
   }
 
@@ -2906,6 +2839,7 @@
   }
 
   function restablecerContabilidad() {
+    CONTABILIDAD_ESTADO_ACTUAL = 'borrador';
     const tbody = document.getElementById('tbody-afiliaciones');
     if (tbody) {
       tbody.innerHTML = '';
@@ -2974,62 +2908,21 @@
     }
   }
 
-  async function intentarRestaurarBorradorRemoto() {
-    if (!window.ContabilidadDiariaService || typeof window.ContabilidadDiariaService.loadRemoteDraftHistory !== 'function') {
-      return false;
+  window.addEventListener('load', function () {
+    mostrarModalBienvenidaContabilidad();
+    if (!document.querySelector('#tbody-afiliaciones .select-asesor')) {
+      agregarFilaAfiliacion();
     }
+    renderResumenCierreContabilidad();
+    registrarAutosaveContabilidad();
 
-    try {
-      const history = await window.ContabilidadDiariaService.loadRemoteDraftHistory();
-      const fechas = (history || [])
-        .map(function (item) { return item && (item.fecha || item.FECHA) ? String(item.fecha || item.FECHA) : ''; })
-        .filter(Boolean)
-        .sort(function (a, b) { return new Date(b) - new Date(a); });
-
-      if (!fechas.length) return false;
-
-      const primerBorrador = await window.ContabilidadDiariaService.loadRemoteDraftByFecha(fechas[0]);
-      if (!primerBorrador) return false;
-
-      localStorage.setItem(CONTABILIDAD_DRAFT_KEY, JSON.stringify(primerBorrador));
-      return restaurarBorradorContabilidad(primerBorrador);
-    } catch (error) {
-      console.warn('[ContabilidadDiaria] No se pudo restaurar borrador remoto:', error);
-      return false;
+    cargarPromotoresContabilidad();
+    if (window.ContabilidadDiariaService && typeof window.ContabilidadDiariaService.syncPendingQueue === 'function') {
+      window.ContabilidadDiariaService.syncPendingQueue().catch(function (error) {
+        console.error('[ContabilidadDiaria] No se pudo sincronizar la cola pendiente:', error);
+      });
     }
-  }
-
-  window.onload = function () {
-    (async function () {
-      syncUrlContabilidad();
-      mostrarModalBienvenidaContabilidad();
-
-      let draftRestaurado = await intentarRestaurarBorradorRemoto();
-
-      if (!draftRestaurado) {
-        const localHistory = window.ContabilidadDiariaService && typeof window.ContabilidadDiariaService.getDraftHistory === 'function'
-          ? window.ContabilidadDiariaService.getDraftHistory()
-          : {};
-        const fechas = Object.keys(localHistory || {}).sort(function (a, b) { return new Date(b) - new Date(a); });
-
-        if (fechas.length) {
-          const localDraft = window.ContabilidadDiariaService ? window.ContabilidadDiariaService.loadDraft(fechas[0]) : null;
-          if (localDraft) {
-            draftRestaurado = restaurarBorradorContabilidad(localDraft);
-          }
-        }
-      }
-
-      if (draftRestaurado) {
-        cerrarModalBienvenidaContabilidad(true);
-      } else {
-        agregarFilaAfiliacion();
-      }
-
-      renderResumenCierreContabilidad();
-      registrarAutosaveContabilidad();
-    })();
-  };
+  });
 
   function switchTab(tabId, btn) {
     document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));

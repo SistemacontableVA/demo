@@ -1,28 +1,15 @@
+// Dashboard
 var DashboardService = {
   _cache: { data: null, expires: 0 },
   _inFlight: null,
-  _ttl: 60000, // ms - cache por defecto (1 minuto)
-
-  /**
-   * Obtiene las 4 métricas reales desde Google Apps Script.
-   * Retorna una Promise con el objeto de métricas.
-   * Implementa cache en memoria con TTL y deduplicación de peticiones.
-   *
-   * @param {Object} opts - { force: true } para forzar recarga
-   * @returns {Promise<object>}
-   */
+  _ttl: 60000,
   obtenerMetricas: function (opts) {
     opts = opts || {};
     var now = Date.now();
-
-    
-
-    // Devolver cache si sigue válida y no se fuerza recarga
     if (!opts.force && this._cache.data && this._cache.expires > now) {
       return Promise.resolve(this._cache.data);
     }
 
-    // Si ya hay una petición en curso, devolverla
     if (this._inFlight) return this._inFlight;
 
     var baseUrl = window.API_URL;
@@ -54,7 +41,6 @@ var DashboardService = {
     return fetchPromise;
   },
 
-  /** Métricas de respaldo cuando la API no está disponible */
   _metricasFallback: function () {
     return {
       ok:               false,
@@ -65,10 +51,6 @@ var DashboardService = {
     };
   },
 
-  /**
-   * Retorna la actividad reciente del sistema (estática por ahora).
-   * @returns {Array}
-   */
   obtenerActividadReciente: function () {
     return [
       { tipo: 'documento',  texto: 'Solicitud institucional generada',    tiempo: 'Hace 5 min' },
@@ -80,10 +62,6 @@ var DashboardService = {
     ];
   },
 
-  /**
-   * Retorna los accesos rápidos del dashboard.
-   * @returns {Array}
-   */
   obtenerAccesosRapidos: function () {
     return [
       { icono: 'doc',    label: 'Nuevo Documento',   ruta: '#/admin/documentos' },

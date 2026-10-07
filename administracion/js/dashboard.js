@@ -48,6 +48,9 @@ function renderDashboard() {
 function _dashShellHtml(perfil) {
   perfil = perfil || 'Administrador';
   var accesos = DashboardService.obtenerAccesosRapidos();
+  var configuracion = ConfiguracionService.obtener();
+  var licenciaEstaActiva = typeof window.licenciaActiva === 'function' && window.licenciaActiva();
+  var vencimientoLicencia = _dashFechaVencimientoLicencia(localStorage.getItem('ks_lic_vence'));
 
   // Saludo personalizado por perfil
   var saludo = perfil === 'Coordinador' ? 'Buenos días, Coordinador' : 'Buenos días, Administrador';
@@ -198,10 +201,10 @@ function _dashShellHtml(perfil) {
     '<div class="mt-4 bg-white rounded-xl shadow-soft p-4">' +
     '<h4 class="font-bold text-verde-oscuro text-sm mb-3">Estado del Sistema</h4>' +
     '<div class="grid grid-cols-2 sm:grid-cols-4 gap-3">' +
-    _estadoChip('Portal de Nómina', 'Activo', 'emerald') +
-    _estadoChip('Google Apps Script', 'Activo', 'emerald') +
-    _estadoChip('Base de Datos', 'Activo', 'emerald') +
-    _estadoChip('Versión', 'v1.2 KG', 'blue') +
+    _estadoChip('Sistema Administrativo', 'Activo', 'emerald') +
+    _estadoChip('Estado de Licencia', licenciaEstaActiva ? 'Activo' : 'Inactivo', licenciaEstaActiva ? 'emerald' : 'amber') +
+    _estadoChip('Vencimiento', vencimientoLicencia, 'blue') +
+    _estadoChip('Versión', configuracion.version, 'blue') +
     '</div>' +
     '</div>' +
 
@@ -288,4 +291,15 @@ function _estadoChip(label, estado, color) {
     '<div class="text-[10px] font-semibold uppercase tracking-wide opacity-70">' + label + '</div>' +
     '<div class="text-xs font-bold mt-0.5">' + estado + '</div>' +
     '</div>';
+}
+
+function _dashFechaVencimientoLicencia(valor) {
+  if (!valor) return 'No disponible';
+  var timestamp = Date.parse(valor);
+  if (!isFinite(timestamp)) return 'No disponible';
+  var fecha = new Date(timestamp);
+  if (isNaN(fecha.getTime())) return 'No disponible';
+  return ('0' + fecha.getDate()).slice(-2) + '/' +
+    ('0' + (fecha.getMonth() + 1)).slice(-2) + '/' +
+    fecha.getFullYear();
 }

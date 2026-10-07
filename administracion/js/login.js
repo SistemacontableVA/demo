@@ -3,6 +3,11 @@
  * Llama a autenticarAdmin() definida en config/auth.js.
  * @param {Event} e
  */
+var loginVersion = document.querySelector('[data-sistema-version]');
+if (loginVersion && window.ConfiguracionService) {
+  loginVersion.textContent = window.ConfiguracionService.obtener().version;
+}
+
 async function adminLoginSubmit(e) {
   e.preventDefault();
 
@@ -83,18 +88,11 @@ function adminVolverLanding() {
 // Autofocus y pre-calentamiento del GAS al cargar la vista
 (function () {
   var u = document.getElementById('admin-usuario');
-  if (u) u.focus();
-
-  // Pre-calentar el GAS de licencias INMEDIATAMENTE al cargar el formulario.
-  // No esperar a que el usuario interactúe — el cold start tarda hasta 10s.
-  // El ping sale en cuanto aparece el login en pantalla.
-  var _precalentado = false;
-  function _precalentarGAS() {
-    if (_precalentado) return;
-    _precalentado = true;
-    fetch(KS_LICENCIAS_URL + '?action=ping', { cache: 'no-store' }).catch(function () {});
+  if (u) {
+    u.type = 'email';
+    u.placeholder = 'Correo electrónico';
+    u.focus();
   }
 
-  // Lanzar ping de inmediato
-  _precalentarGAS();
+
 })();

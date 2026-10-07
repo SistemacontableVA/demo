@@ -3,7 +3,7 @@ var RecordatorioMasivoService = (function () {
   var LEGACY_STORAGE_KEY = 'ks_recordatorio_masivo_municipios';
   var ENDPOINT_BASE = 'https://script.google.com/macros/s/AKfycbxlHPqIhMSIlYCXpDBQu1LiPwZb26MZO1cKVoVsXB1g7QNggFY_2xNBy3xsPJQ6Jq7jUA/exec';
 
-  // ── Registro central de Atención Municipio ───────────────
+  // ── Registro central de Atención Municipios ──────────────
 
   function listarMunicipiosLocales() {
     try {
@@ -14,10 +14,10 @@ var RecordatorioMasivoService = (function () {
   }
 
   function _getAtencionService() {
-    if (!window.AtencionMunicipioService) {
-      throw new Error('No se cargó el servicio central de Atención Municipio.');
+    if (!window.AtencionMunicipiosService) {
+      throw new Error('No se cargó el servicio central de Atención Municipios.');
     }
-    return window.AtencionMunicipioService;
+    return window.AtencionMunicipiosService;
   }
 
   function _extraerSpreadsheetId(linkHoja) {

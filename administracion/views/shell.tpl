@@ -4,7 +4,6 @@
 
   <!-- ══ SIDEBAR ══ -->
   <nav id="admin-sidebar" role="navigation" aria-label="Menu administrativo">
-
     <!-- Logo -->
     <div class="admin-sidebar-logo">
       <div class="flex flex-col items-center justify-center text-center gap-0">
@@ -22,16 +21,14 @@
     <!-- Navegacion -->
     <div class="flex-1 py-2">
 
-      <div class="admin-menu-section">Principal</div>
+      <div class="admin-menu-section admin-menu-section-highlight">Centro de Información</div>
 
       <a class="admin-menu-item" data-ruta="dashboard" onclick="adminNavegar('dashboard')">
         <svg class="admin-menu-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
         </svg>
-        <span>Dashboard</span>
+        <span>Inicio</span>
       </a>
-
-      <div class="admin-menu-section">Gestion</div>
 
       <a class="admin-menu-item" data-ruta="documentos" onclick="adminNavegar('documentos')">
         <svg class="admin-menu-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -40,11 +37,20 @@
         <span>Documentos</span>
       </a>
 
-      <a class="admin-menu-item" data-ruta="ingresarNomina" data-solo-admin="true" onclick="adminNavegar('ingresarNomina')">
+      <a class="admin-menu-item" data-ruta="catalogos" data-solo-admin="true" onclick="adminNavegar('catalogos')">
         <svg class="admin-menu-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
         </svg>
-        <span>Gestión de Nómina</span>
+        <span>Catálogos</span>
+      </a>
+
+      <div class="admin-menu-section admin-menu-section-highlight">Contabilidad de Campo</div>
+
+      <a class="admin-menu-item" data-ruta="contabilidadDiaria" onclick="adminNavegar('contabilidadDiaria')">
+        <svg class="admin-menu-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 4h16v16H4zM8 8h8M8 12h8M8 16h5"/>
+        </svg>
+        <span>Contabilidad Diaria</span>
       </a>
 
       <a class="admin-menu-item" data-ruta="nominaPromotor" onclick="adminNavegar('nominaPromotor')">
@@ -54,25 +60,11 @@
         <span>Consulta Nómina</span>
       </a>
 
-      <a class="admin-menu-item" data-ruta="contabilidadDiaria" onclick="adminNavegar('contabilidadDiaria')">
+      <a class="admin-menu-item" data-ruta="ingresarNomina" data-solo-admin="true" onclick="adminNavegar('ingresarNomina')">
         <svg class="admin-menu-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M4 4h16v16H4zM8 8h8M8 12h8M8 16h5"/>
+          <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
         </svg>
-        <span>Contabilidad Diaria</span>
-      </a>
-
-      <a class="admin-menu-item" data-ruta="oficina" onclick="adminNavegar('oficina')">
-        <svg class="admin-menu-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M9 7h6m-7 4h8m-9 4h10M5 21h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2z"/>
-        </svg>
-        <span>Nómina Oficina</span>
-      </a>
-
-      <a class="admin-menu-item" data-ruta="reportes" onclick="adminNavegar('reportes')">
-        <svg class="admin-menu-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
-        </svg>
-        <span>Reportes</span>
+        <span>Gestión de Nómina</span>
       </a>
 
       <a class="admin-menu-item" data-ruta="cargaLentes" onclick="adminNavegar('cargaLentes')">
@@ -82,7 +74,30 @@
         <span>Gestión de Lentes</span>
       </a>
 
-      <div class="admin-menu-section">Herramientas</div>
+      <div class="admin-menu-section admin-menu-section-highlight">Administración</div>
+
+      <a class="admin-menu-item" data-ruta="gerencia" data-solo-admin="true" onclick="adminNavegar('gerencia')">
+        <svg class="admin-menu-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 21h18M5 21V7l8-4v18m0-10h6v10M8 9v.01M8 12v.01M8 15v.01"/>
+        </svg>
+        <span>Centro de Datos</span>
+      </a>
+
+      <a class="admin-menu-item" data-ruta="oficina" onclick="adminNavegar('oficina')">
+        <svg class="admin-menu-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 7h6m-7 4h8m-9 4h10M5 21h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+        </svg>
+        <span>Nómina de Oficina</span>
+      </a>
+
+      <a class="admin-menu-item" data-ruta="reportes" onclick="adminNavegar('reportes')">
+        <svg class="admin-menu-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+        </svg>
+        <span>Reportes Generales</span>
+      </a>
+
+      <div class="admin-menu-section admin-menu-section-highlight">Jornadas de Atención</div>
 
       <a class="admin-menu-item" data-ruta="recordatorios" onclick="adminNavegar('recordatorios')">
         <svg class="admin-menu-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -98,21 +113,14 @@
         <span>Recordatorio Masivo</span>
       </a>
 
-      <a class="admin-menu-item" data-ruta="atencionMunicipio" data-secretaria="true" onclick="adminNavegar('atencionMunicipio')">
+      <a class="admin-menu-item" data-ruta="atencionMunicipios" data-secretaria="true" onclick="adminNavegar('atencionMunicipios')">
         <svg class="admin-menu-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M3 14h18M10 3v18M14 3v18M5 3h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2z"/>
         </svg>
-        <span>Atención Municipio</span>
+        <span>Atención Municipios</span>
       </a>
 
-      <div class="admin-menu-section">Sistema</div>
-
-      <a class="admin-menu-item" data-ruta="catalogos" data-solo-admin="true" onclick="adminNavegar('catalogos')">
-        <svg class="admin-menu-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
-        </svg>
-        <span>Catalogos</span>
-      </a>
+      <div class="admin-menu-section admin-menu-section-highlight">Sistema</div>
 
       <a class="admin-menu-item" data-ruta="configuracion" data-solo-admin="true" onclick="adminNavegar('configuracion')">
         <svg class="admin-menu-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -158,13 +166,25 @@
             <line x1="3" y1="18" x2="21" y2="18"/>
           </svg>
         </button>
-        <h2 id="admin-topbar-titulo" class="text-verde-oscuro font-semibold text-sm sm:text-base">Dashboard</h2>
+        <button id="admin-sidebar-desktop-toggle"
+                type="button"
+                onclick="adminToggleSidebarDesktop()"
+                aria-label="Ocultar menú lateral"
+                aria-expanded="true"
+                title="Ocultar menú lateral">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="m15 18-6-6 6-6"/>
+          </svg>
+          <span>Ocultar menú</span>
+        </button>
+        <h2 id="admin-topbar-titulo" class="text-verde-oscuro font-semibold text-sm sm:text-base">Inicio</h2>
         <span id="admin-topbar-badge"
               class="hidden text-[10px] font-semibold px-2 py-0.5 rounded-full bg-verde-suave text-verde-oscuro">
         </span>
       </div>
       <div class="flex items-center gap-3">
         <span class="text-slate-400 text-xs hidden sm:block" data-empresa-nombre></span>
+        <nav id="admin-open-viewers" aria-label="Hojas abiertas" hidden></nav>
         <!-- Botón manual administrador -->
         <button onclick="window.open('manuales/administrador.html', '_blank')"
           title="Manual de usuario"
@@ -177,6 +197,8 @@
         <div class="w-7 h-7 rounded-full bg-verde-suave flex items-center justify-center text-verde-oscuro text-xs font-bold avatar-inicial">A</div>
       </div>
     </header>
+
+    <div id="admin-viewer-host" aria-live="off"></div>
 
     <!-- Contenido dinamico -->
     <main id="admin-content" role="main" aria-live="polite">

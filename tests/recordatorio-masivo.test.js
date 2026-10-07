@@ -17,12 +17,13 @@ test('MetaConfig no expone credenciales y usa el idioma aprobado', () => {
   assert.match(service, /send-whatsapp-template/);
 });
 
-test('el router carga ApiConfig y Atención Municipio antes de Recordatorio Masivo', () => {
+test('el router carga el servicio de Atención Municipios antes de Recordatorio Masivo y omite la ruta anterior', () => {
   const router = fs.readFileSync(path.join(root, 'administracion', 'js', 'router.js'), 'utf8');
   const inicio = router.indexOf("'recordatorioMasivo':");
   const ruta = router.slice(inicio, router.indexOf('\n', inicio));
 
-  assert.match(ruta, /scripts:\s*\['assets\/js\/api-config\.js',\s*'atencionMunicipio\/js\/atencionMunicipioService\.js'/);
+  assert.match(ruta, /scripts:\s*\['atencionMunicipios\/js\/atencionMunicipiosService\.js'/);
+  assert.doesNotMatch(router, /'atencionMunicipio':/);
 });
 
 test('normaliza teléfonos internacionales sin + y rechaza números locales', async () => {
@@ -53,7 +54,7 @@ test('normaliza teléfonos internacionales sin + y rechaza números locales', as
   assert.equal(datos.pacientes[1].telfLimpio, '');
 });
 
-test('reutiliza el registro central de Atención Municipio y conserva los datos locales antiguos', async () => {
+test('reutiliza el registro central de Atención Municipios y conserva los datos locales antiguos', async () => {
   const llamadas = [];
   const municipiosCentral = [{
     id: 'MUN_1',
@@ -67,7 +68,7 @@ test('reutiliza el registro central de Atención Municipio y conserva los datos 
   const localAnterior = [{ nombre: 'Local', fechaAtencion: '2026-09-01', spreadsheetId: 'old-sheet' }];
   const context = {
     window: {
-      AtencionMunicipioService: {
+      AtencionMunicipiosService: {
         listarMunicipios: async () => municipiosCentral,
         guardarMunicipio: async datos => { llamadas.push({ accion: 'guardar', datos }); return { ok: true, id: 'MUN_2' }; },
         actualizarMunicipio: async datos => { llamadas.push({ accion: 'actualizar', datos }); return { ok: true }; },

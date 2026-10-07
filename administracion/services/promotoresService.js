@@ -1,3 +1,4 @@
+// Promotores
 var PromotoresService = {
   _cache: { data: null, expires: 0 },
   _inFlight: null,
@@ -13,11 +14,6 @@ var PromotoresService = {
     });
   },
 
-  /**
-   * Devuelve la lista de promotores. Opciones: { force: true }
-   * Implementa cache + deduplicación y timeout.
-   * @returns {Promise<Array>}
-   */
   getAll: function (opts) {
     opts = opts || {};
     var self = this;
@@ -30,7 +26,7 @@ var PromotoresService = {
     if (this._inFlight) return this._inFlight;
 
     var baseUrl = window.API_URL || '';
-    if (!baseUrl) return Promise.resolve([]);
+    if (!baseUrl) return Promise.reject(new Error('No está configurada la URL de Google Apps Script para promotores.'));
 
     var controller = (typeof AbortController !== 'undefined') ? new AbortController() : null;
     var signal = controller ? controller.signal : null;
@@ -42,7 +38,11 @@ var PromotoresService = {
         return res.json();
       })
       .then(function (payload) {
-        var lista = payload && Array.isArray(payload.promotores) ? payload.promotores : (Array.isArray(payload) ? payload : []);
+        if (payload && typeof payload === 'object' && (payload.ok === false || payload.error)) {
+          throw new Error(payload.error || 'Google Apps Script no pudo listar los promotores.');
+        }
+        var lista = payload && Array.isArray(payload.promotores) ? payload.promotores : (Array.isArray(payload) ? payload : null);
+        if (!lista) throw new Error('Google Apps Script devolvió una respuesta de promotores no válida.');
         self._cache.data = lista;
         self._cache.expires = Date.now() + self._ttl;
         self._inFlight = null;
@@ -54,7 +54,6 @@ var PromotoresService = {
         return Promise.reject(err);
       });
 
-    // Abort on timeout if supported
     if (controller) {
       var to = setTimeout(function () { try { controller.abort(); } catch (e) {} }, this._timeout);
       fetchPromise = fetchPromise.finally(function () { clearTimeout(to); });

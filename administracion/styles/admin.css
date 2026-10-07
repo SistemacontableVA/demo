@@ -17,9 +17,34 @@
   height: 100vh;
   overflow-y: auto;
   overflow-x: hidden;
-  transition: width 0.2s ease;
+  transition: width 0.2s ease, min-width 0.2s ease;
   scrollbar-width: thin;
   scrollbar-color: rgba(255,255,255,0.1) transparent;
+}
+
+#admin-sidebar-desktop-toggle {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: #fff;
+  color: rgb(12, 45, 72);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+#admin-sidebar-desktop-toggle:hover {
+  background: #f8fafc;
+}
+
+#admin-sidebar-desktop-toggle:focus-visible {
+  outline: 2px solid rgb(11, 128, 81);
+  outline-offset: 2px;
 }
 
 #admin-sidebar::-webkit-scrollbar { width: 4px; }
@@ -67,12 +92,16 @@
   flex-shrink: 0;
 }
 
+.admin-menu-section-highlight {
+  color: #f2c94c;
+}
+
 /* ── Items del menu ── */
 .admin-menu-item {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 10px 18px; /* +1px para más presencia */
+  padding: 9px 18px;
   margin: 2px 8px;
   border-radius: 10px;
   font-size: 14px; /* +1pt */
@@ -170,6 +199,7 @@
 
 /* ── Main wrapper (topbar + contenido) ── */
 #admin-main-wrapper {
+  position: relative;
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -178,6 +208,8 @@
 
 /* ── Topbar ── */
 #admin-topbar {
+  position: relative;
+  z-index: 11;
   height: 56px;
   min-height: 56px;
   background: #fff;
@@ -189,6 +221,94 @@
   flex-shrink: 0;
   box-shadow: 0 1px 3px rgba(0,0,0,0.04);
   font-size: 14px; /* +1pt */
+}
+
+#admin-open-viewers {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  max-width: min(38vw, 460px);
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+#admin-open-viewers[hidden] {
+  display: none;
+}
+
+#admin-viewer-host {
+  position: absolute;
+  z-index: 10;
+  top: 56px;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  pointer-events: none;
+}
+
+#admin-viewer-host > .gm-viewer,
+#admin-viewer-host > .atm-sheet-viewer {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: auto;
+}
+
+#admin-viewer-host > .gm-viewer:fullscreen,
+#admin-viewer-host > .atm-sheet-viewer:fullscreen {
+  position: fixed;
+  inset: 0;
+}
+
+.admin-open-viewer-link {
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+  max-width: 100%;
+  min-height: 28px;
+  padding: 0 10px;
+  overflow: hidden;
+  border: 0;
+  background: transparent;
+  color: #145e58;
+  font-size: 11px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.admin-open-viewer-link:hover {
+  background: #e8f2ed;
+}
+
+.admin-open-viewer-item {
+  display: flex;
+  align-items: center;
+  flex: none;
+  max-width: 240px;
+  border: 1px solid #dce4e1;
+  border-radius: 7px;
+  background: #fff;
+}
+
+.admin-open-viewer-close {
+  width: 24px;
+  height: 28px;
+  flex: none;
+  border: 0;
+  border-left: 1px solid #e5ece8;
+  border-radius: 0 6px 6px 0;
+  background: transparent;
+  color: #77837f;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.admin-open-viewer-close:hover {
+  background: #fff1f0;
+  color: #a44640;
 }
 
 /* ── Contenido principal scrolleable ── */
@@ -214,11 +334,223 @@
 }
 
 @media (max-width: 768px) {
+  #admin-open-viewers {
+    max-width: min(36vw, 220px);
+  }
+
   .contabilidad-diaria-shell { padding: 4px; }
 }
 
 #admin-content::-webkit-scrollbar { width: 5px; }
 #admin-content::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 6px; }
+
+/* ── Visores de hojas persistentes ─────────────────────────── */
+.gm-viewer,
+.atm-sheet-viewer {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: #f5f7f6;
+}
+
+.gm-viewer-head,
+.atm-sheet-head {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 8px 12px;
+  background: #fff;
+  border-bottom: 1px solid #dce4e1;
+}
+
+.gm-viewer-toolbar,
+.atm-sheet-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+}
+
+.gm-back,
+.atm-back {
+  min-height: 32px;
+  padding: 0 10px;
+  border: 1px solid #e0e6e3;
+  border-radius: 7px;
+  background: #f5f7f6;
+  color: #344641;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.gm-active-title,
+.atm-active-title {
+  min-width: 0;
+  overflow: hidden;
+  color: #203b36;
+  font-size: 13px;
+  font-weight: 750;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.atm-active-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.atm-active-date {
+  color: #84908c;
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.gm-active-title {
+  flex: none;
+  max-width: 190px;
+}
+
+.gm-frame-wrap,
+.atm-sheet-content {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  background: #fff;
+}
+
+.gm-frame {
+  --gm-zoom: 1;
+  position: absolute;
+  inset: 0;
+  width: calc(100% / var(--gm-zoom));
+  height: calc(100% / var(--gm-zoom));
+  border: 0;
+  background: #fff;
+  transform: scale(var(--gm-zoom));
+  transform-origin: top left;
+}
+
+.atm-sheet-frame {
+  --atm-sheet-zoom: 1;
+  position: absolute;
+  inset: 0;
+  width: calc(100% / var(--atm-sheet-zoom));
+  height: calc(100% / var(--atm-sheet-zoom));
+  border: 0;
+  background: #fff;
+  transform: scale(var(--atm-sheet-zoom));
+  transform-origin: top left;
+}
+
+.gm-view-controls,
+.atm-view-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: none;
+}
+
+.gm-zoom,
+.atm-zoom {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #f8fafc;
+}
+
+.gm-zoom button,
+.atm-zoom button {
+  width: 30px;
+  height: 29px;
+  border: 0;
+  border-radius: 6px;
+  background: #083f4a;
+  color: #fff;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.gm-zoom button:hover,
+.atm-zoom button:hover {
+  background: #0b5969;
+}
+
+.gm-zoom-value,
+.atm-zoom-value {
+  min-width: 40px;
+  color: #334155;
+  font-size: 10px;
+  font-weight: 750;
+  text-align: center;
+}
+
+.gm-fullscreen,
+.gm-open-external,
+.atm-fullscreen {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 33px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 7px;
+  background: #083f4a;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.gm-fullscreen:hover,
+.gm-open-external:hover,
+.atm-fullscreen:hover {
+  background: #0b5969;
+}
+
+@media (max-width: 760px) {
+  .gm-viewer-toolbar,
+  .atm-sheet-toolbar {
+    flex-wrap: wrap;
+  }
+
+  .atm-active-info {
+    order: 2;
+    flex-basis: 100%;
+  }
+
+  .gm-view-controls,
+  .atm-view-controls {
+    margin-left: auto;
+  }
+
+  .gm-fullscreen,
+  .atm-fullscreen {
+    width: 34px;
+    padding: 0;
+    font-size: 0;
+  }
+
+  .gm-fullscreen:after,
+  .atm-fullscreen:after {
+    content: "⛶";
+    font-size: 17px;
+  }
+}
 
 /* ── Rediseño visual del módulo Nómina Oficina ── */
 #admin-content .oficina-module,
@@ -740,6 +1072,14 @@
 @media (min-width: 769px) {
   #admin-hamburger { display: none; }
   #admin-mobile-overlay { display: none !important; }
+  #admin-sidebar-desktop-toggle { display: inline-flex; }
+
+  #admin-shell.sidebar-collapsed #admin-sidebar {
+    width: 0;
+    min-width: 0;
+    overflow: hidden;
+  }
+
 }
 
 /* ── Botón hamburguesa ── */

@@ -5,16 +5,62 @@
   var QUEUE_KEY = 'contabilidad_diaria_sync_queue_v1';
   var HISTORY_KEY = 'contabilidad_diaria_history_v1';
 
-  function getBaseUrl() {
-    if (window.API_URL_CONTABILIDAD && typeof window.API_URL_CONTABILIDAD === 'string' && window.API_URL_CONTABILIDAD.trim()) {
-      return window.API_URL_CONTABILIDAD.replace(/\/$/, '');
+  function getRemoteContext() {
+    var authWindow = window;
+    if (window.parent && window.parent !== window) {
+      try {
+        if (!authWindow.ADMIN_AUTH_BASE_URL) authWindow = window.parent;
+      } catch (error) {
+        throw new Error('No se pudo acceder a la sesión del portal.');
+      }
     }
 
-    if (window.ApiConfig && window.ApiConfig.contabilidad && window.ApiConfig.contabilidad.baseUrl) {
-      return window.ApiConfig.contabilidad.baseUrl.replace(/\/$/, '');
+    var token = typeof authWindow.getTokenAdmin === 'function'
+      ? authWindow.getTokenAdmin()
+      : (localStorage.getItem('ks_admin_token') || sessionStorage.getItem('ks_admin_token') || '');
+    if (!token) throw new Error('Inicia sesión para guardar o consultar la contabilidad.');
+    if (!authWindow.ADMIN_AUTH_BASE_URL || !authWindow.ADMIN_AUTH_PUBLIC_KEY) {
+      throw new Error('No se pudo validar la sesión para guardar la jornada.');
     }
+    return {
+      baseUrl: authWindow.ADMIN_AUTH_BASE_URL.replace(/\/$/, ''),
+      publicKey: authWindow.ADMIN_AUTH_PUBLIC_KEY,
+      token: token
+    };
+  }
 
-    return '';
+  function rpc(name, params) {
+    var context = getRemoteContext();
+    return fetch(context.baseUrl + '/rest/v1/rpc/' + name, {
+      method: 'POST',
+      cache: 'no-store',
+      headers: {
+        apikey: context.publicKey,
+        Authorization: 'Bearer ' + context.token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(params || {})
+    }).catch(function () {
+      var networkError = new Error('No fue posible comunicarse con el servicio de datos.');
+      networkError.status = 0;
+      throw networkError;
+    }).then(function (response) {
+      return response.text().then(function (text) {
+        var data = null;
+        if (text) {
+          try { data = JSON.parse(text); } catch (error) { data = text; }
+        }
+        if (!response.ok) {
+          var message = data && typeof data === 'object'
+            ? (data.message || data.details || data.hint || data.error)
+            : data;
+          var apiError = new Error(message || 'No se pudo completar la operación de contabilidad.');
+          apiError.status = response.status;
+          throw apiError;
+        }
+        return data;
+      });
+    });
   }
 
   function getDefaultDraft() {
@@ -169,6 +215,10 @@
           var history = getDraftHistory();
           if (history[fecha]) delete history[fecha];
           saveDraftHistory(history);
+          var queueForDate = this.getPendingQueue().filter(function (item) {
+            return !(item && normalizarFechaClave(item.fecha) === normalizarFechaClave(fecha));
+          });
+          localStorage.setItem(QUEUE_KEY, JSON.stringify(queueForDate));
           if (localStorage.getItem(STORAGE_KEY)) {
             var active = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
             if (active && active.fecha === fecha) {
@@ -180,6 +230,7 @@
 
         localStorage.removeItem(STORAGE_KEY);
         localStorage.removeItem(HISTORY_KEY);
+        localStorage.removeItem(QUEUE_KEY);
         return { ok: true };
       } catch (error) {
         console.error('[ContabilidadDiariaService] No se pudo borrar borrador local:', error);
@@ -188,53 +239,22 @@
     },
 
     loadRemoteDraftHistory: async function () {
-      var baseUrl = getBaseUrl();
-      if (!baseUrl) {
-        return [];
-      }
-
-      try {
-        var response = await fetch(baseUrl + '?action=listar-borradores-contabilidad', { cache: 'no-store' });
-        var data = await response.json();
-        var items = data && Array.isArray(data.data) ? data.data : (Array.isArray(data) ? data : []);
-        return items.filter(function (item) {
-          return item && (item.fecha || item.FECHA || item.municipio || item.coordinador);
-        });
-      } catch (error) {
-        console.warn('[ContabilidadDiariaService] No se pudo cargar el historial remoto de Google Sheets:', error);
-        return [];
-      }
+      var items = await rpc('contabilidad_diaria_listar');
+      if (!Array.isArray(items)) throw new Error('El historial de jornadas recibido no es válido.');
+      return items;
     },
 
     loadRemoteDraftByFecha: async function (fecha) {
       if (!fecha) return null;
-
-      var fechaClave = normalizarFechaClave(fecha);
-      var history = await this.loadRemoteDraftHistory();
-
-      var item = history.find(function (draft) {
-        var fechaRemota = normalizarFechaClave(draft.fecha || draft.FECHA || '');
-        return fechaRemota && fechaRemota === fechaClave;
-      });
-
-      if (!item || !item.id) return null;
-      return this.loadRemoteDraftById(item.id);
+      var draft = await rpc('contabilidad_diaria_obtener', { p_fecha: normalizarFechaClave(fecha) });
+      return draft ? normalizarPayload(draft) : null;
     },
 
     loadRemoteDraftById: async function (id) {
-      var baseUrl = getBaseUrl();
-      if (!baseUrl || !id) return null;
-
-      try {
-        var query = new URLSearchParams({ action: 'consultar-borrador-contabilidad', id: String(id) });
-        var response = await fetch(baseUrl + '?' + query.toString(), { cache: 'no-store' });
-        var data = await response.json();
-        if (!data || !data.data) return null;
-        return normalizarPayload(data.data);
-      } catch (error) {
-        console.warn('[ContabilidadDiariaService] No se pudo cargar el borrador remoto por id:', error);
-        return null;
-      }
+      if (!id) return null;
+      var history = await this.loadRemoteDraftHistory();
+      var item = history.find(function (draft) { return draft && String(draft.id) === String(id); });
+      return item ? this.loadRemoteDraftByFecha(item.fecha) : null;
     },
 
     getPendingQueue: function () {
@@ -258,47 +278,34 @@
     },
 
     syncDraft: async function (payload) {
-      var baseUrl = getBaseUrl();
-      if (!baseUrl) {
-        return { ok: false, offline: true, error: 'API_URL no configurada.' };
-      }
-
       var draft = normalizarPayload(payload);
-      var candidates = [
-        { action: 'guardar-borrador-contabilidad', payload: draft },
-        { action: 'guardar-jornada-contabilidad', payload: draft },
-        { action: 'guardar-borrador', payload: draft }
-      ];
+      var localResult = this.saveDraft(draft);
+      if (!localResult.ok) throw new Error(localResult.error || 'No se pudo guardar el borrador local.');
 
-      var lastError = null;
-
-      for (var i = 0; i < candidates.length; i++) {
-        var candidate = candidates[i];
-        var query = new URLSearchParams({ action: candidate.action });
-        query.set('payload', JSON.stringify(candidate.payload));
-
-        try {
-          var response = await fetch(baseUrl + '?' + query.toString(), { cache: 'no-store' });
-          var data = await response.json();
-
-          if (data && data.ok) {
-            draft.sincronizado = true;
-            if (draft.estado === 'borrador') {
-              draft.estado = 'pendiente_de_validacion';
-            }
-            draft.actualizadoEn = new Date().toISOString();
-            this.saveDraft(draft);
-            return { ok: true, data: data, draft: draft };
-          }
-
-          lastError = data && data.error ? data.error : 'Error al sincronizar la contabilidad';
-        } catch (error) {
-          lastError = error && error.toString ? error.toString() : 'Error de red';
+      try {
+        var saved = normalizarPayload(await rpc('contabilidad_diaria_guardar', { p_payload: draft }));
+        saved.sincronizado = true;
+        this.saveDraft(saved);
+        var remaining = this.getPendingQueue().filter(function (item) {
+          return !(item && item.fecha === saved.fecha);
+        });
+        localStorage.setItem(QUEUE_KEY, JSON.stringify(remaining));
+        return { ok: true, data: saved, draft: saved };
+      } catch (error) {
+        if (error.status === 0 || error.status >= 500) {
+          this.enqueueSync(draft);
+          return { ok: false, offline: true, error: error.message };
         }
+        throw error;
       }
+    },
 
-      this.enqueueSync(draft);
-      return { ok: false, offline: true, error: lastError || 'No se pudo sincronizar el borrador.' };
+    cambiarEstado: async function (id, estado) {
+      return rpc('contabilidad_diaria_cambiar_estado', { p_id: id, p_estado: estado });
+    },
+
+    obtenerResumen: async function () {
+      return rpc('contabilidad_diaria_resumen');
     },
 
     syncPendingQueue: async function () {
@@ -307,26 +314,28 @@
 
       var pendientes = queue.slice();
       var sincronizados = 0;
-
       for (var i = 0; i < pendientes.length; i++) {
-        var item = pendientes[i];
-        var result = await this.syncDraft(item);
-        if (result && result.ok) {
-          sincronizados += 1;
+        var result = await this.syncDraft(pendientes[i]);
+        if (!result || !result.ok) {
+          return {
+            ok: false,
+            offline: !!(result && result.offline),
+            sincronizados: sincronizados,
+            error: result && result.error ? result.error : 'No se sincronizaron todas las jornadas pendientes.'
+          };
         }
+        sincronizados += 1;
       }
-
-      var remaining = this.getPendingQueue().filter(function (item) {
-        return !(item && item.id && pendientes.some(function (pending) { return pending && pending.id === item.id; }));
-      });
-
-      if (sincronizados > 0) {
-        localStorage.setItem(QUEUE_KEY, JSON.stringify(remaining));
-      }
-
       return { ok: true, sincronizados: sincronizados };
     }
   };
 
   window.ContabilidadDiariaService = ContabilidadDiariaService;
+  window.addEventListener('online', function () {
+    ContabilidadDiariaService.syncPendingQueue().then(function (result) {
+      if (result && !result.ok) console.warn('[ContabilidadDiariaService] Hay jornadas sin sincronizar:', result.error);
+    }).catch(function (error) {
+      console.error('[ContabilidadDiariaService] No se pudo vaciar la cola de sincronización:', error);
+    });
+  });
 })();

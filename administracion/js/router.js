@@ -1,24 +1,25 @@
 /** Mapa de secciones: clave → { titulo, scripts[], renderFn } */
 var ADMIN_RUTAS = {
-  'dashboard':      { titulo: 'Dashboard',            scripts: ['administracion/services/dashboardService.js', 'administracion/js/dashboard.js'] },
+  'dashboard':      { titulo: 'Inicio',               scripts: ['administracion/services/dashboardService.js', 'administracion/js/dashboard.js'] },
   'documentos':     { titulo: 'Gestión Documental',   scripts: ['administracion/services/documentosService.js', 'administracion/js/documentos.js'] },
   'ingresarNomina': { titulo: 'Ingresar Nómina',      scripts: ['assets/js/utils.js', 'administracion/js/ingresarNomina.js'] },
   'nominaPromotor': { titulo: 'Nómina Promotor',      scripts: ['assets/js/utils.js', 'promotores/js/nomina-render.js', 'promotores/js/nomina-filtros.js', 'promotores/js/nomina.js', 'administracion/js/nominaPromotor.js'] },
-  'oficina':        { titulo: 'Nómina Oficina',       scripts: ['administracion/services/oficinaNominaService.js', 'administracion/js/oficina.js'] },
-  'reportes':       { titulo: 'Reportes',             scripts: ['administracion/services/reportesService.js', 'administracion/js/reportes.js'] },
+  'oficina':        { titulo: 'Nómina de Oficina',    scripts: ['administracion/services/oficinaNominaService.js', 'administracion/js/oficina.js'] },
+  'reportes':       { titulo: 'Reportes Generales',   scripts: ['administracion/services/reportesService.js', 'administracion/js/reportes.js'] },
   'cargaLentes':    { titulo: 'Gestión de Lentes',    scripts: ['administracion/services/lentesCargaService.js', 'administracion/js/lentesCarga.js'] },
   'recordatorios':      { titulo: 'Recordatorios',          scripts: ['recordatorios/js/recordatoriosService.js', 'recordatorios/js/recordatorios.js'] },
-  'recordatorioMasivo': { titulo: 'Recordatorio Masivo',    scripts: ['assets/js/api-config.js', 'atencionMunicipio/js/atencionMunicipioService.js', 'recordatorioMasivo/js/metaConfig.js', 'recordatorioMasivo/js/metaService.js', 'recordatorioMasivo/js/recordatorioMasivoService.js', 'recordatorioMasivo/js/recordatorioMasivo.js'] },
-  'atencionMunicipio':  { titulo: 'Atención Municipio',      scripts: ['assets/js/api-config.js', 'atencionMunicipio/js/atencionMunicipioService.js', 'atencionMunicipio/js/atencionMunicipio.js'] },
+  'recordatorioMasivo': { titulo: 'Recordatorio Masivo',    scripts: ['atencionMunicipios/js/atencionMunicipiosService.js', 'recordatorioMasivo/js/metaConfig.js', 'recordatorioMasivo/js/metaService.js', 'recordatorioMasivo/js/recordatorioMasivoService.js', 'recordatorioMasivo/js/recordatorioMasivo.js'] },
+  'atencionMunicipios': { titulo: 'Atención Municipios',     scripts: ['atencionMunicipios/js/atencionMunicipiosService.js', 'atencionMunicipios/js/atencionMunicipios.js'] },
+  'gerencia':       { titulo: 'Centro de Datos',      scripts: ['administracion/services/gerenciaService.js', 'administracion/js/gerencia.js'] },
   'catalogos':      { titulo: 'Catálogos',            scripts: ['administracion/js/catalogos.js'] },
   'configuracion':  { titulo: 'Configuración',        scripts: ['administracion/js/configuracion.js'] },
   'contabilidadDiaria': { titulo: 'Contabilidad Diaria', scripts: [] }
 };
 
 var ADMIN_RUTAS_COORDINADOR = ['documentos', 'nominaPromotor', 'contabilidadDiaria'];
-var ADMIN_RUTAS_SECRETARIA  = ['documentos', 'atencionMunicipio', 'recordatorios', 'recordatorioMasivo'];
-var ADMIN_RUTAS_ATENCION    = ['atencionMunicipio', 'catalogos'];
-var ADMIN_RUTAS_EJECUTIVO   = ['dashboard', 'documentos', 'ingresarNomina', 'nominaPromotor', 'contabilidadDiaria', 'oficina', 'reportes', 'cargaLentes', 'catalogos', 'atencionMunicipio'];
+var ADMIN_RUTAS_SECRETARIA  = ['documentos', 'atencionMunicipios', 'recordatorios', 'recordatorioMasivo'];
+var ADMIN_RUTAS_ATENCION    = ['atencionMunicipios', 'catalogos'];
+var ADMIN_RUTAS_EJECUTIVO   = ['dashboard', 'documentos', 'ingresarNomina', 'nominaPromotor', 'contabilidadDiaria', 'oficina', 'reportes', 'cargaLentes', 'catalogos', 'atencionMunicipios'];
 
 var ADMIN_PERFILES_RUTAS = {
   'Administrador': Object.keys(ADMIN_RUTAS),
@@ -27,6 +28,86 @@ var ADMIN_PERFILES_RUTAS = {
   'Atención': ADMIN_RUTAS_ATENCION,
   'Ejecutivo': ADMIN_RUTAS_EJECUTIVO
 };
+
+var _adminOpenViewerItems = [];
+
+function adminRegistrarHojaAbierta(tipo, id, titulo) {
+  var key = tipo + ':' + String(id);
+  var item = _adminOpenViewerItems.find(function (entry) { return entry.key === key; });
+  if (item) {
+    item.titulo = titulo;
+  } else {
+    _adminOpenViewerItems.push({ key: key, tipo: tipo, id: String(id), titulo: titulo });
+  }
+  _adminRenderHojasAbiertas();
+}
+
+function adminCerrarHojaAbierta(tipo, id) {
+  var key = tipo + ':' + String(id);
+  _adminOpenViewerItems = _adminOpenViewerItems.filter(function (item) { return item.key !== key; });
+  _adminRenderHojasAbiertas();
+}
+
+function _adminRenderHojasAbiertas() {
+  var host = document.getElementById('admin-open-viewers');
+  if (!host) return;
+  host.innerHTML = '';
+  host.hidden = _adminOpenViewerItems.length === 0;
+
+  _adminOpenViewerItems.forEach(function (item) {
+    var tab = document.createElement('div');
+    tab.className = 'admin-open-viewer-item';
+    var button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'admin-open-viewer-link';
+    button.textContent = item.titulo;
+    button.title = item.titulo;
+    button.addEventListener('click', function () {
+      adminMostrarHojaAbierta(item.tipo, item.id);
+    });
+
+    var close = document.createElement('button');
+    close.type = 'button';
+    close.className = 'admin-open-viewer-close';
+    close.textContent = '×';
+    close.title = 'Cerrar ' + item.titulo;
+    close.setAttribute('aria-label', 'Cerrar ' + item.titulo);
+    close.addEventListener('click', function () {
+      if (item.tipo === 'gerencia' && typeof _gerenciaCloseTab === 'function') {
+        _gerenciaCloseTab(item.id);
+      } else if (item.tipo === 'atencionMunicipios' && typeof _atencionMunicipiosCloseSheetTab === 'function') {
+        _atencionMunicipiosCloseSheetTab(item.id);
+      }
+    });
+    tab.appendChild(button);
+    tab.appendChild(close);
+    host.appendChild(tab);
+  });
+}
+
+function adminMostrarHojaAbierta(tipo, id) {
+  var viewer = document.querySelector('[data-admin-viewer="' + tipo + '"]');
+  if (!viewer) return;
+  if (tipo === 'gerencia' && typeof _gerenciaSelectTab === 'function') _gerenciaSelectTab(id);
+  if (tipo === 'atencionMunicipios' && typeof _atencionMunicipiosSelectSheetTab === 'function') {
+    _atencionMunicipiosSelectSheetTab(id);
+  }
+  document.querySelectorAll('[data-admin-viewer]').forEach(function (otherViewer) {
+    otherViewer.style.display = otherViewer === viewer ? 'flex' : 'none';
+  });
+}
+
+function adminLimpiarHojasAbiertas() {
+  document.querySelectorAll('[data-admin-viewer]').forEach(function (viewer) { viewer.remove(); });
+  _adminOpenViewerItems = [];
+  _adminRenderHojasAbiertas();
+  window.__ksGerenciaTabs = [];
+  window.__ksGerenciaViewer = null;
+  window.__ksGerenciaActiveTabId = null;
+  window.__ksAtencionMunicipiosOpenTabs = [];
+  window.__ksAtencionMunicipiosViewer = null;
+  window.__ksAtencionMunicipiosActiveTabId = null;
+}
 
 function adminTieneAccesoRuta(perfil, seccion) {
   var rutas = ADMIN_PERFILES_RUTAS[perfil] || [];
@@ -56,6 +137,9 @@ function adminNavegar(seccion) {
   }
 
   _adminRutaActual = seccion;
+  document.querySelectorAll('[data-admin-viewer]').forEach(function (viewer) {
+    viewer.style.display = 'none';
+  });
 
   var scriptsRuta = ruta.scripts;
   if (seccion === 'contabilidadDiaria') {
@@ -159,6 +243,7 @@ function _cargarScriptsAdmin(scripts, index, callback) {
  */
 function adminLogout() {
   if (typeof cerrarSesionAdmin === 'function') cerrarSesionAdmin();
+  adminLimpiarHojasAbiertas();
 
   // Limpiar scripts del admin del DOM
   document.querySelectorAll('script[data-admin]').forEach(function (s) { s.remove(); });
@@ -219,16 +304,26 @@ function adminLogout() {
   }, 2000);
 
   var rutaInicial = perfil === 'Coordinador' || perfil === 'Secretaria' ? 'documentos' :
-    perfil === 'Atención' ? 'atencionMunicipio' : 'dashboard';
+    perfil === 'Atención' ? 'atencionMunicipios' : 'dashboard';
   adminNavegar(rutaInicial);
 
   // Re-validar sesión cada 30 minutos
   setInterval(function () {
-    if (typeof estaAutenticado === 'function' && !estaAutenticado()) {
+    var validacion = typeof renovarSesionAdmin === 'function'
+      ? renovarSesionAdmin()
+      : Promise.resolve(estaAutenticado());
+
+    Promise.resolve(validacion).then(function (valida) {
+      if (!valida) {
+        if (typeof cerrarSesionAdmin === 'function') cerrarSesionAdmin();
+        alert('Tu sesión ha expirado. Inicia sesión nuevamente.');
+        mostrarModulo('admin-login');
+      }
+    }).catch(function () {
       if (typeof cerrarSesionAdmin === 'function') cerrarSesionAdmin();
-      alert('Tu sesión ha expirado. Inicia sesión nuevamente.');
+      alert('No se pudo renovar la sesión. Inicia sesión nuevamente.');
       mostrarModulo('admin-login');
-    }
+    });
   }, 30 * 60 * 1000);
 })();
 
@@ -290,4 +385,22 @@ function adminToggleSidebar() {
     overlay.classList.add('open');
     document.body.style.overflow = 'hidden';
   }
+}
+
+function adminToggleSidebarDesktop() {
+  if (window.innerWidth <= 768) return;
+
+  var shell = document.getElementById('admin-shell');
+  var sidebarToggle = document.getElementById('admin-sidebar-desktop-toggle');
+  if (!shell || !sidebarToggle) return;
+
+  var collapsed = shell.classList.toggle('sidebar-collapsed');
+  var label = collapsed ? 'Mostrar menú' : 'Ocultar menú';
+  var iconPath = sidebarToggle.querySelector('svg path');
+  var text = sidebarToggle.querySelector('span');
+  sidebarToggle.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+  sidebarToggle.setAttribute('aria-label', label + ' lateral');
+  sidebarToggle.setAttribute('title', label + ' lateral');
+  if (text) text.textContent = label;
+  if (iconPath) iconPath.setAttribute('d', collapsed ? 'm9 18 6-6-6-6' : 'm15 18-6-6 6-6');
 }

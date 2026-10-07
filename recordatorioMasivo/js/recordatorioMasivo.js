@@ -167,7 +167,7 @@ function _rmShellHtml() {
             '<label class="block text-[11px] uppercase text-slate-400 font-semibold mb-1.5">Enlace o ID de la Hoja de Atención <span class="text-red-400">*</span></label>' +
             '<input type="text" id="rm-input-link" required placeholder="https://docs.google.com/spreadsheets/d/..." ' +
               'class="w-full px-4 py-2.5 rounded-[12px] border border-slate-200 text-sm font-mono outline-none focus:ring-2 focus:ring-verde-oscuro/30 focus:border-verde-oscuro transition-all">' +
-            '<p class="text-[11px] text-slate-400 mt-1.5">Se guardará en el registro central de Atención Municipio.</p>' +
+            '<p class="text-[11px] text-slate-400 mt-1.5">Se guardará en el registro central de Atención Municipios.</p>' +
           '</div>' +
           '<div id="rm-modal-error" class="hidden mb-4 text-sm text-center font-medium rounded-lg px-4 py-2 bg-red-50 text-red-600"></div>' +
           '<div class="flex gap-3">' +
@@ -203,7 +203,7 @@ function _rmRenderizarTabla() {
     if (vacio) vacio.classList.add('hidden');
     if (wrap) wrap.classList.remove('hidden');
     if (counter) counter.textContent = 'Cargando registro central…';
-    tbody.innerHTML = '<tr><td colspan="6" class="px-5 py-8 text-center text-sm text-slate-400"><span class="spinner inline-block mr-2"></span>Consultando Atención Municipio…</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6" class="px-5 py-8 text-center text-sm text-slate-400"><span class="spinner inline-block mr-2"></span>Consultando Atención Municipios…</td></tr>';
     return;
   }
 
@@ -291,7 +291,7 @@ function _rmMostrarAvisoMigracion() {
     return;
   }
 
-  aviso.textContent = pendientes.length + ' registro(s) anterior(es) siguen guardados solo en este navegador. No se borraron; vuelve a registrarlos en Atención Municipio para centralizarlos.';
+  aviso.textContent = pendientes.length + ' registro(s) anterior(es) siguen guardados solo en este navegador. No se borraron; vuelve a registrarlos en Atención Municipios para centralizarlos.';
   aviso.classList.remove('hidden');
 }
 

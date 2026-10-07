@@ -2,6 +2,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
+const vm = require('node:vm');
 
 const root = path.join(__dirname, '..');
 const templatesDir = path.join(root, 'administracion', 'documentos', 'templates');
@@ -77,4 +78,56 @@ test('el reset de contabilidad diaria debe limpiar los campos del coordinador y 
   const bloqueReset = contabilidad.slice(inicioReset, finReset);
   assert.ok(!bloqueReset.includes('mostrarModalBienvenidaContabilidad'), 'El reset no debe disparar la ventana de bienvenida');
   assert.match(bloqueReset, /limpiarResumenContabilidad\s*\(/, 'El reset debe llamar a la limpieza del resumen antes de volver a mostrar la bienvenida');
+});
+
+test('el menú lateral administrativo se puede contraer y expandir en escritorio', () => {
+  const shell = fs.readFileSync(path.join(root, 'administracion', 'views', 'shell.tpl'), 'utf8');
+  const styles = fs.readFileSync(path.join(root, 'administracion', 'styles', 'admin.css'), 'utf8');
+  const router = fs.readFileSync(path.join(root, 'administracion', 'js', 'router.js'), 'utf8');
+
+  assert.match(shell, /id="admin-sidebar-desktop-toggle"[\s\S]*aria-expanded="true"/, 'El menú debe incluir un control accesible para escritorio');
+  assert.match(shell, /id="admin-sidebar-desktop-toggle"[\s\S]*Ocultar menú/, 'La barra superior debe tener el control de visibilidad del menú');
+  assert.match(styles, /#admin-shell\.sidebar-collapsed #admin-sidebar\s*\{[\s\S]*width:\s*0[\s\S]*min-width:\s*0/, 'El estado contraído no debe ocupar espacio lateral');
+  assert.match(styles, /#admin-sidebar-desktop-toggle\s*\{\s*display:\s*none;/, 'El control se oculta inicialmente hasta la regla de escritorio');
+  assert.doesNotMatch(shell, /id="admin-sidebar-desktop-toggle"[\s\S]{0,80}<nav/, 'El botón no debe estar en el lateral junto al logo');
+  assert.match(router, /function adminToggleSidebarDesktop\s*\(/, 'El control debe alternar el estado del menú lateral');
+  assert.match(router, /sidebarToggle\.setAttribute\('aria-expanded'/, 'El estado accesible debe reflejar la expansión del menú');
+});
+
+test('el dashboard muestra licencia y vencimiento usando la versión central del sistema', () => {
+  const dashboard = fs.readFileSync(path.join(root, 'administracion', 'js', 'dashboard.js'), 'utf8');
+  const configuracion = fs.readFileSync(path.join(root, 'administracion', 'js', 'configuracion.js'), 'utf8');
+  const configService = fs.readFileSync(path.join(root, 'administracion', 'services', 'configuracionService.js'), 'utf8');
+  const auth = fs.readFileSync(path.join(root, 'administracion', 'config', 'auth.js'), 'utf8');
+  const login = fs.readFileSync(path.join(root, 'administracion', 'views', 'login.tpl'), 'utf8');
+  const loginScript = fs.readFileSync(path.join(root, 'administracion', 'js', 'login.js'), 'utf8');
+  const app = fs.readFileSync(path.join(root, 'assets', 'js', 'app.js'), 'utf8');
+  const landing = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+
+  assert.match(dashboard, /_estadoChip\('Sistema Administrativo', 'Activo'/, 'El dashboard debe nombrar el sistema administrativo');
+  assert.match(dashboard, /_estadoChip\('Estado de Licencia', licenciaEstaActiva \? 'Activo' : 'Inactivo'/, 'El estado de licencia debe ser dinámico');
+  assert.match(dashboard, /localStorage\.getItem\('ks_lic_vence'\)/, 'El vencimiento debe usar la fecha real recibida al activar la licencia');
+  assert.match(configuracion, /localStorage\.getItem\('ks_lic_vence'\)/, 'Configuración debe mostrar el vencimiento de licencia y no la expiración de sesión');
+  assert.match(auth, /localStorage\.setItem\('ks_lic_vence', activacion\.license\.expires_at\)/, 'La fecha mostrada debe venir del vencimiento de licencia recibido al activar');
+  assert.match(dashboard, /_estadoChip\('Versión', configuracion\.version/, 'El dashboard debe usar la versión del servicio de configuración');
+  assert.match(app, /window\.ADMIN_VERSION = 'v1\.2 KG'/, 'Debe existir una versión central única');
+  assert.match(configService, /version:\s*window\.ADMIN_VERSION/, 'Configuración debe leer la versión central');
+  assert.match(login, /data-sistema-version/, 'El login debe reservar el valor de versión para rellenarlo dinámicamente');
+  assert.match(loginScript, /loginVersion\.textContent = window\.ConfiguracionService\.obtener\(\)\.version/, 'El login debe usar la versión central');
+  assert.match(app, /'administracion\/services\/configuracionService\.js',\s*'administracion\/js\/login\.js'/, 'El login debe cargar la configuración antes de inicializar la versión');
+  assert.match(landing, /data-sistema-version/, 'La portada debe usar el mismo valor dinámico de versión');
+  assert.match(app, /function actualizarVersionSistema\s*\(/, 'La aplicación debe rellenar los marcadores de versión dinámicamente');
+  assert.doesNotMatch(dashboard + configService + login + landing, /v5\.0/, 'No debe quedar la versión anterior en las superficies del sistema');
+
+  const fechas = vm.runInNewContext(dashboard + '\n[_dashFechaVencimientoLicencia(""), _dashFechaVencimientoLicencia("2026-10-15T23:59:59-05:00")]');
+  assert.equal(fechas[0], 'No disponible', 'Un vencimiento ausente o nulo no debe mostrarse como una fecha válida');
+  assert.match(fechas[1], /^\d{2}\/\d{2}\/\d{4}$/, 'La fecha ISO de vencimiento debe mostrarse como dd/mm/aaaa');
+});
+
+test('el mensaje para extender la licencia usa el nombre empresarial configurado, no el de la licencia', () => {
+  const configuracion = fs.readFileSync(path.join(root, 'administracion', 'js', 'configuracion.js'), 'utf8');
+
+  assert.match(configuracion, /var nombreEmpresa = config\.empresa \|\| 'la empresa'/, 'El nombre debe proceder del servicio de branding configurado');
+  assert.doesNotMatch(configuracion, /ks_lic_cliente/, 'El nombre de empresa asociado a la licencia no debe sobrescribir la configuración');
+  assert.match(configuracion, /para la empresa ' \+ nombreEmpresa \+ '\.'/, 'El mensaje debe interpolar el nombre configurado');
 });

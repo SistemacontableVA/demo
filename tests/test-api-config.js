@@ -26,14 +26,14 @@ const ApiConfigTests = {
     
     console.log('  window.ApiConfig existe:', exists ? '✅' : '❌');
     console.log('  Tiene endpoint "nomina":', hasNomina ? '✅' : '❌');
-    console.log('  Tiene endpoint "oficina":', hasOficina ? '✅' : '❌');
+    console.log('  Nómina de oficina migrada fuera de ApiConfig:', !hasOficina ? '✅' : '❌');
     
     if (exists) {
       console.log('  Endpoints disponibles:', Object.keys(window.ApiConfig).filter(k => k !== 'buildUrl' && k !== 'getEndpoint' && k !== 'listEndpoints' && k !== 'getDocsEndpoint'));
     }
     
     console.groupEnd();
-    return exists && hasNomina && hasOficina;
+    return exists && hasNomina && !hasOficina;
   },
 
   // ───────────────────────────────────────────────────────────────
@@ -113,19 +113,12 @@ const ApiConfigTests = {
     
     try {
       var nominaUrl = window.ApiConfig.buildUrl('nomina', { cedula: 'V-123' });
-      var oficinaUrl = window.ApiConfig.buildUrl('oficina', { action: 'listar-empleados-oficina' });
-      
       console.log('  ✅ buildUrl("nomina", { cedula: "V-123" })');
       console.log('    →', nominaUrl.substring(0, 80) + '...');
-      
-      console.log('  ✅ buildUrl("oficina", { action: "listar-empleados-oficina" })');
-      console.log('    →', oficinaUrl.substring(0, 80) + '...');
-      
-      console.log('  ¿Ambas son URLs válidas?:', 
-        nominaUrl.startsWith('https://') && oficinaUrl.startsWith('https://') ? '✅' : '❌');
+      console.log('  Nómina de oficina utiliza Supabase RPC, no ApiConfig:', !window.ApiConfig.oficina ? '✅' : '❌');
       
       console.groupEnd();
-      return true;
+      return nominaUrl.startsWith('https://') && !window.ApiConfig.oficina;
     } catch (e) {
       console.error('  ❌ Error:', e.message);
       console.groupEnd();

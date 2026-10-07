@@ -1,21 +1,5 @@
+// Reportes
 var ReportesService = {
-
-  /**
-   * Obtiene el reporte consolidado de lentes y desempeño.
-   *
-   * @param {object} [filtros] — Todos opcionales
-   * @param {string} [filtros.fechaInicio]  'YYYY-MM-DD'
-   * @param {string} [filtros.fechaFin]     'YYYY-MM-DD'
-   * @param {string} [filtros.municipio]    Texto parcial del municipio
-   *
-   * @returns {Promise<{
-   *   ok: boolean,
-   *   kpis: object,
-   *   rankingPromotores: Array,
-   *   embudoMunicipios: Array,
-   *   municipiosDisponibles: Array
-   * }>}
-   */
   obtenerReporteLentes: function (filtros) {
     var baseUrl = window.API_URL;
     if (!baseUrl) {
@@ -23,7 +7,6 @@ var ReportesService = {
       return Promise.resolve({ ok: false, error: 'API_URL no configurada.' });
     }
 
-    // Construir parámetros
     var params = ['action=obtener-reporte-lentes'];
     filtros = filtros || {};
 
@@ -41,8 +24,6 @@ var ReportesService = {
     }
 
     var url = baseUrl + '?' + params.join('&');
-
-
     return fetch(url, { cache: 'no-store' })
       .then(function (res) {
         if (!res.ok) throw new Error('HTTP ' + res.status);

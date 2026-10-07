@@ -20,7 +20,13 @@ Código.gs
 PENDIENTE-*.md
 Subida
 documentacion/
-backend/
+backend/*
+!backend/supabase/
+backend/supabase/*
+!backend/supabase/migrations/
+backend/supabase/migrations/*
+!backend/supabase/migrations/20261006120000_contabilidad_diaria.sql
+!backend/supabase/migrations/20261005160000_gerencia_herramientas.sql
 
 # Configuración de APIs cargada por los módulos del navegador.
 

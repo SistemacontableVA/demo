@@ -1,10 +1,6 @@
+// Configuracion del portal
 var ConfiguracionService = {
 
-  /**
-   * Retorna la configuración actual del sistema.
-   * TODO: Leer desde localStorage o base de datos.
-   * @returns {object}
-   */
   obtener: function () {
     var brand = (window.empresaBrand && typeof window.empresaBrand.getBrandData === 'function')
       ? window.empresaBrand.getBrandData()
@@ -13,15 +9,11 @@ var ConfiguracionService = {
     return {
       nombreSistema: 'Portal de Nómina',
       empresa:       brand ? brand.nombre : '',
-      version:       'v5.0'
+      version:       window.ADMIN_VERSION
     };
   },
 
-  /**
-   * Guarda la configuración del sistema.
-   * TODO: Persistir en localStorage o base de datos.
-   * @param {object} datos
-   */
+  // TODO: conectar con persistencia.
   guardar: function (datos) {
     return Promise.resolve({ ok: true });
   }

@@ -4,7 +4,7 @@
 
   // Leer datos de licencia desde localStorage
   var licToken  = localStorage.getItem('ks_lic_token');
-  var licExpira = parseInt(localStorage.getItem('ks_lic_expira') || '0');
+  var licExpira = Date.parse(localStorage.getItem('ks_lic_vence') || '') || 0;
   var config    = ConfiguracionService.obtener();
 
   var ahora       = new Date().getTime();
@@ -30,8 +30,8 @@
     diasColor = 'text-emerald-700 bg-emerald-50 border-emerald-200';
   }
 
-  // Nombre del cliente desde localStorage o config
-  var nombreEmpresa = localStorage.getItem('ks_lic_cliente') || config.empresa || 'la empresa';
+  // El mensaje de contacto usa el nombre empresarial configurado en empresa-config.json.
+  var nombreEmpresa = config.empresa || 'la empresa';
 
   // Mensaje prearmado para WhatsApp
   var mensaje = 'Buenas tardes, deseo extender la licencia del sistema administrativo para óptica, para la empresa ' + nombreEmpresa + '.';
@@ -113,7 +113,5 @@ function _formatearFecha(fecha) {
   var d  = ('0' + fecha.getDate()).slice(-2);
   var m  = ('0' + (fecha.getMonth() + 1)).slice(-2);
   var y  = fecha.getFullYear();
-  var hh = ('0' + fecha.getHours()).slice(-2);
-  var mm = ('0' + fecha.getMinutes()).slice(-2);
-  return d + '/' + m + '/' + y + ' ' + hh + ':' + mm;
+  return d + '/' + m + '/' + y;
 }
