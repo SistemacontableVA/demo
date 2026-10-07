@@ -79,6 +79,12 @@ test('la interfaz Herramientas presenta nombre, descripción, link e iframe en p
   assert.match(module, /window\.__ksGerenciaTabs \|\| \[\]/);
 });
 
+test('los iframes de ambos módulos reciben un ancho de escritorio en pantallas móviles', () => {
+  const css = fs.readFileSync(path.join(root, 'administracion', 'styles', 'admin.css'), 'utf8');
+
+  assert.match(css, /@media \(max-width: 760px\) \{[\s\S]*?\.gm-frame,\s*\.atm-sheet-frame\s*\{\s*min-width:\s*980px;/);
+});
+
 test('las hojas abiertas permanecen accesibles desde la barra superior al cambiar de módulo', () => {
   const shell = fs.readFileSync(path.join(root, 'administracion', 'views', 'shell.tpl'), 'utf8');
   const router = fs.readFileSync(path.join(root, 'administracion', 'js', 'router.js'), 'utf8');

@@ -226,6 +226,9 @@ async function renovarSesionAdmin() {
       body: JSON.stringify({ refresh_token: refreshToken })
     });
     var session = await _leerRespuestaAuth(authRes);
+    if (session.refresh_token) {
+      localStorage.setItem(ADMIN_REFRESH_KEY, session.refresh_token);
+    }
     var validation = await _validarAccesoDirecto(session.access_token);
 
     if (!validation.ok || !validation.user || validation.user.id !== session.user.id) return false;
@@ -237,6 +240,12 @@ async function renovarSesionAdmin() {
   } finally {
     _adminRefreshInProgress = false;
   }
+}
+
+async function restaurarSesionAdmin() {
+  if (estaAutenticado()) return true;
+  if (!localStorage.getItem(ADMIN_REFRESH_KEY)) return false;
+  return renovarSesionAdmin();
 }
 
 function getPerfilAdmin() {

@@ -528,6 +528,11 @@
     flex-wrap: wrap;
   }
 
+  .gm-frame,
+  .atm-sheet-frame {
+    min-width: 980px;
+  }
+
   .atm-active-info {
     order: 2;
     flex-basis: 100%;

@@ -307,24 +307,33 @@ function adminLogout() {
     perfil === 'Atención' ? 'atencionMunicipios' : 'dashboard';
   adminNavegar(rutaInicial);
 
-  // Re-validar sesión cada 30 minutos
-  setInterval(function () {
-    var validacion = typeof renovarSesionAdmin === 'function'
-      ? renovarSesionAdmin()
-      : Promise.resolve(estaAutenticado());
+  var avisoRenovacionPendiente = false;
 
-    Promise.resolve(validacion).then(function (valida) {
-      if (!valida) {
-        if (typeof cerrarSesionAdmin === 'function') cerrarSesionAdmin();
-        alert('Tu sesión ha expirado. Inicia sesión nuevamente.');
-        mostrarModulo('admin-login');
+  function revalidarSesionAdmin(forzar) {
+    if (typeof renovarSesionAdmin !== 'function') return;
+
+    var expira = parseInt(localStorage.getItem('ks_admin_expira') || '0', 10);
+    if (!forzar && expira - Date.now() > 5 * 60 * 1000) return;
+
+    renovarSesionAdmin().then(function (valida) {
+      if (valida) {
+        avisoRenovacionPendiente = false;
+      } else if (!estaAutenticado() && !avisoRenovacionPendiente) {
+        avisoRenovacionPendiente = true;
+        alert('No se pudo renovar la sesión. Tus credenciales se conservaron; vuelve a intentarlo cuando haya conexión o inicia sesión nuevamente.');
       }
-    }).catch(function () {
-      if (typeof cerrarSesionAdmin === 'function') cerrarSesionAdmin();
-      alert('No se pudo renovar la sesión. Inicia sesión nuevamente.');
-      mostrarModulo('admin-login');
+    }).catch(function (error) {
+      console.error('[AdminRouter] Error al renovar la sesión:', error);
+      if (!estaAutenticado() && !avisoRenovacionPendiente) {
+        avisoRenovacionPendiente = true;
+        alert('No se pudo renovar la sesión. Tus credenciales se conservaron; vuelve a intentarlo cuando haya conexión o inicia sesión nuevamente.');
+      }
     });
-  }, 30 * 60 * 1000);
+  }
+
+  setInterval(function () { revalidarSesionAdmin(true); }, 30 * 60 * 1000);
+  window.addEventListener('online', function () { revalidarSesionAdmin(false); });
+  window.addEventListener('focus', function () { revalidarSesionAdmin(false); });
 })();
 
 /**

@@ -444,6 +444,14 @@ async function inicializarApp() {
   if (!valida) {
     document.getElementById('landing-principal').classList.add('hidden');
     document.getElementById('pantalla-licencia').classList.remove('hidden');
+    return;
+  }
+
+  if (typeof restaurarSesionAdmin === 'function' && localStorage.getItem('ks_admin_refresh')) {
+    var sesionRestaurada = await restaurarSesionAdmin();
+    document.getElementById('landing-principal').classList.add('hidden');
+    document.getElementById('app-container').classList.remove('hidden');
+    await mostrarModulo(sesionRestaurada ? 'administracion' : 'admin-login');
   }
 }
 
