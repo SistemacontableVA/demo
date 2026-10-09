@@ -3,27 +3,24 @@ function renderContabilidadDiaria() {
   if (!contenedor) return;
 
   contenedor.innerHTML = [
-    '<div class="fade-in p-5">',
-      '<div class="bg-white rounded-2xl shadow-soft border border-slate-200 p-5 mb-5">',
-        '<div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">',
-          '<div>',
-            '<h3 class="text-verde-oscuro font-bold text-lg">Contabilidad diaria cerrada</h3>',
-            '<p class="text-slate-500 text-sm mt-1">Selecciona una jornada cerrada por el coordinador para revisar y validar el cierre.</p>',
-          '</div>',
-          '<div class="flex flex-col sm:flex-row gap-2 items-end">',
-            '<div>',
-              '<label class="block text-[10px] font-bold uppercase tracking-wide text-slate-500 mb-1">Fecha disponible</label>',
-              '<select id="contabilidad-admin-fecha" class="w-full sm:w-56 px-3 py-2 border border-slate-200 rounded-lg text-sm text-slate-700 bg-slate-50 focus:outline-none focus:border-verde-oscuro focus:ring-2 focus:ring-verde-oscuro/10 focus:bg-white transition-all"></select>',
-            '</div>',
-            '<button type="button" onclick="cargarContabilidadAdminSeleccionada()" class="btn-primario hover:bg-verde-oscuro active:scale-95 transition-all text-white font-semibold text-sm px-4 py-2.5 rounded-lg">Cargar</button>',
-            '<button type="button" onclick="validarContabilidadAdminSeleccionada()" class="bg-emerald-600 hover:bg-emerald-700 active:scale-95 transition-all text-white font-semibold text-sm px-4 py-2.5 rounded-lg">Validar cierre</button>',
+    '<div class="fade-in contabilidad-admin-module">',
+      '<section class="contabilidad-admin-toolbar">',
+        '<div class="contabilidad-admin-heading">',
+          '<div class="contabilidad-admin-mark" aria-hidden="true">CD</div>',
+          '<div><span class="contabilidad-admin-eyebrow">CONTROL FINANCIERO</span><h2>Revisión de contabilidad</h2><p>Consulta los movimientos de la jornada y valida el cierre del coordinador.</p></div>',
+        '</div>',
+        '<div class="contabilidad-admin-controls">',
+          '<label for="contabilidad-admin-fecha">Jornada disponible</label>',
+          '<div class="contabilidad-admin-control-row">',
+            '<select id="contabilidad-admin-fecha"></select>',
+            '<button type="button" onclick="cargarContabilidadAdminSeleccionada()" class="contabilidad-admin-button contabilidad-admin-button-load">Ver reporte</button>',
+            '<button id="btn-pdf-contabilidad-admin" type="button" disabled onclick="imprimirContabilidadAdminPDF()" class="contabilidad-admin-button contabilidad-admin-button-pdf">Imprimir / Guardar PDF</button>',
           '</div>',
         '</div>',
-      '</div>',
-
-      '<div id="contabilidad-admin-loading" class="hidden bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm text-slate-600 mb-4">Cargando contabilidades disponibles...</div>',
-      '<div id="contabilidad-admin-error" class="hidden bg-red-50 border border-red-200 rounded-xl p-4 text-sm text-red-700 mb-4"></div>',
-      '<div id="contabilidad-admin-detalle" class="hidden bg-white rounded-2xl shadow-soft border border-slate-200 p-5"></div>',
+      '</section>',
+      '<div id="contabilidad-admin-loading" class="hidden contabilidad-admin-feedback">Cargando contabilidades disponibles...</div>',
+      '<div id="contabilidad-admin-error" class="hidden contabilidad-admin-error"></div>',
+      '<div id="contabilidad-admin-detalle" class="hidden contabilidad-admin-detail"></div>',
     '</div>'
   ].join('');
 
@@ -122,6 +119,8 @@ async function cargarContabilidadAdminSeleccionada() {
 function renderDetalleContabilidadAdmin(draft) {
   var detalle = document.getElementById('contabilidad-admin-detalle');
   if (!detalle) return;
+  var botonPdf = document.getElementById('btn-pdf-contabilidad-admin');
+  if (botonPdf) botonPdf.disabled = !draft;
 
   var totales = draft && draft.totales ? draft.totales : {};
   var ingresos = Number(totales.totalIngresos || 0) || 0;
@@ -160,7 +159,7 @@ function renderDetalleContabilidadAdmin(draft) {
   };
   var detalleTexto = function (valor) { return valor ? '<div class="text-xs text-slate-500 mt-1">Detalle: ' + texto(valor) + '</div>' : ''; };
   var lineaGasto = function (nombre, valor, detalle) {
-    return '<div class="py-3 border-b border-slate-100 last:border-0"><div class="flex items-center justify-between gap-4"><span class="text-slate-700">' + texto(nombre) + '</span><strong class="text-slate-700">' + moneda(valor) + '</strong></div>' + detalleTexto(detalle) + '</div>';
+    return '<div class="contabilidad-report-ledger-row"><div><span>' + texto(nombre) + '</span>' + detalleTexto(detalle) + '</div><strong>' + moneda(valor) + '</strong></div>';
   };
   var formatoMovimiento = function (nombre, valor, movimiento) {
     movimiento = movimiento || {};
@@ -169,7 +168,8 @@ function renderDetalleContabilidadAdmin(draft) {
     return lineaGasto(nombre, valor, origen + tasa);
   };
   var cenasGanadas = afiliaciones.filter(function (fila) { return Number(fila.cena || 0) > 0; }).map(function (fila) {
-    return '<div class="flex items-center justify-between py-2 border-b border-slate-100 last:border-0"><span>' + texto(fila.asesor || fila.promotor || fila.nombre) + '</span><strong>' + moneda(fila.cena) + '</strong></div>';
+    var cantidadAfiliaciones = Number(fila.aff || fila.afiliaciones) || 0;
+    return '<div class="contabilidad-report-ledger-row"><div><span>' + texto(fila.asesor || fila.promotor || fila.nombre) + '</span><small class="contabilidad-report-affiliation-count">' + cantidadAfiliaciones.toLocaleString('es-VE') + ' afiliaciones</small></div><strong>' + moneda(fila.cena) + '</strong></div>';
   }).join('') || '<div class="text-xs text-slate-400">Ningún promotor registró cena ganada.</div>';
   var extra = Array.isArray(gastos.extra) ? gastos.extra : [];
   var extrasHtml = extra.map(function (item, index) {
@@ -177,32 +177,51 @@ function renderDetalleContabilidadAdmin(draft) {
     var descripcion = typeof item === 'object' ? item.detalle : '';
     return lineaGasto(descripcion || ('Gasto adicional ' + (index + 1)), monto, 'Concepto registrado por el coordinador');
   }).join('');
+  var estadoActual = draft && draft.estado ? draft.estado : 'borrador';
+  var etiquetaEstado = function (estado) {
+    return estado.replace(/_/g, ' ').replace(/^\w/, function (letra) { return letra.toUpperCase(); });
+  };
+  var opcionesEstado = '<option value="' + texto(estadoActual) + '" selected>' + texto(etiquetaEstado(estadoActual)) + '</option>';
+  if (estadoActual === 'cerrada') {
+    opcionesEstado += '<option value="validada">Validada</option><option value="borrador">Reabrir para edición</option>';
+  } else if (estadoActual === 'validada') {
+    opcionesEstado += '<option value="borrador">Reabrir para edición</option>';
+  }
+  var mensajeEstado = draft && draft.estado === 'borrador'
+    ? 'La jornada fue reabierta y queda pendiente de corrección por el coordinador.'
+    : (draft && draft.estado === 'validada'
+      ? 'La contabilidad fue validada por administración; el coordinador no puede editarla mientras mantenga este estado.'
+      : 'La contabilidad ya fue cerrada por el coordinador y está lista para validación administrativa.');
 
   detalle.innerHTML = [
-    '<div class="flex flex-col gap-4">',
-      '<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">',
-        '<div class="bg-slate-50 border border-slate-200 rounded-xl p-3"><div class="text-[10px] uppercase tracking-wide text-slate-500 font-bold">Fecha</div><div class="mt-2 font-bold text-slate-700">' + texto(draft && draft.fecha) + '</div></div>',
-        '<div class="bg-slate-50 border border-slate-200 rounded-xl p-3"><div class="text-[10px] uppercase tracking-wide text-slate-500 font-bold">Municipio</div><div class="mt-2 font-bold text-slate-700">' + texto(draft && draft.municipio) + '</div></div>',
-        '<div class="bg-slate-50 border border-slate-200 rounded-xl p-3"><div class="text-[10px] uppercase tracking-wide text-slate-500 font-bold">Coordinador</div><div class="mt-2 font-bold text-slate-700">' + texto(draft && draft.coordinador) + '</div></div>',
-        '<div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3"><div class="text-[10px] uppercase tracking-wide text-emerald-700 font-bold">Estado</div><div class="mt-2 font-bold text-emerald-800">' + texto(draft && draft.estado ? draft.estado : 'borrador') + '</div></div>',
-      '</div>',
-      '<div class="grid grid-cols-1 md:grid-cols-4 gap-3">',
-        '<div class="bg-white border border-slate-200 rounded-xl p-3"><div class="text-[10px] uppercase tracking-wide text-slate-500 font-bold">Afiliaciones</div><div class="mt-2 font-bold text-slate-700">' + totalAfiliaciones + '</div></div>',
-        '<div class="bg-white border border-slate-200 rounded-xl p-3"><div class="text-[10px] uppercase tracking-wide text-slate-500 font-bold">Ingresos</div><div class="mt-2 font-bold text-slate-700">' + moneda(ingresos) + '</div></div>',
-        '<div class="bg-white border border-slate-200 rounded-xl p-3"><div class="text-[10px] uppercase tracking-wide text-slate-500 font-bold">Egresos</div><div class="mt-2 font-bold text-slate-700">' + moneda(egresos) + '</div></div>',
-        '<div class="bg-white border border-slate-200 rounded-xl p-3"><div class="text-[10px] uppercase tracking-wide text-slate-500 font-bold">Saldo final</div><div class="mt-2 font-bold text-slate-700">' + moneda(saldo) + '</div></div>',
-      '</div>',
-      '<div class="text-xs text-slate-500 border-t border-slate-200 pt-3">Saldo inicial: ' + moneda(saldoInicial) + ' · Deducción: ' + moneda(deduccion) + ' · La contabilidad ya fue cerrada por el coordinador y está lista para validación administrativa.</div>',
-      '<section class="border border-slate-200 rounded-xl overflow-hidden">',
-        '<div class="px-4 py-3 bg-slate-50 font-bold text-sm text-slate-700">Afiliaciones cargadas</div>',
-        '<div class="overflow-x-auto"><table class="min-w-full text-xs"><thead class="bg-white text-left text-[10px] uppercase tracking-wide text-slate-500"><tr><th class="px-3 py-2">#</th><th class="px-3 py-2">Asesor</th><th class="px-3 py-2">Rol</th><th class="px-3 py-2 text-right">Afiliaciones</th><th class="px-3 py-2 text-right">Rec. abono</th><th class="px-3 py-2 text-right">Recaudo neto</th><th class="px-3 py-2 text-right">Préstamo</th></tr></thead><tbody>' + filasAfiliaciones + '</tbody></table></div>',
+    '<div class="contabilidad-report-layout">',
+      '<header class="contabilidad-report-hero">',
+        '<div class="contabilidad-report-hero-copy"><span>REPORTE CONTABLE</span><h2>Cierre de jornada</h2></div>',
+        '<div class="contabilidad-report-meta"><span>Fecha<strong>' + texto(draft && draft.fecha) + '</strong></span><span>Municipio<strong>' + texto(draft && draft.municipio) + '</strong></span><span>Coordinador<strong>' + texto(draft && draft.coordinador) + '</strong></span></div>',
+        '<div class="contabilidad-report-status-control"><select id="contabilidad-admin-estado" class="contabilidad-report-status contabilidad-report-status-' + texto(estadoActual) + '" aria-label="Estado de la jornada" onchange="actualizarBotonGuardarEstadoAdmin()">' + opcionesEstado + '</select><button id="btn-guardar-estado-contabilidad-admin" type="button" disabled onclick="guardarEstadoContabilidadAdmin()">Guardar</button></div>',
+      '</header>',
+      '<section class="contabilidad-report-metrics" aria-label="Resumen financiero">',
+        '<article class="contabilidad-report-metric metric-affiliations"><span>Afiliaciones</span><strong>' + totalAfiliaciones.toLocaleString('es-VE') + '</strong><small>Registradas en la jornada</small></article>',
+        '<article class="contabilidad-report-metric"><span>Saldo inicial</span><strong>' + moneda(saldoInicial) + '</strong><small>Disponible al comenzar</small></article>',
+        '<article class="contabilidad-report-metric"><span>Total ingresos</span><strong>' + moneda(ingresos) + '</strong><small>Entradas de caja</small></article>',
+        '<article class="contabilidad-report-metric"><span>Deducciones</span><strong>' + moneda(deduccion) + '</strong><small>Consignaciones y abonos</small></article>',
+        '<article class="contabilidad-report-metric"><span>Egresos</span><strong>' + moneda(egresos) + '</strong><small>Gastos de la jornada</small></article>',
+        '<article class="contabilidad-report-metric metric-balance"><span>Saldo final</span><strong>' + moneda(saldo) + '</strong><small>Saldo a rendir</small></article>',
       '</section>',
-      '<section class="border border-slate-200 rounded-xl p-4"><h4 class="font-bold text-sm text-slate-700 mb-2">Ingresos y movimientos</h4>' +
+      '<div class="contabilidad-report-grid">',
+      '<section class="contabilidad-report-panel contabilidad-report-affiliations">',
+        '<div class="contabilidad-report-panel-heading"><div><span>DETALLE DE CAMPO</span><h3>Afiliaciones registradas</h3></div><b>' + afiliaciones.length + ' asesores</b></div>',
+        '<div class="contabilidad-report-table-wrap"><table><thead><tr><th>#</th><th>Asesor / promotor</th><th>Rol</th><th class="is-number">Afiliaciones</th><th class="is-number">Recaudo abono</th><th class="is-number">Recaudo neto</th><th class="is-number">Préstamo</th></tr></thead><tbody>' + filasAfiliaciones + '</tbody></table></div>',
+      '</section>',
+      '<section class="contabilidad-report-panel contabilidad-report-movements">',
+        '<div class="contabilidad-report-panel-heading"><div><span>ENTRADAS Y DEDUCCIONES</span><h3>Movimientos de caja</h3></div></div>' +
         formatoMovimiento('Giros / consignaciones', totalMovimiento(gastos.giros, detalleGastos.giros), detalleGastos.giros) +
         formatoMovimiento('Consignaciones / transferencias', totalMovimiento(gastos.consignaciones, detalleGastos.consignaciones), detalleGastos.consignaciones) +
         lineaGasto('Pago de abonos ganados', gastos.abonosGanados || 0) +
       '</section>',
-      '<section class="border border-slate-200 rounded-xl p-4"><h4 class="font-bold text-sm text-slate-700 mb-2">Egresos y gastos operativos</h4>' +
+      '<section class="contabilidad-report-panel contabilidad-report-expenses">',
+        '<div class="contabilidad-report-panel-heading"><div><span>SALIDAS DE CAJA</span><h3>Gastos operativos</h3></div></div>' +
+        '<div class="contabilidad-report-expense-list">' +
         lineaGasto('Comida del coordinador', gastos.comidaCoor, detalleGastos.comidaCoordinador) +
         lineaGasto('Desayunos de brigada', gastos.desayunos, detalleGastos.desayunos) +
         lineaGasto('Almuerzos', gastos.almuerzos) +
@@ -212,53 +231,84 @@ function renderDetalleContabilidadAdmin(draft) {
         lineaGasto('Transporte vereda', gastos.transVereda) +
         lineaGasto('Gastos varios / recargas', gastos.varios, detalleGastos.varios) +
         extrasHtml +
+        '</div>' +
       '</section>',
-      '<section class="border border-slate-200 rounded-xl p-4"><h4 class="font-bold text-sm text-slate-700 mb-2">Cenas ganadas por promotor</h4>' + cenasGanadas + '</section>',
+      '<section class="contabilidad-report-panel contabilidad-report-dinners"><div class="contabilidad-report-panel-heading"><div><span>BENEFICIOS DE CAMPO</span><h3>Cenas ganadas por promotor</h3></div></div><div class="contabilidad-report-dinner-list">' + cenasGanadas + '</div></section>',
+      '</div>',
+      '<footer class="contabilidad-report-note">' + mensajeEstado + '</footer>',
     '</div>'
   ].join('');
 
   detalle.classList.remove('hidden');
 }
 
-async function validarContabilidadAdminSeleccionada() {
-  var select = document.getElementById('contabilidad-admin-fecha');
-  var fecha = select ? select.value : '';
-  if (!fecha) {
-    mostrarErrorContabilidadAdmin('Primero selecciona una fecha para validar la contabilidad.');
-    return;
-  }
-
+function imprimirContabilidadAdminPDF() {
   var detalle = document.getElementById('contabilidad-admin-detalle');
-  if (!detalle || detalle.classList.contains('hidden')) {
-    cargarContabilidadAdminSeleccionada();
+  if (!detalle || detalle.classList.contains('hidden') || !window.__CONTABILIDAD_ADMIN_SELECCIONADA) {
+    mostrarErrorContabilidadAdmin('Carga primero una jornada antes de generar el PDF.');
     return;
   }
 
-  var text = detalle.textContent || '';
-  if (!text || text.trim().length < 20) {
-    mostrarErrorContabilidadAdmin('La contabilidad aún no se ha cargado.');
+  window.print();
+}
+
+function actualizarBotonGuardarEstadoAdmin() {
+  var select = document.getElementById('contabilidad-admin-estado');
+  var boton = document.getElementById('btn-guardar-estado-contabilidad-admin');
+  var draft = window.__CONTABILIDAD_ADMIN_SELECCIONADA;
+  if (select) {
+    select.classList.remove('contabilidad-report-status-cerrada', 'contabilidad-report-status-validada', 'contabilidad-report-status-borrador');
+    select.classList.add('contabilidad-report-status-' + select.value);
+  }
+  if (boton) boton.disabled = !select || !draft || select.value === draft.estado;
+}
+
+async function guardarEstadoContabilidadAdmin() {
+  var draft = window.__CONTABILIDAD_ADMIN_SELECCIONADA;
+  var select = document.getElementById('contabilidad-admin-estado');
+  var estadoNuevo = select ? select.value : '';
+  if (!draft || !draft.id || !select || estadoNuevo === draft.estado) {
+    mostrarErrorContabilidadAdmin('Selecciona un cambio de estado válido para guardar.');
     return;
   }
 
-  var draft = JSON.parse(JSON.stringify(window.__CONTABILIDAD_ADMIN_SELECCIONADA || {}));
-  if (!draft || !draft.fecha) {
-    mostrarErrorContabilidadAdmin('No existe una contabilidad válida seleccionada.');
-    return;
-  }
-
+  ocultarErrorContabilidadAdmin();
+  setLoadingContabilidadAdmin(true, 'Guardando estado de la jornada...');
+  select.disabled = true;
+  var botonGuardar = document.getElementById('btn-guardar-estado-contabilidad-admin');
+  if (botonGuardar) botonGuardar.disabled = true;
   try {
-    await window.ContabilidadDiariaService.cambiarEstado(draft.id, 'validada');
-  } catch (error) {
-    console.error('[ContabilidadAdmin] No se pudo validar el cierre:', error);
-    mostrarErrorContabilidadAdmin('No se pudo validar el cierre. Reintenta o contacta con soporte.');
-    return;
-  }
+    if (estadoNuevo === 'validada' && draft.estado === 'cerrada') {
+      await window.ContabilidadDiariaService.cambiarEstado(draft.id, 'validada');
+    } else if (estadoNuevo === 'borrador' && (draft.estado === 'cerrada' || draft.estado === 'validada')) {
+      if (!window.confirm('¿Reabrir esta jornada para que el coordinador pueda editarla? La acción quedará registrada.')) {
+        setLoadingContabilidadAdmin(false, 'No se realizaron cambios.');
+        select.value = draft.estado;
+        actualizarBotonGuardarEstadoAdmin();
+        return;
+      }
+      await window.ContabilidadDiariaService.reabrirParaEdicion(draft.id);
+    } else {
+      mostrarErrorContabilidadAdmin('Ese cambio de estado no está permitido.');
+      return;
+    }
 
-  draft.estado = 'validada';
-  draft.actualizadoEn = new Date().toISOString();
-  window.__CONTABILIDAD_ADMIN_SELECCIONADA = draft;
-  renderDetalleContabilidadAdmin(draft);
-  alert('La contabilidad seleccionada fue validada correctamente por administración.');
+    draft.estado = estadoNuevo;
+    draft.actualizadoEn = new Date().toISOString();
+    window.__CONTABILIDAD_ADMIN_SELECCIONADA = draft;
+    renderDetalleContabilidadAdmin(draft);
+    setLoadingContabilidadAdmin(false, 'Estado de la jornada actualizado.');
+  } catch (error) {
+    console.error('[ContabilidadAdmin] No se pudo guardar el estado:', error);
+    mostrarErrorContabilidadAdmin(error && error.message
+      ? error.message
+      : 'No se pudo actualizar el estado de la jornada. Reintenta o contacta con soporte.');
+  } finally {
+    setLoadingContabilidadAdmin(false);
+    var selectorActual = document.getElementById('contabilidad-admin-estado');
+    if (selectorActual) selectorActual.disabled = false;
+    actualizarBotonGuardarEstadoAdmin();
+  }
 }
 
 window.addEventListener('DOMContentLoaded', function () {

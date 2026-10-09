@@ -553,7 +553,7 @@ function _ofImprimirRelacion(idPeriodo, idEmpleado) {
       var popup = window.open('', '_blank');
       if (!popup) return alert('Permite ventanas emergentes para imprimir.');
       popup.document.open();
-      popup.document.write(html);
+      popup.document.write(window.empresaBrand.preparePrintHtml(html));
       popup.document.close();
       popup.focus();
       // Dar tiempo al DOM para renderizar antes de imprimir
@@ -1362,7 +1362,7 @@ function _ofImprimirPagoHistorico(idPago) {
       var popup = window.open('', '_blank');
       if (!popup) throw new Error('Permite ventanas emergentes para imprimir.');
       popup.document.open();
-      popup.document.write(html);
+      popup.document.write(window.empresaBrand.preparePrintHtml(html));
       popup.document.close();
       popup.focus();
       setTimeout(function() { popup.print(); }, 800);

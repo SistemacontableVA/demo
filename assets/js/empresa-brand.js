@@ -38,6 +38,19 @@
     return new URL(value.replace(/^\//, ''), getAppRootUrl()).href;
   }
 
+  function preparePrintHtml(html) {
+    const baseTag = '<base href="' + getAppRootUrl() + '">';
+    if (/<base\b[^>]*>/i.test(html)) {
+      return html.replace(/<base\b[^>]*>/i, baseTag);
+    }
+    if (/<head\b[^>]*>/i.test(html)) {
+      return html.replace(/<head\b[^>]*>/i, function (head) {
+        return head + baseTag;
+      });
+    }
+    throw new Error('No se encontró el elemento <head> de la plantilla para preparar su ruta base.');
+  }
+
   function getBrandData() {
     const source = getBrandSource();
     const empresa = source.empresa || {};
@@ -118,6 +131,9 @@
 
   window.empresaBrand = {
     getBrandData,
+    getAppRootUrl,
+    resolveAppUrl,
+    preparePrintHtml,
     applyBrand,
     cargarBrandDesdeConfig
   };

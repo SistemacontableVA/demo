@@ -40,11 +40,11 @@ function abrirPlantillaNomina() {
   fetch('administracion/documentos/templates/nomina-impresion.html?ts=' + Date.now(), { cache: 'no-store' })
     .then(function(response) { return response.text(); })
     .then(function(html) {
-      var logoUrl = new URL('assets/images/logomenu.png', document.baseURI).href;
-      var configUrl = new URL('empresa-config.json', document.baseURI).href;
+      var brand = window.empresaBrand.getBrandData();
+      var logoUrl = window.empresaBrand.resolveAppUrl(brand.logo);
+      var configUrl = window.empresaBrand.resolveAppUrl('empresa-config.json');
       var scriptTag = '<script>window.__nominaData = ' + JSON.stringify(nominaActual) + ';</script>';
-      var htmlConDatos = html
-        .replace(/\.\.\/\.\.\/\.\.\/assets\/images\/logomenu\.png/g, logoUrl)
+      var htmlConDatos = window.empresaBrand.preparePrintHtml(html)
         .replace(/fetch\(['"]empresa-config\.json/g, 'fetch(' + JSON.stringify(configUrl))
         .replace('</head>', scriptTag + '</head>');
       popup.document.write(htmlConDatos);

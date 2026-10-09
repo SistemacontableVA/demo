@@ -25,15 +25,8 @@
       --tabla-encabezado-borde: #94ccb8;
 
       /* Colores editables de los botones superiores */
-      --boton-restablecer-fondo: #f5e8f4;
-      --boton-restablecer-texto: #070707;
-      --boton-restablecer-borde: #f1d2ef;
-
       --boton-guardar-fondo: #008F73;
       --boton-guardar-texto: #FFFFFF;
-
-      --boton-validar-fondo: #124E8C;
-      --boton-validar-texto: #FFFFFF;
 
       --boton-cerrar-fondo: #0B3A5B;
       --boton-cerrar-texto: #FFFFFF;
@@ -108,7 +101,7 @@
       background: var(--surface);
       border-radius: var(--radius-lg);
       box-shadow: var(--shadow-lg);
-      padding: 0.8rem 1.25rem;
+      padding: 0.8rem 1.25rem 0.5rem;
       display: grid;
       grid-template-columns: 1fr;
       align-items: center;
@@ -116,10 +109,9 @@
     }
 
     .header-top {
-      display: flex;
-      justify-content: space-between;
+      display: grid;
+      grid-template-columns: minmax(180px, 0.9fr) minmax(0, 2fr) auto;
       align-items: center;
-      flex-wrap: wrap;
       gap: 0.75rem;
     }
 
@@ -161,46 +153,105 @@
       flex-wrap: wrap;
     }
 
-    .nav-tabs {
-      display: flex;
+    .header-status {
+      display: inline-flex;
+      flex: 0 1 auto;
+      align-items: center;
+      justify-content: center;
       gap: 0.35rem;
-      background: var(--bg);
-      padding: 0.28rem;
-      border-radius: 10px;
-      border: 1px solid var(--border);
+      max-width: 180px;
+      min-height: 32px;
+      padding: 0.35rem 0.65rem;
+      border: 1px solid #c7eadb;
+      border-radius: 999px;
+      background: #eaf8f1;
+      color: #126143;
+      font-size: 0.7rem;
+      font-weight: 700;
+      line-height: 1.2;
+      text-align: center;
+    }
+
+    .header-status::before {
+      width: 7px;
+      height: 7px;
+      flex: 0 0 7px;
+      border-radius: 50%;
+      background: #15915f;
+      content: "";
+    }
+
+    .header-status strong { font-weight: 800; }
+
+    .ui-icon {
+      width: 1rem;
+      height: 1rem;
+      flex: 0 0 auto;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+      vertical-align: middle;
+    }
+
+    .meta-field label .ui-icon { width: 0.8rem; height: 0.8rem; color: #16466a; }
+
+    .nav-tabs {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      width: min(100%, 700px);
+      margin: 0 auto;
+      gap: 0.35rem;
+      background: transparent;
+      padding: 0;
+      border: 0;
       box-shadow: none;
     }
 
+    .nav-switcher-row {
+      display: flex;
+      justify-content: center;
+      padding: 0.35rem 0 0;
+      border-top: 1px solid var(--border);
+    }
+
     .tab-btn {
-      padding: 0.48rem 1rem;
-      border: 1px solid transparent;
+      display: inline-flex;
+      min-height: 46px;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.55rem 1rem;
+      border: 1px solid var(--border);
       border-radius: 8px;
-      font-size: 0.8rem;
+      font-size: 0.82rem;
       font-weight: 700;
       letter-spacing: 0.01em;
       cursor: pointer;
-      background: transparent;
+      background: var(--surface);
       color: var(--text-muted);
       transition: all 0.2s ease;
-      white-space: nowrap;
+      white-space: normal;
       box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
     }
 
     .tab-btn.active {
-      background: var(--surface);
-      color: var(--navy);
-      border-color: var(--border);
-      box-shadow: var(--shadow-sm);
+      background: #07865d;
+      color: var(--white);
+      border-color: #07865d;
+      box-shadow: 0 7px 16px rgba(7, 134, 93, 0.2);
     }
 
     .tab-btn:hover {
       color: var(--navy);
-      background: var(--surface);
+      background: #f0f6fa;
       transform: translateY(-1px);
     }
 
     .tab-btn.active:hover {
-      background: var(--surface);
+      background: #08744f;
+      color: var(--white);
       transform: translateY(-1px);
     }
 
@@ -221,27 +272,15 @@
 
     .btn-print:hover { background: color-mix(in srgb, var(--boton-reporte-fondo) 88%, #000000 12%); color: var(--boton-reporte-texto); filter: none; }
 
-    .btn-reset {
-      background: var(--boton-restablecer-fondo);
-      color: var(--boton-restablecer-texto);
-      border: 1px solid var(--boton-restablecer-borde);
-      margin-left: 1.1rem;
-      box-shadow: var(--shadow-sm);
-    }
-
-    .btn-reset:hover { background: color-mix(in srgb, var(--boton-restablecer-fondo) 88%, #000000 12%); color: var(--boton-restablecer-texto); filter: none; }
-
     .header-actions .btn-guardar { background: var(--boton-guardar-fondo); color: var(--boton-guardar-texto); }
-    .header-actions .btn-validar { background: var(--boton-validar-fondo); color: var(--boton-validar-texto); }
     .header-actions .btn-cerrar { background: var(--boton-cerrar-fondo); color: var(--boton-cerrar-texto); }
     .header-actions .btn-guardar:hover { background: color-mix(in srgb, var(--boton-guardar-fondo) 88%, #000000 12%); color: var(--boton-guardar-texto); filter: none; }
-    .header-actions .btn-validar:hover { background: color-mix(in srgb, var(--boton-validar-fondo) 88%, #000000 12%); color: var(--boton-validar-texto); filter: none; }
     .header-actions .btn-cerrar:hover { background: color-mix(in srgb, var(--boton-cerrar-fondo) 88%, #000000 12%); color: var(--boton-cerrar-texto); filter: none; }
     .header-actions .btn-print:hover { background: color-mix(in srgb, var(--boton-reporte-fondo) 88%, #000000 12%); color: var(--boton-reporte-texto); filter: none; }
 
     /* Hover único: solo se oscurece el fondo de cada botón. */
-    .tab-btn:hover,
-    .tab-btn.active:hover { background: color-mix(in srgb, var(--surface) 88%, #000000 12%); color: var(--navy); }
+    .tab-btn:hover:not(.active) { background: color-mix(in srgb, var(--surface) 88%, #000000 12%); color: var(--navy); }
+    .tab-btn.active:hover { background: color-mix(in srgb, var(--navy) 88%, #000000 12%); color: var(--white); }
     .btn-primary:hover { background: color-mix(in srgb, var(--green) 88%, #000000 12%); color: var(--green-text); filter: none; }
     .btn-danger:hover { background: color-mix(in srgb, var(--red) 88%, #000000 12%); color: var(--white); filter: none; }
     .btn-agregar-asesor:hover { background: color-mix(in srgb, var(--boton-agregar-asesor-fondo) 88%, #000000 12%); color: var(--boton-agregar-asesor-texto); filter: none; }
@@ -277,7 +316,7 @@
     }
 
     .app-modal {
-      width: min(440px, 100%);
+      width: min(460px, 100%);
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 18px;
@@ -295,6 +334,7 @@
       background: linear-gradient(135deg, var(--navy), var(--navy-mid));
       color: var(--white);
       padding: 1rem 1.1rem;
+      border-bottom: 3px solid var(--green);
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -338,6 +378,10 @@
     }
 
     .app-modal-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
       border: none;
       border-radius: 10px;
       padding: 0.75rem 1rem;
@@ -350,14 +394,79 @@
     .app-modal-btn:hover { transform: translateY(-1px); }
 
     .app-modal-btn.secondary {
-      background: var(--bg);
-      color: var(--text-soft);
-      border: 1px solid var(--border);
+      background: #edf5fa;
+      color: #16466a;
+      border: 1px solid #d5e5ef;
     }
 
     .app-modal-btn.primary {
-      background: linear-gradient(135deg, var(--red), var(--red-dark));
+      background: linear-gradient(135deg, #07865d, #08744f);
       color: var(--white);
+    }
+
+    .app-modal-btn.primary:hover { box-shadow: 0 6px 14px rgba(7, 134, 93, 0.22); }
+
+    .welcome-modal-actions .app-modal-btn { flex: 1; }
+
+    .draft-select-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+      width: 100%;
+      margin-bottom: 0.5rem;
+    }
+
+    .draft-select-label {
+      color: #16466a;
+      font-size: 0.82rem;
+      font-weight: 700;
+      line-height: 1.35;
+    }
+
+    .draft-select {
+      width: 100%;
+      min-height: 48px;
+      padding: 0.7rem 0.8rem;
+      border: 1px solid #cbdde8;
+      border-radius: 10px;
+      background: #fff;
+      color: #123f56;
+      font: inherit;
+      font-size: 0.9rem;
+      line-height: 1.35;
+      box-shadow: 0 2px 7px rgba(18, 63, 86, 0.06);
+    }
+
+    .draft-select:focus {
+      outline: none;
+      border-color: #07865d;
+      box-shadow: 0 0 0 3px rgba(7, 134, 93, 0.14);
+    }
+
+    .draft-modal-actions .app-modal-btn { min-height: 44px; }
+
+    @media (max-width: 560px) {
+      #modal-cargar-borradores-contabilidad .app-modal-body {
+        gap: 0.75rem;
+        padding: 1rem;
+      }
+
+      #modal-cargar-borradores-contabilidad .app-modal-body p,
+      #modal-cargar-borradores-contabilidad .draft-select-label,
+      #modal-cargar-borradores-contabilidad .draft-select {
+        font-size: 1rem;
+      }
+
+      #modal-cargar-borradores-contabilidad .draft-select {
+        min-height: 52px;
+        padding: 0.75rem 0.85rem;
+        font-size: 1rem;
+      }
+
+      #modal-cargar-borradores-contabilidad .draft-modal-actions .app-modal-btn {
+        min-height: 48px;
+        font-size: 0.95rem;
+      }
     }
 
     /* Meta Fields Row */
@@ -367,11 +476,15 @@
       gap: 0.625rem;
     }
 
+    .header-meta { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+    #resumen-cierre-contabilidad { display: none !important; }
+
     @media (max-width: 760px) {
       .header-card {
         grid-template-columns: 1fr;
         gap: 0.75rem;
-        padding: 0.75rem;
+        padding: 0.75rem 0.75rem 0.4rem;
         width: 100%;
       }
 
@@ -387,6 +500,7 @@
       .header-main,
       .header-top,
       .header-actions,
+      .nav-switcher-row,
       .nav-tabs {
         width: 100%;
         min-width: 0;
@@ -401,29 +515,25 @@
 
       .header-actions {
         display: grid;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: minmax(72px, 0.75fr) repeat(2, minmax(0, 1fr));
         gap: 0.5rem;
         align-items: stretch;
       }
 
-      .header-actions .nav-tabs {
-        grid-column: 1 / -1;
-      }
-
-      .btn-reset {
-        margin-left: 0;
-      }
+      .header-status { max-width: 100%; font-size: 0.65rem; }
+      .header-actions .btn { min-width: 0; justify-content: center; padding-right: 0.35rem; padding-left: 0.35rem; }
+      .header-actions .btn-print { grid-column: 2 / -1; }
+      .header-meta { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 
       .nav-tabs {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
       }
 
       .tab-btn {
         min-width: 0;
         white-space: normal;
         line-height: 1.15;
-        padding: 0.5rem 0.35rem;
+        padding: 0.55rem 0.4rem;
       }
 
       .btn-print {
@@ -450,6 +560,27 @@
       display: flex;
       align-items: center;
       gap: 0.3rem;
+    }
+
+    .header-meta .meta-field label {
+      color: #16466a;
+      font-size: 0.62rem;
+      letter-spacing: 0.035em;
+    }
+
+    .header-meta .meta-field input {
+      min-height: 36px;
+      padding: 0.4rem 0.6rem;
+      border: 1px solid #d7e4ed;
+      border-radius: 8px;
+      background: #fff;
+      color: #123f56;
+      box-shadow: 0 2px 7px rgba(18, 63, 86, 0.05);
+    }
+
+    .header-meta .meta-field input:focus {
+      border-color: #168a68;
+      box-shadow: 0 0 0 3px rgba(22, 138, 104, 0.12);
     }
 
     .meta-field input {
@@ -540,32 +671,118 @@
       text-align: right;
     }
 
-    .stat-card.sc-blue  {
-      background: linear-gradient(180deg, #0d2741 0%, #123a5b 100%);
-      border: 1px solid rgba(255,255,255,0.06);
-      box-shadow: 0 12px 24px rgba(13, 39, 65, 0.26);
-    }
-    .stat-card.sc-blue .label  { color: rgba(255,255,255,0.75); }
-    .stat-card.sc-blue .value  { color: var(--white); border-left-color: rgba(255,255,255,0.28); }
-    .stat-card.sc-blue .sc-icon{ background: rgba(255,255,255,0.08); color: var(--white); }
-
-    .stat-card.sc-green {
-      background: linear-gradient(180deg, #1ea95f 0%, #178a4d 100%);
-      border: 1px solid rgba(255,255,255,0.08);
-      box-shadow: 0 12px 24px rgba(22, 163, 74, 0.28);
-    }
-    .stat-card.sc-green .label { color: rgba(255,255,255,0.78); }
-    .stat-card.sc-green .value { color: var(--white); border-left-color: rgba(255,255,255,0.28); }
-    .stat-card.sc-green .sc-icon{ background: rgba(255,255,255,0.12); color: var(--white); }
-
-    .stat-card.sc-navy  {
+    .stat-card.sc-navy {
       background: linear-gradient(180deg, #122b48 0%, #0b1f36 100%);
       border: 1px solid rgba(255,255,255,0.08);
       box-shadow: 0 14px 28px rgba(11, 31, 54, 0.28);
     }
-    .stat-card.sc-navy .label  { color: rgba(255,255,255,0.8); }
-    .stat-card.sc-navy .value  { color: var(--gold-light); border-left-color: rgba(255,255,255,0.28); }
-    .stat-card.sc-navy .sc-icon{ background: rgba(255,255,255,0.08); color: var(--gold-light); }
+    .stat-card.sc-navy .label { color: rgba(255,255,255,0.8); }
+    .stat-card.sc-navy .value { color: var(--gold-light); border-left-color: rgba(255,255,255,0.28); }
+    .stat-card.sc-navy .sc-icon { background: rgba(255,255,255,0.08); color: var(--gold-light); }
+
+    #tab-afiliaciones .summary-cards {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0.75rem;
+    }
+
+    #tab-afiliaciones .summary-cards .stat-card {
+      --stat-accent: #07865d;
+      display: grid;
+      grid-template-columns: 46px minmax(0, 1fr);
+      grid-template-rows: auto auto;
+      column-gap: 0.75rem;
+      align-content: center;
+      padding: 0.65rem 0.8rem;
+      border: 1px solid #cdebe0;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #f3fbf7, #eaf7f1);
+      box-shadow: 0 5px 14px rgba(18, 63, 86, 0.06);
+      min-width: 0;
+      min-height: 70px;
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    #tab-afiliaciones .summary-cards .stat-card:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 18px rgba(18, 63, 86, 0.11);
+    }
+
+    #tab-afiliaciones .summary-cards .stat-card .sc-header {
+      display: contents;
+    }
+
+    #tab-afiliaciones .summary-cards .stat-card .sc-icon {
+      grid-column: 1;
+      grid-row: 1 / span 2;
+      width: 46px;
+      height: 46px;
+      align-self: center;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--stat-accent);
+      background: color-mix(in srgb, var(--stat-accent) 13%, white);
+    }
+
+    #tab-afiliaciones .summary-cards .stat-card .sc-icon .ui-icon {
+      width: 1.25rem;
+      height: 1.25rem;
+      stroke-width: 2.2;
+    }
+
+    #tab-afiliaciones .summary-cards .stat-card .label {
+      grid-column: 2;
+      grid-row: 1;
+      align-self: end;
+      overflow-wrap: anywhere;
+      color: var(--stat-accent);
+      font-size: 0.68rem;
+      font-weight: 800;
+      line-height: 1.2;
+      letter-spacing: 0.025em;
+      text-transform: uppercase;
+    }
+
+    #tab-afiliaciones .summary-cards .stat-card .value {
+      grid-column: 2;
+      grid-row: 2;
+      align-self: start;
+      padding: 0.12rem 0 0;
+      border: 0;
+      color: #123f56;
+      font-size: 1.35rem;
+      font-weight: 850;
+      line-height: 1;
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    #tab-afiliaciones .summary-cards .stat-card.sc-blue {
+      --stat-accent: #287eb7;
+      border-color: #c9e4f8;
+      background: linear-gradient(135deg, #f3f9fe, #eaf4fd);
+    }
+
+    #tab-afiliaciones .summary-cards .stat-card.sc-purple {
+      --stat-accent: #7653ad;
+      border-color: #e4d9f7;
+      background: linear-gradient(135deg, #faf7fe, #f3edfc);
+    }
+
+    #tab-afiliaciones .summary-cards .stat-card.sc-navy {
+      --stat-accent: #d7fff0;
+      border-color: #146b57;
+      background: linear-gradient(135deg, #08705a, #075344);
+      box-shadow: 0 8px 20px rgba(7, 83, 68, 0.19);
+    }
+
+    #tab-afiliaciones .summary-cards .stat-card.sc-navy .label { color: rgba(255, 255, 255, 0.88); }
+    #tab-afiliaciones .summary-cards .stat-card.sc-navy .value { color: #fff; }
+    #tab-afiliaciones .summary-cards .stat-card.sc-navy .sc-icon { background: rgba(255, 255, 255, 0.14); color: #baf6de; }
+
+    #tab-afiliaciones .summary-cards .stat-card.sc-blue .value,
+    #tab-afiliaciones .summary-cards .stat-card.sc-purple .value { color: #123f56; }
 
     .summary-final-card {
       padding: 0.8rem 1rem;
@@ -577,6 +794,8 @@
     }
 
     .summary-final-card .sc-summary-content {
+      align-items: center;
+      justify-content: space-between;
       display: flex;
       flex-direction: column;
       gap: 0.2rem;
@@ -613,6 +832,54 @@
     }
 
     .table-wrapper { overflow-x: auto; }
+    .mobile-asesor-controls { display: none; }
+    .consolidado-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 1200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      background: rgba(15, 23, 42, 0.68);
+    }
+    .consolidado-overlay[hidden] { display: none; }
+    .consolidado-dialog {
+      display: flex;
+      flex-direction: column;
+      width: min(1100px, 100%);
+      max-height: min(90vh, 900px);
+      overflow: hidden;
+      border-radius: var(--radius-lg);
+      background: var(--surface);
+      box-shadow: var(--shadow-lg);
+    }
+    .consolidado-header,
+    .consolidado-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.85rem 1rem;
+    }
+    .consolidado-header { border-bottom: 1px solid var(--border); }
+    .consolidado-footer {
+      justify-content: flex-end;
+      border-top: 1px solid var(--border);
+    }
+    .consolidado-title { color: var(--navy); font-size: 1rem; font-weight: 800; }
+    .consolidado-hint { margin-top: 0.2rem; color: var(--text-muted); font-size: 0.75rem; }
+    .consolidado-close {
+      padding: 0.45rem 0.8rem;
+      border: 1px solid var(--border-dark);
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+      color: var(--text);
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+    .consolidado-table-wrap { flex: 1; min-height: 0; overflow: auto; padding: 0.75rem; }
+    .consolidado-table-wrap table { min-width: 980px; }
 
     table {
       width: 100%;
@@ -693,6 +960,95 @@
       padding: 0.75rem 1rem;
       background: var(--bg);
       border-top: 1px solid var(--border);
+    }
+
+    @media (min-width: 561px) {
+      #tab-afiliaciones > .table-card {
+        padding: 0.65rem 0.75rem 0.35rem;
+        border-color: #dce9ee;
+        border-radius: 14px;
+        background: linear-gradient(180deg, #fff, #fbfdfd);
+      }
+
+      #tab-afiliaciones > .table-card .table-wrapper {
+        border-radius: 10px;
+      }
+
+      #tab-afiliaciones > .table-card table {
+        border-collapse: separate;
+        border-spacing: 0 5px;
+      }
+
+      #tab-afiliaciones > .table-card thead th {
+        padding: 0.72rem 0.5rem;
+        background: #e3f4ed;
+        color: #16466a;
+        border-bottom: 1px solid #c7e7d8;
+      }
+
+      #tab-afiliaciones > .table-card thead th:first-child { border-radius: 8px 0 0 8px; }
+      #tab-afiliaciones > .table-card thead th:last-child { border-radius: 0 8px 8px 0; }
+
+      #tab-afiliaciones > .table-card tbody tr:hover { background: #f2faf6; }
+      #tab-afiliaciones > .table-card tbody td {
+        padding: 0.45rem 0.35rem;
+        border-bottom: 0;
+      }
+
+      #tab-afiliaciones > .table-card tbody td:first-child {
+        color: #16466a;
+        font-weight: 700;
+      }
+
+      #tab-afiliaciones > .table-card tbody td input,
+      #tab-afiliaciones > .table-card tbody td select {
+        min-height: 36px;
+        border-color: #d7e4ed;
+        border-radius: 8px;
+      }
+
+      #tab-afiliaciones > .table-card tbody td input[readonly] {
+        background: #f1f5f7;
+      }
+
+      #tab-afiliaciones > .table-card tfoot tr {
+        background: linear-gradient(110deg, #16466a, #0d3b5c);
+      }
+
+      #tab-afiliaciones > .table-card tfoot td {
+        padding: 0.78rem 0.5rem !important;
+        border-right: 1px solid rgba(255, 255, 255, 0.12) !important;
+      }
+
+      #tab-afiliaciones > .table-card tfoot td:first-child {
+        border-radius: 9px 0 0 9px;
+      }
+
+      #tab-afiliaciones > .table-card tfoot td:last-child {
+        border: 0 !important;
+        border-radius: 0 9px 9px 0;
+      }
+
+      #tab-afiliaciones > .table-card .table-footer-bar {
+        padding: 0.45rem 0.45rem 0.35rem;
+        border: 0;
+        background: transparent;
+      }
+    }
+
+    #tab-afiliaciones > .table-card .btn-agregar-asesor {
+      min-height: 40px;
+      padding: 0.55rem 1rem;
+      border: 0;
+      border-radius: 9px;
+      background: linear-gradient(135deg, #07865d, #08744f);
+      color: #fff;
+      box-shadow: 0 4px 10px rgba(7, 134, 93, 0.16);
+    }
+
+    #tab-afiliaciones > .table-card .btn-agregar-asesor:hover {
+      background: linear-gradient(135deg, #08744f, #075d42);
+      color: #fff;
     }
 
     /* ─── SECTION CARD (form panel) ─────────────── */
@@ -874,6 +1230,8 @@
       font-weight: 700;
       cursor: pointer;
     }
+
+    .btn-print[hidden] { display: none !important; }
 
       /* sub-label inline (para grupos con etiqueta encima del input) */
     .input-group {
@@ -1071,6 +1429,76 @@
         white-space: normal;
       }
 
+      .section-header {
+        padding: 0.85rem 0.9rem;
+      }
+
+      .section-title-text {
+        font-size: 0.92rem;
+      }
+
+      .form-row {
+        gap: 0.6rem;
+        padding: 0.65rem 0.75rem;
+        min-height: 54px;
+      }
+
+      .form-row-label {
+        width: 145px;
+        min-width: 145px;
+        font-size: 0.75rem;
+        line-height: 1.25;
+        white-space: normal;
+      }
+
+      .form-row-inputs {
+        gap: 0.5rem;
+        min-width: 0;
+      }
+
+      .form-row-inputs input,
+      .form-row-inputs select,
+      .input-group input,
+      .input-group select,
+      .extra-expense-row input {
+        min-height: 38px;
+        padding: 0.45rem 0.5rem;
+        font-size: 0.84rem;
+      }
+
+      .input-group .sub-label {
+        font-size: 0.63rem;
+        line-height: 1.2;
+        letter-spacing: 0.02em;
+      }
+
+      .extra-expenses {
+        padding: 0.75rem 0.8rem;
+      }
+
+      .extra-expense-row {
+        gap: 0.5rem;
+        margin-bottom: 0.55rem;
+      }
+
+      .extra-expense-label {
+        font-size: 0.75rem;
+      }
+
+      .total-row {
+        min-height: 58px;
+        padding: 0.85rem 0.9rem;
+      }
+
+      .total-row-label {
+        font-size: 0.82rem;
+      }
+
+      .total-row input[readonly],
+      .total-amount .currency-prefix {
+        font-size: 1.05rem;
+      }
+
       .stat-card {
         min-height: 76px;
         padding: 0.55rem 0.65rem;
@@ -1083,6 +1511,166 @@
       .stat-card .value {
         font-size: 1rem;
         padding-left: 0.45rem;
+      }
+
+      .table-card .table-wrapper { overflow-x: visible; }
+      .table-card table {
+        display: block;
+        min-width: 0;
+        border-collapse: separate;
+      }
+      .table-card thead { display: none; }
+      .table-card tbody {
+        display: grid;
+        gap: 0.65rem;
+        padding: 0.65rem;
+      }
+      .table-card tbody tr {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0 0.55rem;
+        padding: 0.55rem;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        background: var(--surface);
+        box-shadow: var(--shadow-sm);
+      }
+      .table-card tbody td {
+        display: none;
+        min-width: 0;
+        padding: 0.4rem 0.3rem;
+        border: 0;
+        text-align: left;
+      }
+      .table-card tbody td::before {
+        content: attr(data-mobile-label);
+        display: block;
+        margin-bottom: 0.25rem;
+        color: var(--text-muted);
+        font-size: 0.65rem;
+        font-weight: 700;
+        line-height: 1.2;
+      }
+      .table-card tbody td:nth-child(2) {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 0 0.55rem;
+        grid-column: 1 / -1;
+      }
+      .table-card tbody td:nth-child(2)::before { display: none; }
+      .table-card tbody td:nth-child(2) > select { grid-column: 1; }
+      .table-card tbody td:nth-child(2) .mobile-asesor-controls { display: contents; }
+      .table-card tbody td:nth-child(2) .mobile-asesor-index { display: none; }
+      .table-card tbody td:nth-child(2) .mobile-asesor-toggle {
+        grid-column: 2;
+        grid-row: 1;
+      }
+      .mobile-asesor-controls {
+        display: contents;
+      }
+      .mobile-asesor-toggle {
+        padding: 0.45rem 0.7rem;
+        border: 1px solid var(--linked-bdr);
+        border-radius: var(--radius-sm);
+        background: var(--linked-bg);
+        color: var(--linked-text);
+        font-size: 0.72rem;
+        font-weight: 700;
+      }
+      .table-card tbody tr.mobile-expanded td {
+        display: grid;
+        grid-column: 1 / -1;
+      }
+      .table-card tbody tr.mobile-expanded td:first-child {
+        display: grid;
+        grid-column: 1 / -1;
+      }
+      .table-card tbody tr.mobile-expanded td:nth-child(14) {
+        display: flex;
+        grid-column: 1 / -1;
+        justify-content: flex-end;
+      }
+      .table-card tbody tr.mobile-expanded td:nth-child(2) {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+      }
+      .table-card tbody tr.mobile-expanded td:nth-child(2) .mobile-asesor-index {
+        display: none;
+      }
+      .consolidado-overlay {
+        align-items: stretch;
+        padding: 0;
+      }
+      .consolidado-dialog {
+        width: 100%;
+        max-height: 100%;
+        border-radius: 0;
+      }
+      .consolidado-table-wrap { padding: 0.5rem; }
+      .consolidado-hint { max-width: 235px; }
+      .consolidado-table-wrap table {
+        display: table;
+        min-width: 980px;
+        border-collapse: collapse;
+      }
+      .consolidado-table-wrap thead { display: table-header-group; }
+      .consolidado-table-wrap tbody { display: table-row-group; padding: 0; }
+      .consolidado-table-wrap tbody tr { display: table-row; padding: 0; box-shadow: none; }
+      .consolidado-table-wrap tbody td {
+        display: table-cell !important;
+        padding: 0.4rem 0.3rem;
+        text-align: center;
+      }
+      .consolidado-table-wrap tbody td::before { display: none; }
+      .consolidado-table-wrap tfoot { display: table-footer-group; padding: 0; }
+      .consolidado-table-wrap tfoot tr { display: table-row; }
+      .consolidado-table-wrap tfoot td {
+        display: table-cell;
+        padding: 0.5rem !important;
+        text-align: center;
+      }
+      .consolidado-table-wrap tfoot td::before { display: none; }
+      .consolidado-table-wrap .mobile-asesor-controls,
+      .consolidado-table-wrap .mobile-asesor-toggle { display: none; }
+      .consolidado-table-wrap select,
+      .consolidado-table-wrap input { min-width: 58px; }
+      .table-footer-bar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+      .table-card tfoot {
+        display: block;
+        padding: 0.65rem;
+        background: var(--navy);
+      }
+      .table-card tfoot tr {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0.4rem 0.55rem;
+      }
+      .table-card tfoot td {
+        display: flex;
+        flex-direction: column;
+        gap: 0.2rem;
+        padding: 0.45rem 0.35rem !important;
+        font-size: 0.85rem;
+        text-align: left;
+      }
+      .table-card tfoot td::before {
+        content: attr(data-mobile-label);
+        color: var(--on-dark-mid);
+        font-size: 0.7rem;
+        font-weight: 600;
+      }
+      .table-card tfoot td:first-child {
+        grid-column: 1 / -1;
+        padding-left: 0.4rem !important;
+      }
+      .table-card tfoot td:first-child::before,
+      .table-card tfoot td:last-child {
+        display: none;
       }
     }
 
@@ -1100,6 +1688,10 @@
       cursor: pointer;
       border: none;
       transition: all 0.18s ease;
+    }
+    .table-footer-bar .btn-ver-consolidado { display: none; }
+    @media (max-width: 560px) {
+      .table-footer-bar .btn-ver-consolidado { display: inline-flex; }
     }
 
     .btn-primary {
@@ -1130,6 +1722,30 @@
     .stat-card .value { color: var(--navy); }
     .stat-card.sc-green { background: linear-gradient(180deg, #A8E6CF, #83C5BE); border-color: rgba(45,106,79,0.14); box-shadow: var(--shadow-md); }
     .stat-card.sc-green .label, .stat-card.sc-green .value { color: #2D6A4F; }
+    #tab-afiliaciones .summary-cards .stat-card {
+      border-color: #cdebe0;
+      background: linear-gradient(135deg, #f3fbf7, #eaf7f1);
+      box-shadow: 0 5px 14px rgba(18, 63, 86, 0.06);
+    }
+    #tab-afiliaciones .summary-cards .stat-card .sc-icon { background: color-mix(in srgb, var(--stat-accent) 13%, white); color: var(--stat-accent); }
+    #tab-afiliaciones .summary-cards .stat-card .label { color: var(--stat-accent); }
+    #tab-afiliaciones .summary-cards .stat-card .value { color: #123f56; }
+    #tab-afiliaciones .summary-cards .stat-card.sc-blue {
+      border-color: #c9e4f8;
+      background: linear-gradient(135deg, #f3f9fe, #eaf4fd);
+    }
+    #tab-afiliaciones .summary-cards .stat-card.sc-purple {
+      border-color: #e4d9f7;
+      background: linear-gradient(135deg, #faf7fe, #f3edfc);
+    }
+    #tab-afiliaciones .summary-cards .stat-card.sc-navy {
+      border-color: #146b57;
+      background: linear-gradient(135deg, #08705a, #075344);
+      box-shadow: 0 8px 20px rgba(7, 83, 68, 0.19);
+    }
+    #tab-afiliaciones .summary-cards .stat-card.sc-navy .sc-icon { background: rgba(255,255,255,0.14); color: #baf6de; }
+    #tab-afiliaciones .summary-cards .stat-card.sc-navy .label { color: rgba(255,255,255,0.88); }
+    #tab-afiliaciones .summary-cards .stat-card.sc-navy .value { color: #fff; }
 
     .section-card { background: var(--surface); border-color: var(--border); box-shadow: var(--shadow-md); }
     .section-header { background: #F9FBFC; border-bottom-color: #83C5BE; }
@@ -1160,13 +1776,10 @@
     .balance-total { color: var(--gold-light); }
 
     .btn-primary { background: var(--green); color: var(--green-text); box-shadow: var(--shadow-sm); }
-    .btn-reset { background: var(--boton-restablecer-fondo); color: var(--boton-restablecer-texto); border-color: var(--boton-restablecer-borde); }
 
     .header-actions .btn-guardar:hover { background: color-mix(in srgb, var(--boton-guardar-fondo) 88%, #000000 12%); color: var(--boton-guardar-texto); filter: none; }
-    .header-actions .btn-validar:hover { background: color-mix(in srgb, var(--boton-validar-fondo) 88%, #000000 12%); color: var(--boton-validar-texto); filter: none; }
     .header-actions .btn-cerrar:hover { background: color-mix(in srgb, var(--boton-cerrar-fondo) 88%, #000000 12%); color: var(--boton-cerrar-texto); filter: none; }
     .header-actions .btn-print:hover { background: color-mix(in srgb, var(--boton-reporte-fondo) 88%, #000000 12%); color: var(--boton-reporte-texto); filter: none; }
-    .header-actions .btn-reset:hover { background: color-mix(in srgb, var(--boton-restablecer-fondo) 88%, #000000 12%); color: var(--boton-restablecer-texto); filter: none; }
 
     /* ─── PRINT ──────────────────────────────────── */
     .print-header { display: none; }
@@ -1193,24 +1806,8 @@
         margin: 0;
       }
 
-      .btn, .btn-danger, .btn-print { display: none !important; }
-
-      .nav-tabs {
-        display: flex !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-      }
-
-      .tab-btn {
-        background: rgba(12, 45, 72, 0.10) !important;
-        color: var(--white) !important;
-        border: 1px solid rgba(12, 45, 72, 0.20) !important;
-      }
-
-      .tab-btn.active {
-        background: var(--green) !important;
-        color: var(--white) !important;
-      }
+      .btn, .btn-danger, .btn-print, .modal-backdrop { display: none !important; }
+      .header-actions, .nav-switcher-row { display: none !important; }
 
       .print-header { display: block !important; }
 
@@ -1239,10 +1836,7 @@
         flex-wrap: nowrap !important;
       }
 
-      .header-actions {
-        display: flex !important;
-        justify-content: flex-end !important;
-      }
+      .header-actions { display: none !important; }
 
       .header-card img { width: 100px; }
 
@@ -1258,14 +1852,14 @@
       #tab-afiliaciones {
         display: block !important;
         page-break-after: always;
-        page-break-inside: avoid;
+        break-after: page;
       }
 
       /* PÁGINA 2: Contabilidad Coordinador */
       #tab-contabilidad {
         display: block !important;
-        page-break-after: avoid;
-        page-break-inside: avoid;
+        page-break-before: always;
+        break-before: page;
       }
 
       .tab-content { display: block !important; gap: 0.5rem !important; }
@@ -1390,43 +1984,42 @@
           <h1 data-empresa-nombre>Óptica Angelus Visión</h1>
           <p>Sistema Operativo y Contable de Campo</p>
         </div>
-        <div class="header-actions">
-          <div class="nav-tabs">
-            <button class="tab-btn active" onclick="switchTab('tab-afiliaciones', this)">1. Recepción Afiliaciones</button>
-            <button class="tab-btn" onclick="switchTab('tab-contabilidad', this)">2. Contabilidad Coordinador</button>
+        <div class="meta-row header-meta">
+          <div class="meta-field">
+            <label><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M16 3v4M8 3v4M3 10h18"></path></svg>Fecha Jornada</label>
+            <input type="date" id="global-fecha" value="">
           </div>
-          <button class="btn btn-reset" type="button" onclick="mostrarModalReset()">↺ Reestablecer</button>
-          <button class="btn btn-primary btn-guardar" type="button" onclick="guardarYSincronizarContabilidad()">💾 Guardar borrador</button>
-          <button class="btn btn-primary btn-validar" type="button" onclick="validarCierreContabilidad()">✓ Validar cierre</button>
-          <button class="btn btn-primary btn-cerrar" type="button" onclick="mostrarConfirmacionCierreContabilidad()">🔒 Cerrar contabilidad</button>
-          <button class="btn-print" onclick="mostrarReporteCierreContabilidad()">🖨️ Generar reporte</button>
+          <div class="meta-field">
+            <label><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"></path><circle cx="12" cy="10" r="2.5"></circle></svg>Municipio</label>
+            <input type="text" id="global-municipio" value="">
+          </div>
+          <div class="meta-field">
+            <label><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"></circle><path d="M5 21v-2a7 7 0 0 1 14 0v2"></path></svg>Coordinador</label>
+            <input type="text" id="global-coordinador" value="">
+          </div>
+        </div>
+        <div class="header-actions">
+          <span class="header-status" role="status" aria-live="polite" aria-label="Estado de la jornada">
+            Estado <strong id="estado-draft-contabilidad">Borrador local</strong>
+          </span>
+          <button class="btn btn-primary btn-guardar" type="button" onclick="guardarYSincronizarContabilidad()"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M5 3h12l4 4v14H3V3h2Z"></path><path d="M7 3v6h10V3M7 21v-8h10v8"></path></svg>Guardar borrador</button>
+          <button class="btn btn-primary btn-cerrar" type="button" onclick="mostrarConfirmacionCierreContabilidad()"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3M12 14v3"></path></svg>Cerrar contabilidad</button>
+          <button class="btn-print" type="button" hidden onclick="generarReporteContabilidadPDF()"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><path d="M6 14h12v7H6z"></path></svg>Generar reporte PDF</button>
         </div>
       </div>
-      <div class="meta-row">
-        <div class="meta-field">
-          <label>📅 Fecha Jornada</label>
-          <input type="date" id="global-fecha" value="">
-        </div>
-        <div class="meta-field">
-          <label>📍 Municipio</label>
-          <input type="text" id="global-municipio" value="">
-        </div>
-        <div class="meta-field">
-          <label>👤 Coordinador</label>
-          <input type="text" id="global-coordinador" value="">
-        </div>
-        <div class="meta-field">
-          <label>🗂️ Estado</label>
-          <input type="text" id="estado-draft-contabilidad" value="Borrador local" readonly>
+      <div class="nav-switcher-row">
+        <div class="nav-tabs" aria-label="Secciones de la jornada">
+          <button class="tab-btn active" onclick="switchTab('tab-afiliaciones', this)"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"></path></svg>1. Recepción Afiliaciones</button>
+          <button class="tab-btn" onclick="switchTab('tab-contabilidad', this)"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"></circle><path d="M5 21v-2a7 7 0 0 1 14 0v2"></path></svg>2. Contabilidad Coordinador</button>
         </div>
       </div>
-      <div class="meta-row" id="resumen-cierre-contabilidad" style="margin-top:0.6rem; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08); padding: 0.7rem 0.85rem; border-radius: 12px; display:flex; flex-wrap:wrap; gap:0.75rem; align-items:center; color:#fff;">
-        <span style="font-size:0.72rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; opacity:0.8;">Estado jornada:</span>
-        <strong id="estado-jornada-resumen" style="font-size:0.82rem;">Borrador</strong>
-        <span style="font-size:0.72rem; opacity:0.8;">|</span>
+      <div class="meta-row" id="resumen-cierre-contabilidad" style="margin-top:0.25rem; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08); padding: 0.35rem 0.85rem; border-radius: 12px; display:flex; flex-wrap:wrap; gap:0.75rem; align-items:center; color:#fff;">
         <span style="font-size:0.72rem; opacity:0.8;">Total afiliaciones: <strong id="resumen-total-afiliaciones">0</strong></span>
         <span style="font-size:0.72rem; opacity:0.8;">|</span>
         <span style="font-size:0.72rem; opacity:0.8;">Saldo final: <strong id="resumen-saldo-final">$0</strong></span>
+      </div>
+      <div id="aviso-contabilidad-bloqueada" hidden role="status" style="margin-top:0.6rem; padding:0.7rem 0.85rem; border:1px solid rgba(255,255,255,0.2); border-radius:10px; background:rgba(127,29,29,0.35); color:#fff; font-size:0.82rem; line-height:1.45;">
+        Esta jornada está cerrada y no puede modificarse. Si necesita cambios, solicite a administración que la reabra.
       </div>
     </div>
   </div>
@@ -1437,28 +2030,28 @@
     <div class="summary-cards">
       <div class="stat-card">
         <div class="sc-header">
-          <div class="sc-icon">👥</div>
+          <div class="sc-icon"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"></path></svg></div>
           <div class="label">Total Afiliaciones</div>
         </div>
         <div class="value" id="card-tot-aff">0</div>
       </div>
-      <div class="stat-card">
+      <div class="stat-card sc-blue">
         <div class="sc-header">
-          <div class="sc-icon">💵</div>
+          <div class="sc-icon"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="8" ry="3"></ellipse><path d="M4 5v14c0 1.66 3.58 3 8 3s8-1.34 8-3V5M4 10c0 1.66 3.58 3 8 3s8-1.34 8-3M4 15c0 1.66 3.58 3 8 3s8-1.34 8-3"></path></svg></div>
           <div class="label">Recaudo Abono</div>
         </div>
         <div class="value" id="card-tot-abono">$0</div>
       </div>
-      <div class="stat-card">
+      <div class="stat-card sc-purple">
         <div class="sc-header">
-          <div class="sc-icon">🍽️</div>
+          <div class="sc-icon"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M7 3v7M4 3v4a3 3 0 0 0 6 0V3M7 10v11M16 3v18M16 3c2 1.3 4 3.5 4 6v2h-4"></path></svg></div>
           <div class="label">Almuerzos Campo</div>
         </div>
         <div class="value" id="card-tot-almuerzo">$0</div>
       </div>
       <div class="stat-card sc-navy">
         <div class="sc-header">
-          <div class="sc-icon">✅</div>
+          <div class="sc-icon"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="13" rx="2"></rect><circle cx="12" cy="12.5" r="3"></circle><path d="M6 10h.01M18 15h.01"></path></svg></div>
           <div class="label">Recaudo Neto Asesores</div>
         </div>
         <div class="value" id="card-tot-neto">$0</div>
@@ -1492,23 +2085,44 @@
           <tfoot>
             <tr>
               <td colspan="3" style="text-align:left; padding-left:1rem; letter-spacing:0.05em;">TOTALES</td>
-              <td id="tot-aff">0</td>
-              <td id="tot-rec-abono">$0</td>
-              <td id="tot-almuerzo">$0</td>
-              <td id="tot-cena">$0</td>
-              <td id="tot-urbano">$0</td>
-              <td id="tot-vereda">$0</td>
-              <td id="tot-abono-adic">$0</td>
-              <td id="tot-abono-ganado">$0</td>
-              <td id="tot-recaudo-neto">$0</td>
-              <td id="tot-prestamo">$0</td>
+              <td id="tot-aff" data-mobile-label="Nº Aff">0</td>
+              <td id="tot-rec-abono" data-mobile-label="Recaudo ($)">$0</td>
+              <td id="tot-almuerzo" data-mobile-label="Almuerzo">$0</td>
+              <td id="tot-cena" data-mobile-label="Cena">$0</td>
+              <td id="tot-urbano" data-mobile-label="T. Urbano">$0</td>
+              <td id="tot-vereda" data-mobile-label="T. Vereda">$0</td>
+              <td id="tot-abono-adic" data-mobile-label="A. Adic ($)">$0</td>
+              <td id="tot-abono-ganado" data-mobile-label="A. Ganado ($)">$0</td>
+              <td id="tot-recaudo-neto" data-mobile-label="Recaudo Neto">$0</td>
+              <td id="tot-prestamo" data-mobile-label="Préstamo">$0</td>
               <td></td>
             </tr>
           </tfoot>
         </table>
       </div>
       <div class="table-footer-bar">
-        <button class="btn btn-agregar-asesor" onclick="agregarFilaAfiliacion()">+ Agregar Asesor</button>
+        <button class="btn btn-agregar-asesor" onclick="agregarFilaAfiliacion()"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg>Agregar Asesor</button>
+        <button class="btn btn-primary btn-ver-consolidado" type="button" onclick="verConsolidadoAfiliaciones()">Ver consolidado</button>
+      </div>
+    </div>
+
+    <div id="consolidado-afiliaciones" class="consolidado-overlay" role="dialog" aria-modal="true"
+         aria-labelledby="consolidado-afiliaciones-titulo" hidden
+         onclick="if (event.target === this) cerrarConsolidadoAfiliaciones()">
+      <div class="consolidado-dialog">
+        <div class="consolidado-header">
+          <div>
+            <h2 id="consolidado-afiliaciones-titulo" class="consolidado-title">Consolidado de asesores</h2>
+            <p class="consolidado-hint">Vista completa de los registros de la jornada. En móvil, desliza horizontalmente para ver todas las columnas.</p>
+          </div>
+          <button class="consolidado-close" type="button" aria-label="Cerrar consolidado"
+                  onclick="cerrarConsolidadoAfiliaciones()">Cerrar</button>
+        </div>
+        <div id="consolidado-afiliaciones-contenido" class="consolidado-table-wrap" tabindex="0"
+             aria-label="Tabla consolidada de afiliaciones"></div>
+        <div class="consolidado-footer">
+          <button class="consolidado-close" type="button" onclick="cerrarConsolidadoAfiliaciones()">Cerrar</button>
+        </div>
       </div>
     </div>
 
@@ -1842,11 +2456,13 @@
         <strong>Antes de seguir, recuerda registrar a cada uno de los promotores en cada fila.</strong>
       </p>
 
-      <div class="app-modal-actions" style="justify-content: space-between; gap: 0.75rem;">
+      <div class="app-modal-actions welcome-modal-actions" style="justify-content: space-between; gap: 0.75rem;">
         <button type="button" class="app-modal-btn secondary" onclick="cerrarModalBienvenidaContabilidad(false)">
-          Nuevo
+          <svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg>
+          Iniciar nueva jornada
         </button>
         <button type="button" class="app-modal-btn primary" onclick="abrirModalCargaBorradoresContabilidad()">
+          <svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 15V3m0 0L7 8m5-5 5 5"></path><path d="M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"></path></svg>
           Cargar borrador
         </button>
       </div>
@@ -1863,12 +2479,12 @@
 
     <div class="app-modal-body">
       <p id="modal-borradores-loading" class="text-xs text-slate-500 mb-2">Espera, estamos cargando los borradores disponibles...</p>
-      <div id="modal-borradores-contabilidad" class="w-full mb-2 hidden">
-        <label for="select-borrador-contabilidad" class="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">Borradores disponibles</label>
-        <select id="select-borrador-contabilidad" class="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-700 bg-white hidden"></select>
+      <div id="modal-borradores-contabilidad" class="draft-select-group hidden">
+        <label for="select-borrador-contabilidad" class="draft-select-label">Borradores disponibles</label>
+        <select id="select-borrador-contabilidad" class="draft-select hidden"></select>
       </div>
 
-      <div class="app-modal-actions" style="justify-content: space-between; gap: 0.75rem;">
+      <div class="app-modal-actions draft-modal-actions" style="justify-content: space-between; gap: 0.75rem;">
         <button type="button" class="app-modal-btn secondary" onclick="cerrarModalCargaBorradoresContabilidad(true)">
           Cancelar
         </button>
@@ -1908,35 +2524,6 @@
   </div>
 </div>
 
-<div id="modal-reset" class="modal-backdrop" aria-hidden="true">
-  <div class="app-modal" role="dialog" aria-modal="true" aria-labelledby="modal-reset-title">
-    <div class="app-modal-header">
-      <h3 id="modal-reset-title">¿Borrar datos de la jornada?</h3>
-      <button type="button" class="app-modal-close" aria-label="Cerrar modal" onclick="cerrarModalReset()">×</button>
-    </div>
-
-<div class="app-modal-body">
-  <p>
-    Se restablecerán todos los datos cargados de esta jornada.
-  </p>
-  <p>
-    <strong>Esta acción no se puede deshacer.</strong>
-  </p>
-
-  <div class="app-modal-actions">
-    <button type="button" class="app-modal-btn secondary" onclick="cerrarModalReset()">
-      Cancelar
-    </button>
-    <button type="button" class="app-modal-btn primary" onclick="confirmarResetContabilidad()">
-      Sí, borrar datos
-    </button>
-  </div>
-</div>
-
-  </div>
-</div>
-
-
 <script src="../../assets/js/api-config.js"></script>
 <script src="../../assets/js/empresa-brand.js"></script>
 <script src="../../assets/js/utils.js"></script>
@@ -1946,6 +2533,51 @@
   const contabilidadPromotores = [];
   const CONTABILIDAD_DRAFT_KEY = 'contabilidad_diaria_draft_v1';
   let CONTABILIDAD_ESTADO_ACTUAL = 'borrador';
+
+  function contabilidadEstaBloqueada() {
+    return CONTABILIDAD_ESTADO_ACTUAL === 'cerrada' || CONTABILIDAD_ESTADO_ACTUAL === 'validada';
+  }
+
+  function actualizarBloqueoEdicionContabilidad() {
+    const bloqueada = contabilidadEstaBloqueada();
+    const botonGuardar = document.querySelector('.header-actions .btn-guardar');
+    const botonCerrar = document.querySelector('.header-actions .btn-cerrar');
+    const botonReporte = document.querySelector('.header-actions .btn-print');
+    if (botonGuardar) botonGuardar.hidden = bloqueada;
+    if (botonCerrar) botonCerrar.hidden = bloqueada;
+    if (botonReporte) botonReporte.hidden = !bloqueada;
+
+    const controles = document.querySelectorAll(
+      '.meta-row input:not(#estado-draft-contabilidad), #tbody-afiliaciones input, #tbody-afiliaciones select, #tbody-afiliaciones .btn-danger, #tab-contabilidad input, #tab-contabilidad select, #tab-contabilidad button, .table-footer-bar .btn-agregar-asesor, .header-actions .btn-guardar, .header-actions .btn-cerrar'
+    );
+
+    controles.forEach(function (control) {
+      if (bloqueada) {
+        if (control.dataset.contabilidadDisabledOriginal === undefined) {
+          control.dataset.contabilidadDisabledOriginal = String(control.disabled);
+        }
+        control.disabled = true;
+      } else if (control.dataset.contabilidadDisabledOriginal !== undefined) {
+        control.disabled = control.dataset.contabilidadDisabledOriginal === 'true';
+        delete control.dataset.contabilidadDisabledOriginal;
+      }
+    });
+
+    const aviso = document.getElementById('aviso-contabilidad-bloqueada');
+    if (aviso) aviso.hidden = !bloqueada;
+
+    const estadoTexto = bloqueada
+      ? (CONTABILIDAD_ESTADO_ACTUAL === 'validada' ? 'Validada - edición bloqueada' : 'Cerrada - edición bloqueada')
+      : (CONTABILIDAD_ESTADO_ACTUAL === 'pendiente_de_validacion' ? 'Pendiente de validación' : '');
+    if (estadoTexto) actualizarEstadoDraftContabilidad(estadoTexto);
+  }
+
+  function rechazarEdicionContabilidadBloqueada() {
+    if (!contabilidadEstaBloqueada()) return false;
+    mostrarEstadoContabilidad('Esta jornada está cerrada. Solicita a administración que la reabra antes de hacer cambios.', 'error');
+    setTimeout(ocultarEstadoContabilidad, 2200);
+    return true;
+  }
 
   function obtenerSnapshotContabilidad() {
     const filas = [];
@@ -2071,13 +2703,19 @@
   function actualizarEstadoDraftContabilidad(texto) {
     const estado = document.getElementById('estado-draft-contabilidad');
     if (estado && texto) {
-      estado.value = texto;
+      estado.textContent = texto;
+      const indicador = estado.closest('.header-status');
+      if (indicador) indicador.setAttribute('aria-label', 'Estado: ' + texto);
     }
   }
 
   function obtenerResumenCierreContabilidad() {
     const draft = obtenerSnapshotContabilidad();
-    const totalAfiliaciones = Array.isArray(draft.afiliaciones) ? draft.afiliaciones.length : 0;
+    const totalAfiliaciones = Array.isArray(draft.afiliaciones)
+      ? draft.afiliaciones.reduce(function (total, fila) {
+        return total + (Number(fila.aff) || 0);
+      }, 0)
+      : 0;
     const totalIngresos = Number(draft.totales && draft.totales.totalIngresos) || 0;
     const totalEgresos = Number(draft.totales && draft.totales.totalEgresos) || 0;
     const totalDeduccion = Number(draft.totales && draft.totales.totalDeduccion) || 0;
@@ -2100,19 +2738,17 @@
 
   function renderResumenCierreContabilidad() {
     const resumen = obtenerResumenCierreContabilidad();
-    const estadoResumen = document.getElementById('estado-jornada-resumen');
     const totalAfiliaciones = document.getElementById('resumen-total-afiliaciones');
     const saldoFinal = document.getElementById('resumen-saldo-final');
 
-    if (estadoResumen) {
-      const label = resumen.estado === 'validada' ? 'Validada' : (resumen.estado === 'cerrada' ? 'Cerrada' : 'Borrador');
-      estadoResumen.textContent = label;
-    }
+    const label = resumen.estado === 'validada' ? 'Validada' : (resumen.estado === 'cerrada' ? 'Cerrada' : 'Borrador');
+    actualizarEstadoDraftContabilidad(label);
     if (totalAfiliaciones) totalAfiliaciones.textContent = String(resumen.totalAfiliaciones || 0);
     if (saldoFinal) saldoFinal.textContent = '$' + Number(resumen.saldoFinal || 0).toLocaleString('es-VE', { maximumFractionDigits: 2 });
+    actualizarBloqueoEdicionContabilidad();
   }
 
-  function mostrarReporteCierreContabilidad() {
+  function mostrarResumenCierreContabilidad() {
     const resumen = obtenerResumenCierreContabilidad();
     const contenedor = document.getElementById('contenido-reporte-cierre-contabilidad');
     const modal = document.getElementById('modal-reporte-cierre-contabilidad');
@@ -2170,7 +2806,7 @@
       return;
     }
 
-    mostrarReporteCierreContabilidad();
+    mostrarResumenCierreContabilidad();
   }
 
   function cerrarReporteCierreContabilidad() {
@@ -2185,7 +2821,19 @@
     modal.setAttribute('aria-hidden', 'true');
   }
 
-  async function validarCierreContabilidad() {
+  function generarReporteContabilidadPDF() {
+    if (!contabilidadEstaBloqueada()) {
+      mostrarEstadoContabilidad('Cierra la contabilidad antes de generar el reporte.', 'error');
+      setTimeout(ocultarEstadoContabilidad, 1800);
+      return false;
+    }
+
+    window.print();
+    return true;
+  }
+
+  async function prepararCierreContabilidad() {
+    if (rechazarEdicionContabilidadBloqueada()) return { ok: false, error: 'La jornada está cerrada y bloqueada.' };
     const draft = obtenerSnapshotContabilidad();
     if (!draft.fecha || !draft.municipio || !draft.coordinador) {
       mostrarEstadoContabilidad('Completa la fecha, municipio y coordinador antes de validar el cierre.', 'error');
@@ -2204,18 +2852,17 @@
       window.ContabilidadDiariaService.saveDraft(saved.draft);
       actualizarEstadoDraftContabilidad('Pendiente de validación');
       renderResumenCierreContabilidad();
-      mostrarEstadoContabilidad('La jornada quedó pendiente de validación administrativa.', 'success');
-      setTimeout(ocultarEstadoContabilidad, 1200);
       return { ok: true, draft: saved.draft };
     } catch (error) {
-      console.error('[ContabilidadDiaria] No se pudo enviar la jornada a validación:', error);
-      mostrarEstadoContabilidad('No se pudo enviar la jornada a validación.', 'error');
+      console.error('[ContabilidadDiaria] No se pudo preparar el cierre:', error);
+      mostrarEstadoContabilidad('No se pudo preparar el cierre de la jornada.', 'error');
       setTimeout(ocultarEstadoContabilidad, 1800);
       return { ok: false, error: error.message };
     }
   }
 
   async function cerrarContabilidad() {
+    if (rechazarEdicionContabilidadBloqueada()) return { ok: false, error: 'La jornada está cerrada y bloqueada.' };
     const draft = obtenerSnapshotContabilidad();
     if (!draft.fecha || !draft.municipio || !draft.coordinador) {
       mostrarEstadoContabilidad('Completa la fecha, municipio y coordinador antes de cerrar la contabilidad.', 'error');
@@ -2223,7 +2870,7 @@
       return { ok: false, error: 'Faltan metadatos de la jornada.' };
     }
 
-    const validado = await validarCierreContabilidad();
+    const validado = await prepararCierreContabilidad();
     if (!validado.ok) return validado;
 
     try {
@@ -2246,6 +2893,7 @@
   }
 
   function guardarBorradorContabilidad(mostrarFeedback = true) {
+    if (rechazarEdicionContabilidadBloqueada()) return { ok: false, error: 'La jornada está cerrada y bloqueada.' };
     if (!window.ContabilidadDiariaService) {
       return { ok: false, error: 'Servicio de borrador no disponible.' };
     }
@@ -2277,6 +2925,7 @@
   }
 
   async function guardarYSincronizarContabilidad() {
+    if (rechazarEdicionContabilidadBloqueada()) return { ok: false, error: 'La jornada está cerrada y bloqueada.' };
     if (!window.ContabilidadDiariaService) {
       return { ok: false, error: 'Servicio de borrador no disponible.' };
     }
@@ -2294,6 +2943,7 @@
       if (respuesta && respuesta.ok) {
         CONTABILIDAD_ESTADO_ACTUAL = respuesta.draft.estado || 'borrador';
         actualizarEstadoDraftContabilidad('Borrador guardado');
+        actualizarBloqueoEdicionContabilidad();
         mostrarEstadoContabilidad('Borrador guardado correctamente.', 'success');
       } else {
         actualizarEstadoDraftContabilidad('Guardado localmente. Pendiente de sincronización');
@@ -2334,6 +2984,7 @@
     const draft = draftOverride || window.ContabilidadDiariaService.loadDraft();
     if (!draft) return false;
     CONTABILIDAD_ESTADO_ACTUAL = draft.estado || 'borrador';
+    actualizarBloqueoEdicionContabilidad();
 
     const metaCampos = [
       ['global-fecha', formatDateInputValue(draft.fecha || '')],
@@ -2525,25 +3176,6 @@
     }
   }
 
-  function mostrarModalReset() {
-    const modal = document.getElementById('modal-reset');
-    if (!modal) return;
-    modal.classList.add('visible');
-    modal.setAttribute('aria-hidden', 'false');
-  }
-
-  function cerrarModalReset() {
-    const modal = document.getElementById('modal-reset');
-    if (!modal) return;
-    modal.classList.remove('visible');
-    modal.setAttribute('aria-hidden', 'true');
-  }
-
-  function confirmarResetContabilidad() {
-    cerrarModalReset();
-    restablecerContabilidad();
-  }
-
   async function mostrarModalBienvenidaContabilidad() {
     const modal = document.getElementById('modal-bienvenida-contabilidad');
     if (!modal) return;
@@ -2692,7 +3324,7 @@
       if (fechas.length) {
         select.classList.remove('hidden');
         if (confirmar) confirmar.classList.remove('hidden');
-        if (loading) loading.textContent = 'Borradores disponibles para cargar.';
+        if (loading) loading.textContent = 'Selecciona la jornada que deseas continuar.';
       } else if (errorRemoto) {
         select.classList.add('hidden');
         if (confirmar) confirmar.classList.add('hidden');
@@ -2782,9 +3414,7 @@
       }
     }
 
-    if (document.getElementById('estado-draft-contabilidad')) {
-      document.getElementById('estado-draft-contabilidad').value = 'Borrador cargado';
-    }
+    actualizarEstadoDraftContabilidad('Borrador cargado');
 
     mostrarEstadoContabilidad('Borrador cargado correctamente.', 'success');
     setTimeout(ocultarEstadoContabilidad, 1200);
@@ -2839,6 +3469,7 @@
   }
 
   function restablecerContabilidad() {
+    if (rechazarEdicionContabilidadBloqueada()) return false;
     CONTABILIDAD_ESTADO_ACTUAL = 'borrador';
     const tbody = document.getElementById('tbody-afiliaciones');
     if (tbody) {
@@ -2869,7 +3500,7 @@
     document.getElementById('global-coordinador').value = '';
 
     const estadoDraft = document.getElementById('estado-draft-contabilidad');
-    if (estadoDraft) estadoDraft.value = 'Borrador local';
+    if (estadoDraft) actualizarEstadoDraftContabilidad('Borrador local');
 
     limpiarResumenContabilidad();
 
@@ -2893,7 +3524,7 @@
           </select>
         </td>
         <td><input type="number" class="input-aff" value="" min="0" oninput="calcularFilaAfiliacion(this.closest('tr'))"></td>
-        <td><input type="number" class="input-rec-abono" value="" oninput="calcularFilaAfiliacion(this.closest('tr'), true)"></td>
+        <td><input type="number" class="input-rec-abono" value="" readonly></td>
         <td><input type="number" class="input-almuerzo" value="" readonly></td>
         <td><input type="number" class="input-cena" value="" readonly></td>
         <td><input type="number" class="input-urbano" value="" oninput="calcularFilaAfiliacion(this.closest('tr'))"></td>
@@ -2902,10 +3533,12 @@
         <td><input type="number" class="input-abono-ganado" value="" oninput="calcularFilaAfiliacion(this.closest('tr'))"></td>
         <td><input type="number" class="input-recaudo-neto net-recaudo-cell" value="" readonly></td>
         <td><input type="number" class="input-prestamo" value="" oninput="recalcularTodo()"></td>
-        <td><button class="btn btn-danger" onclick="eliminarFilaAfiliacion(this)">✕</button></td>
+        <td><button class="btn btn-danger" aria-label="Eliminar asesor" title="Eliminar asesor" onclick="eliminarFilaAfiliacion(this)">✕</button></td>
       `;
+      prepararFilaAfiliacionMovil(tr, 1);
       tbody.appendChild(tr);
     }
+    actualizarBloqueoEdicionContabilidad();
   }
 
   window.addEventListener('load', function () {
@@ -2932,6 +3565,7 @@
   }
 
   function agregarFilaAfiliacion(datos = null) {
+    if (!datos && rechazarEdicionContabilidadBloqueada()) return;
     const tbody = document.getElementById('tbody-afiliaciones');
     if (!tbody) return;
 
@@ -2953,7 +3587,7 @@
         </select>
       </td>
       <td><input type="number" class="input-aff" value="${datos ? datos.aff    : ''}" min="0" oninput="calcularFilaAfiliacion(this.closest('tr'))"></td>
-      <td><input type="number" class="input-rec-abono" value="${datos ? datos.recAbono : ''}" oninput="calcularFilaAfiliacion(this.closest('tr'), true)"></td>
+      <td><input type="number" class="input-rec-abono" value="${datos ? datos.recAbono : ''}" readonly></td>
       <td><input type="number" class="input-almuerzo" value="${datos ? datos.almuerzo : ''}" readonly></td>
       <td><input type="number" class="input-cena" value="${datos ? datos.cena : ''}" readonly></td>
       <td><input type="number" class="input-urbano" value="${datos ? datos.urbano  : ''}" oninput="calcularFilaAfiliacion(this.closest('tr'))"></td>
@@ -2962,9 +3596,10 @@
       <td><input type="number" class="input-abono-ganado" value="${datos ? datos.ganado : ''}" oninput="calcularFilaAfiliacion(this.closest('tr'))"></td>
       <td><input type="number" class="input-recaudo-neto net-recaudo-cell" value="${datos ? datos.recaudoNeto : ''}" readonly></td>
       <td><input type="number" class="input-prestamo" value="${datos ? datos.prestamo : ''}" oninput="recalcularTodo()"></td>
-      <td><button class="btn btn-danger" onclick="eliminarFilaAfiliacion(this)">✕</button></td>
+      <td><button class="btn btn-danger" aria-label="Eliminar asesor" title="Eliminar asesor" onclick="eliminarFilaAfiliacion(this)">✕</button></td>
     `;
 
+    prepararFilaAfiliacionMovil(tr, index);
     tbody.appendChild(tr);
 
     if (datos) {
@@ -2972,17 +3607,144 @@
     }
   }
 
+  function prepararFilaAfiliacionMovil(tr, index) {
+    const etiquetas = [
+      'N°',
+      'Asesor / Promotor',
+      'Rol',
+      'Nº Aff',
+      'Recaudo ($)',
+      'Almuerzo',
+      'Cena',
+      'T. Urbano',
+      'T. Vereda',
+      'A. Adic ($)',
+      'A. Ganado ($)',
+      'Recaudo Neto',
+      'Préstamo',
+      'Acciones'
+    ];
+
+    tr.querySelectorAll('td').forEach(function (celda, posicion) {
+      celda.dataset.mobileLabel = etiquetas[posicion] || '';
+    });
+
+    const celdaAsesor = tr.querySelector('td:nth-child(2)');
+    if (!celdaAsesor) return;
+
+    const controles = document.createElement('div');
+    controles.className = 'mobile-asesor-controls';
+
+    const numero = document.createElement('span');
+    numero.className = 'mobile-asesor-index';
+    numero.textContent = 'N° ' + index;
+
+    const toggle = document.createElement('button');
+    toggle.type = 'button';
+    toggle.className = 'mobile-asesor-toggle';
+    toggle.setAttribute('aria-expanded', 'false');
+    toggle.textContent = 'Detalle';
+    toggle.setAttribute('aria-label', 'Ver detalle del asesor ' + index);
+    toggle.addEventListener('click', function () {
+      const expandida = tr.classList.toggle('mobile-expanded');
+      const numeroAsesor = Array.prototype.indexOf.call(tr.parentNode.children, tr) + 1;
+      toggle.setAttribute('aria-expanded', String(expandida));
+      toggle.setAttribute('aria-label', (expandida ? 'Cerrar detalle del asesor ' : 'Ver detalle del asesor ') + numeroAsesor);
+      toggle.textContent = expandida ? 'Cerrar detalle' : 'Detalle';
+    });
+
+    controles.appendChild(numero);
+    controles.appendChild(toggle);
+    celdaAsesor.appendChild(controles);
+  }
+
+  function renumerarFilasAfiliacion() {
+    document.querySelectorAll('#tbody-afiliaciones tr').forEach(function (tr, index) {
+      const celdaNumero = tr.querySelector('.index-cell');
+      const numeroMovil = tr.querySelector('.mobile-asesor-index');
+      if (celdaNumero) celdaNumero.textContent = index + 1;
+      if (numeroMovil) numeroMovil.textContent = 'N° ' + (index + 1);
+      const botonDetalle = tr.querySelector('.mobile-asesor-toggle');
+      if (botonDetalle) {
+        const accion = tr.classList.contains('mobile-expanded') ? 'Cerrar detalle del asesor ' : 'Ver detalle del asesor ';
+        botonDetalle.setAttribute('aria-label', accion + (index + 1));
+      }
+    });
+  }
+
+  function verConsolidadoAfiliaciones() {
+    const origen = document.querySelector('.table-card table');
+    const overlay = document.getElementById('consolidado-afiliaciones');
+    const contenido = document.getElementById('consolidado-afiliaciones-contenido');
+    if (!origen || !overlay || !contenido) return;
+
+    const tabla = origen.cloneNode(true);
+    tabla.removeAttribute('id');
+    tabla.querySelectorAll('[id]').forEach(function (elemento) {
+      elemento.removeAttribute('id');
+    });
+    tabla.querySelectorAll('.mobile-asesor-controls').forEach(function (elemento) {
+      elemento.remove();
+    });
+
+    const controlesOriginales = origen.querySelectorAll('input, select');
+    const controlesClonados = tabla.querySelectorAll('input, select');
+    controlesClonados.forEach(function (control, index) {
+      const original = controlesOriginales[index];
+      if (original) {
+        if (control.tagName === 'SELECT') {
+          Array.from(control.options).forEach(function (opcion, opcionIndex) {
+            opcion.selected = original.options[opcionIndex].selected;
+          });
+        } else {
+          control.value = original.value;
+        }
+      }
+      control.disabled = true;
+      ['oninput', 'onchange', 'onclick', 'onkeydown'].forEach(function (atributo) {
+        control.removeAttribute(atributo);
+      });
+    });
+
+    tabla.querySelectorAll('tr').forEach(function (fila) {
+      if (fila.lastElementChild) fila.lastElementChild.remove();
+    });
+
+    contenido.replaceChildren(tabla);
+    overlay.dataset.previousBodyOverflow = document.body.style.overflow;
+    overlay._triggerElement = document.activeElement;
+    document.body.style.overflow = 'hidden';
+    overlay.hidden = false;
+    overlay.querySelector('[aria-label="Cerrar consolidado"]').focus();
+  }
+
+  function cerrarConsolidadoAfiliaciones() {
+    const overlay = document.getElementById('consolidado-afiliaciones');
+    if (!overlay || overlay.hidden) return;
+    overlay.hidden = true;
+    document.body.style.overflow = overlay.dataset.previousBodyOverflow || '';
+    if (overlay._triggerElement && typeof overlay._triggerElement.focus === 'function') {
+      overlay._triggerElement.focus();
+    }
+  }
+
+  document.getElementById('consolidado-afiliaciones')?.addEventListener('keydown', function (event) {
+    if (event.key === 'Escape') cerrarConsolidadoAfiliaciones();
+  });
+
   function eliminarFilaAfiliacion(btn) {
+    if (rechazarEdicionContabilidadBloqueada()) return;
     btn.closest("tr").remove();
+    renumerarFilasAfiliacion();
     recalcularTodo();
   }
 
-  function calcularFilaAfiliacion(tr, recaudoManual = false) {
+  function calcularFilaAfiliacion(tr) {
     const rol = tr.querySelector(".select-rol").value;
     const aff = parseInt(tr.querySelector(".input-aff").value) || 0;
 
     const inputRecAbono = tr.querySelector(".input-rec-abono");
-    if (!recaudoManual) inputRecAbono.value = aff * 3;
+    inputRecAbono.value = aff * 3;
     const recaudoAbono = parseFloat(inputRecAbono.value) || 0;
 
     const almuerzo = (rol === "PROMOTOR" && aff >= 1) ? 3 : 0;
@@ -3049,6 +3811,7 @@
     document.getElementById("ingreso-abonos-adic").value   = totAbonoAdic;
 
     calcularContabilidad();
+    renderResumenCierreContabilidad();
   }
 
   /* ── MONEDA DUAL: HOTEL ── */

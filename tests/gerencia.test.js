@@ -71,10 +71,17 @@ test('la interfaz Herramientas presenta nombre, descripción, link e iframe en p
   assert.match(module, /name="descripcion"/);
   assert.match(module, /name="link"/);
   assert.match(module, /document\.createElement\('iframe'\)/);
+  assert.match(module, /frame\.title = 'Hoja de ' \+ tab\.nombre/);
+  assert.match(module, /frame\.allowFullscreen = true/);
+  assert.match(module, /frame\.hidden = true/);
+  assert.match(module, /frame\.src = tab\.url/);
+  assert.doesNotMatch(module, /frame\.referrerPolicy/);
   assert.doesNotMatch(module, /id="gm-tabs"/);
   assert.match(module, /function _gerenciaSelectTab/);
   assert.match(module, /data-gm-zoom/);
   assert.match(module, /data-gm-fullscreen/);
+  assert.match(module, /linear-gradient\(110deg,#082c4a,#008a69\)/);
+  assert.match(module, /\.gm-btn\.primary\{border-color:#008a69;background:#008a69;color:#fff\}/);
   assert.match(module, /adminRegistrarHojaAbierta\('gerencia'/);
   assert.match(module, /window\.__ksGerenciaTabs \|\| \[\]/);
 });

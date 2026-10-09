@@ -33,6 +33,63 @@ test('las plantillas no deben bloquear la carga del branding central con condici
   }
 });
 
+test('el branding prepara las plantillas con la raíz de la aplicación en GitHub Pages', () => {
+  const brandScript = fs.readFileSync(path.join(root, 'assets', 'js', 'empresa-brand.js'), 'utf8');
+  let onReady;
+  const document = {
+    baseURI: 'https://sistemacontableva.github.io/demo/',
+    readyState: 'loading',
+    addEventListener: function (event, callback) {
+      if (event === 'DOMContentLoaded') onReady = callback;
+    },
+    querySelectorAll: function () { return []; },
+    title: ''
+  };
+  const window = {
+    location: {
+      href: 'https://sistemacontableva.github.io/demo/',
+      pathname: '/demo/'
+    }
+  };
+
+  vm.runInNewContext(brandScript, { window, document, URL, console });
+  assert.equal(typeof onReady, 'function', 'El branding debe esperar al DOM');
+  const html = window.empresaBrand.preparePrintHtml('<html><head><title>Prueba</title></head><body></body></html>');
+
+  assert.match(html, /<base href="https:\/\/sistemacontableva\.github\.io\/demo\/">/);
+  assert.equal(
+    window.empresaBrand.resolveAppUrl('assets/images/logomenu.png'),
+    'https://sistemacontableva.github.io/demo/assets/images/logomenu.png',
+    'El logo debe resolverse dentro de la carpeta publicada de la aplicación'
+  );
+});
+
+test('las plantillas de impresión usan la raíz de la aplicación para el logo y recursos locales', () => {
+  const files = listarTemplates();
+  assert.ok(files.length > 0, 'Debe haber plantillas HTML para verificar');
+
+  for (const file of files) {
+    const text = fs.readFileSync(file, 'utf8');
+    assert.match(
+      text,
+      /<base href="\.\.\/\.\.\/\.\.\/">/i,
+      `La plantilla ${path.relative(root, file)} debe resolver sus recursos desde la raíz de la aplicación cuando se abre directamente`
+    );
+    assert.doesNotMatch(
+      text,
+      /data-empresa-logo="\.\.\/\.\.\/\.\.\/assets\/images\/logomenu\.png"/i,
+      `La plantilla ${path.relative(root, file)} no debe subir fuera de la raíz publicada para cargar el logo`
+    );
+  }
+
+  const documentos = fs.readFileSync(path.join(root, 'administracion', 'js', 'documentos.js'), 'utf8');
+  const oficina = fs.readFileSync(path.join(root, 'administracion', 'js', 'oficina.js'), 'utf8');
+  const nomina = fs.readFileSync(path.join(root, 'promotores', 'js', 'nomina.js'), 'utf8');
+  assert.match(documentos, /preparePrintHtml\(doc\)/, 'La generación de documentos administrativos debe ajustar la base al escribir un pop-up');
+  assert.match(oficina, /preparePrintHtml\(html\)/, 'La impresión de relación de pago debe ajustar la base al escribir un pop-up');
+  assert.match(nomina, /preparePrintHtml\(html\)/, 'La impresión de nómina de promotor debe ajustar la base al escribir un pop-up');
+});
+
 test('la landing, login y contabilidad diaria deben usar el nombre dinámico de empresa y no texto estático', () => {
   const landing = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
   const contabilidad = fs.readFileSync(path.join(root, 'coordinador', 'views', 'contabilidadDiaria.html'), 'utf8');
@@ -73,7 +130,7 @@ test('el reset de contabilidad diaria debe limpiar los campos del coordinador y 
   assert.ok(contabilidad.includes("document.getElementById('global-coordinador').value = '';"), 'El reset debe limpiar el coordinador');
 
   const inicioReset = contabilidad.indexOf('function restablecerContabilidad()');
-  const finReset = contabilidad.indexOf('window.onload = function ()');
+  const finReset = contabilidad.indexOf("window.addEventListener('load'", inicioReset);
   assert.ok(inicioReset >= 0 && finReset > inicioReset, 'Debe existir un bloque de reset bien definido');
   const bloqueReset = contabilidad.slice(inicioReset, finReset);
   assert.ok(!bloqueReset.includes('mostrarModalBienvenidaContabilidad'), 'El reset no debe disparar la ventana de bienvenida');

@@ -2,6 +2,7 @@
 <html lang="es">
 
 <head>
+  <base href="../../../">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=850, initial-scale=1.0, minimum-scale=0.1">
   <title>Nómina de Promotor </title>
@@ -852,7 +853,7 @@
 
         <!-- COL 1: Logo -->
         <div class="logo-panel">
-          <img class="logo" data-empresa-logo="../../../assets/images/logomenu.png" data-empresa-nombre="" alt="" />
+          <img class="logo" data-empresa-logo="assets/images/logomenu.png" data-empresa-nombre="" alt="" />
         </div>
 
         <!-- COL 2: Títulos -->
@@ -1368,7 +1369,7 @@
     const logoElements = document.querySelectorAll('[data-empresa-logo]');
     if (logoElements.length > 0) {
       logoElements.forEach(el => {
-        const fallback = el.dataset.empresaLogo || '../../../assets/images/logomenu.png';
+        const fallback = el.dataset.empresaLogo || 'assets/images/logomenu.png';
         el.setAttribute('src', fallback);
         const altText = el.dataset.empresaNombre || 'Empresa no configurada';
         el.setAttribute('alt', altText);

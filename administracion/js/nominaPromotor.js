@@ -4,7 +4,7 @@
 
   contenedor.innerHTML = [
     '<div class="fade-in">',
-    '  <div id="admin-nomina-modal" class="fixed inset-0 z-[100] flex min-h-screen items-center justify-center overflow-y-auto bg-[#082c4a]/90 px-4 py-8 backdrop-blur-sm">',
+    '  <div id="admin-nomina-modal" class="fixed inset-0 z-[100] flex min-h-screen items-center justify-center overflow-y-auto bg-white px-4 py-8 backdrop-blur-sm">',
     '    <div class="relative w-full max-w-2xl overflow-hidden rounded-3xl border border-white/70 bg-white shadow-2xl">',
     '      <div class="bg-gradient-to-br from-[#082c4a] via-[#0c5360] to-[#008a69] px-6 py-8 text-white sm:px-10">',
     '        <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white/15 text-2xl ring-1 ring-white/30">$</div>',

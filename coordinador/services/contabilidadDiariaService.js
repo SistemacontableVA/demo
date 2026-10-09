@@ -304,6 +304,10 @@
       return rpc('contabilidad_diaria_cambiar_estado', { p_id: id, p_estado: estado });
     },
 
+    reabrirParaEdicion: async function (id) {
+      return rpc('contabilidad_diaria_reabrir', { p_id: id });
+    },
+
     obtenerResumen: async function () {
       return rpc('contabilidad_diaria_resumen');
     },

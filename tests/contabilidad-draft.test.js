@@ -125,11 +125,33 @@ test('al cargar un borrador la modal se cierra sin reiniciar la jornada', () => 
   assert.match(view, /modalCarga\.classList\.remove\('visible'\)\s*;\s*modalCarga\.classList\.add\('hidden'\)/i, 'La confirmación debe cerrar la modal de borradores sin dejarla visible');
 });
 
-test('la jornada tiene cierre de validacion y un reporte visible para el administrador', () => {
+test('la modal de borradores muestra una instrucción distinta a la etiqueta del selector', () => {
   const view = fs.readFileSync(path.join(root, 'coordinador', 'views', 'contabilidadDiaria.html'), 'utf8');
 
-  assert.match(view, /Validar cierre/i, 'Debe existir la acción de validación del cierre');
-  assert.match(view, /Cerrar contabilidad/i, 'Debe existir la acción para cerrar la contabilidad');
+  assert.match(view, /loading\.textContent = 'Selecciona la jornada que deseas continuar\.'/i, 'El texto de ayuda debe indicar la acción y no duplicar la etiqueta');
+  assert.match(view, /<label for="select-borrador-contabilidad"[^>]*>Borradores disponibles<\/label>/i, 'El selector conserva su etiqueta accesible');
+  assert.doesNotMatch(view, /loading\.textContent = 'Borradores disponibles para cargar\.'/i, 'No se repite el mismo concepto en la ayuda');
+});
+
+test('el selector de borradores tiene tamaño táctil y tipografía unificada en móvil', () => {
+  const view = fs.readFileSync(path.join(root, 'coordinador', 'views', 'contabilidadDiaria.html'), 'utf8');
+
+  assert.match(view, /\.draft-select\s*\{[^}]*min-height:\s*48px;[^}]*font-size:\s*0\.9rem;/i, 'El selector tiene altura táctil y tipografía definida');
+  assert.match(view, /@media\s*\(max-width:\s*560px\)\s*\{[\s\S]*?#modal-cargar-borradores-contabilidad \.draft-select\s*\{[^}]*min-height:\s*52px;[^}]*font-size:\s*1rem;/i, 'En móvil se amplía el selector y se unifica el tamaño de texto');
+  assert.match(view, /class="draft-select hidden"/, 'El selector conserva el estado oculto hasta cargar las opciones');
+  assert.match(view, /class="draft-select-label"/, 'La etiqueta tiene tipografía propia coherente con el selector');
+});
+
+test('el coordinador solo ve cierre o reporte segun el estado de la jornada', () => {
+  const view = fs.readFileSync(path.join(root, 'coordinador', 'views', 'contabilidadDiaria.html'), 'utf8');
+
+  assert.doesNotMatch(view, /onclick="validarCierreContabilidad\(\)"/i, 'El coordinador no debe tener un botón para validar el cierre');
+  assert.match(view, /class="btn btn-primary btn-cerrar"[^>]*onclick="mostrarConfirmacionCierreContabilidad\(\)"/i, 'Debe existir la acción para abrir el cierre');
+  assert.match(view, /class="btn-print"[^>]*hidden[^>]*onclick="generarReporteContabilidadPDF\(\)"/i, 'El botón PDF inicia oculto hasta cerrar la jornada');
+  assert.match(view, /if \(botonGuardar\) botonGuardar\.hidden = bloqueada;/);
+  assert.match(view, /if \(botonCerrar\) botonCerrar\.hidden = bloqueada;/);
+  assert.match(view, /if \(botonReporte\) botonReporte\.hidden = !bloqueada;/);
+  assert.doesNotMatch(view, /id="modal-reset"|onclick="mostrarModalReset\(\)"/i, 'La interfaz ya no ofrece restablecer la jornada');
   assert.match(view, /pendiente_de_validacion|validada|cerrada/i, 'Debe existir un estado claro para la jornada');
   assert.match(view, /generarResumenCierreContabilidad|renderResumenCierreContabilidad/i, 'Debe existir un resumen exportable del cierre para la administración');
 });
@@ -163,6 +185,15 @@ test('el cierre confirmado transiciona la jornada en Supabase', () => {
   assert.match(view, /onclick="cerrarContabilidad\(\)">Confirmar cierre/i, 'La modal debe confirmar el cierre mediante una acción explícita');
   assert.match(view, /cambiarEstado\(validado\.draft\.id,\s*['"]cerrada['"]\)/i, 'La confirmación debe cambiar el estado en el servidor');
   assert.match(view, /cambiarEstado\(saved\.draft\.id,\s*['"]pendiente_de_validacion['"]\)/i, 'El coordinador debe enviar la jornada a validación antes del cierre');
+});
+
+test('el reporte PDF del coordinador solo se genera para jornadas cerradas e incluye ambas pestañas', () => {
+  const view = fs.readFileSync(path.join(root, 'coordinador', 'views', 'contabilidadDiaria.html'), 'utf8');
+
+  assert.match(view, /function generarReporteContabilidadPDF\(\) \{\s*if \(!contabilidadEstaBloqueada\(\)\)/i);
+  assert.match(view, /window\.print\(\)/, 'La descarga PDF debe usar el diálogo de impresión del navegador');
+  assert.match(view, /#tab-afiliaciones\s*\{[^}]*display:\s*block !important;[^}]*page-break-after:\s*always;/);
+  assert.match(view, /#tab-contabilidad\s*\{[^}]*display:\s*block !important;[^}]*page-break-before:\s*always;/);
 });
 
 test('la migracion crea tablas por tenant, permisos RLS, auditoria y RPC de resumen', () => {

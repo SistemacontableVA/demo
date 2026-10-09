@@ -46,8 +46,21 @@ function _atencionMunicipiosRenderShell() {
       '.atm-route-label{color:#263a35;font-size:12px;font-weight:750}' +
       '.atm-route-count{color:#82908b;font-size:10px}' +
       '.atm-route-content{padding:0 9px 4px}' +
-      '.atm-add{height:38px;padding:0 15px;border:0;border-radius:20px;background:#102f3f;color:#fff;font-size:12px;font-weight:700;cursor:pointer;box-shadow:0 3px 9px #102f3f25}' +
-      '.atm-add:hover{background:#174d43}' +
+      '.atm-mobile-list{display:none}' +
+      '.atm-mobile-card{margin:9px 0;border:1px solid #dce8e3;border-left:3px solid #5b9b83;border-radius:9px;background:#fff;box-shadow:0 2px 5px #142d2808;overflow:hidden}' +
+      '.atm-mobile-card summary{display:flex;align-items:center;gap:9px;min-height:48px;padding:8px 11px;cursor:pointer;list-style:none}' +
+      '.atm-mobile-card summary::-webkit-details-marker{display:none}' +
+      '.atm-mobile-card summary:after{content:"⌄";margin-left:auto;color:#7a8784;font-size:18px;transition:transform .15s}' +
+      '.atm-mobile-card[open] summary:after{transform:rotate(180deg)}' +
+      '.atm-mobile-place-icon{width:19px;height:19px;flex:none;color:#bd4d45}' +
+      '.atm-mobile-card .atm-place-name{flex:1;color:#263a35;font-size:13px}' +
+      '.atm-mobile-card-content{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:11px;border-top:1px solid #e8edeb;color:#354541;font-size:11px}' +
+      '.atm-mobile-field{display:grid;gap:4px;min-width:0}' +
+      '.atm-mobile-field-label{color:#84908c;font-size:9px;font-weight:700;text-transform:uppercase}' +
+      '.atm-mobile-state,.atm-mobile-actions{grid-column:1/-1}' +
+      '.atm-mobile-actions{display:flex;align-items:center;justify-content:space-between;gap:8px;padding-top:3px}' +
+      '.atm-add{height:38px;padding:0 15px;border:0;border-radius:20px;background:linear-gradient(110deg,#082c4a,#008a69);color:#fff;font-size:12px;font-weight:700;cursor:pointer;box-shadow:0 3px 9px #082c4a25}' +
+      '.atm-add:hover{background:linear-gradient(110deg,#0c5360,#008a69)}' +
       '.atm-table-wrap{overflow-x:auto;border-radius:10px}' +
       '.atm-table{width:100%;min-width:900px;border-collapse:separate;border-spacing:0 7px;font-size:12px}' +
       '.atm-table thead th{padding:0 10px 5px;text-align:left;color:#53615e;font-size:11px;font-weight:700;white-space:nowrap}' +
@@ -56,7 +69,7 @@ function _atencionMunicipiosRenderShell() {
       '.atm-row td:last-child{border-right:1px solid #e7ece9;border-radius:0 9px 9px 0}' +
       '.atm-row{filter:drop-shadow(0 2px 3px #142d2810)}' +
       '.atm-group-start td{border-top:2px solid #dce4e1}' +
-      '.atm-route{display:grid;width:32px;height:32px;place-items:center;border-radius:50%;background:#e7d6a9;color:#3c3729;font-size:10px;font-weight:800}' +
+      '.atm-route{display:grid;width:32px;height:32px;place-items:center;border-radius:50%;background:#082c4a;color:#fff;font-size:10px;font-weight:800}' +
       '.atm-place{display:flex;align-items:center;gap:9px;min-width:175px;white-space:normal}' +
       '.atm-place-icon{width:22px;height:22px;flex:none;color:#bd4d45}' +
       '.atm-place-name{font-size:12px;font-weight:750;color:#293936}' +
@@ -72,12 +85,12 @@ function _atencionMunicipiosRenderShell() {
       '.atm-state-select[data-state="Sin Digitalizar"]{background:#f6d4d3;color:#923632}' +
       '.atm-actions{display:flex;align-items:center;justify-content:flex-end;gap:6px}' +
       '.atm-icon-btn{display:grid;width:29px;height:29px;place-items:center;border:1px solid #dce4e1;border-radius:6px;background:#fff;color:#52615d;cursor:pointer}' +
-      '.atm-icon-btn:hover{background:#f1f6f3;color:#174d43}' +
+      '.atm-icon-btn:hover{background:#f1f6f3;color:#008a69}' +
       '.atm-icon-btn svg{width:15px;height:15px}' +
       '.atm-icon-btn.danger{color:#a44640}' +
       '.atm-icon-btn.danger:hover{background:#fff1f0}' +
-      '.atm-access{min-width:76px;height:30px;padding:0 12px;border:0;border-radius:17px;background:#145e58;color:#fff;font-size:10px;font-weight:800;cursor:pointer}' +
-      '.atm-access:hover{background:#0e4843}' +
+      '.atm-access{min-width:76px;height:30px;padding:0 12px;border:0;border-radius:17px;background:#008a69;color:#fff;font-size:10px;font-weight:800;cursor:pointer}' +
+      '.atm-access:hover{background:#0c5360}' +
       '.atm-loading,.atm-empty,.atm-error{padding:32px 15px;text-align:center;color:#77837f;font-size:13px}' +
       '.atm-error{color:#9a3530}' +
       '.atm-modal-backdrop{position:fixed;inset:0;z-index:1000;display:grid;place-items:center;padding:16px;background:#10232180}' +
@@ -90,7 +103,7 @@ function _atencionMunicipiosRenderShell() {
       '.atm-modal-body input,.atm-modal-body select{width:100%;min-height:38px;padding:8px 9px;border:1px solid #d4dfda;border-radius:5px;background:#fff;color:#293936;font:12px inherit}' +
       '.atm-modal-footer{display:flex;justify-content:flex-end;gap:9px;padding:14px 20px;border-top:1px solid #e6ece9}' +
       '.atm-btn{min-height:36px;padding:0 14px;border:1px solid #d4dfda;border-radius:6px;background:#fff;color:#465550;font-size:12px;font-weight:700;cursor:pointer}' +
-      '.atm-btn.primary{border-color:#145e58;background:#145e58;color:#fff}' +
+      '.atm-btn.primary{border-color:#008a69;background:#008a69;color:#fff}' +
       '.atm-sheet-viewer{position:fixed;inset:0;z-index:1100;display:flex;flex-direction:column;min-width:0;background:#f5f7f6}' +
       '.atm-sheet-head{display:flex;flex-direction:column;gap:7px;padding:8px 12px;background:#fff;border-bottom:1px solid #dce4e1}' +
       '.atm-sheet-toolbar{display:flex;align-items:center;gap:10px;min-height:36px}' +
@@ -100,14 +113,15 @@ function _atencionMunicipiosRenderShell() {
       '.atm-active-date{color:#84908c;font-size:10px;white-space:nowrap}' +
       '.atm-view-controls{display:flex;align-items:center;gap:4px;flex:none}' +
       '.atm-zoom{display:flex;align-items:center;gap:3px;padding:2px;border:1px solid #e2e8f0;border-radius:8px;background:#f8fafc}' +
-      '.atm-zoom button{width:30px;height:29px;border:0;border-radius:6px;background:#083f4a;color:#fff;font-size:18px;line-height:1;cursor:pointer}' +
-      '.atm-zoom button:hover{background:#0b5969}' +
+      '.atm-zoom button{width:30px;height:29px;border:0;border-radius:6px;background:#082c4a;color:#fff;font-size:18px;line-height:1;cursor:pointer}' +
+      '.atm-zoom button:hover{background:#0c5360}' +
       '.atm-zoom-value{min-width:40px;text-align:center;color:#334155;font-size:10px;font-weight:750}' +
-      '.atm-fullscreen{min-height:33px;padding:0 10px;border:0;border-radius:7px;background:#083f4a;color:#fff;font-size:10px;font-weight:700;white-space:nowrap;cursor:pointer}' +
-      '.atm-fullscreen:hover{background:#0b5969}' +
+      '.atm-fullscreen{min-height:33px;padding:0 10px;border:0;border-radius:7px;background:#008a69;color:#fff;font-size:10px;font-weight:700;white-space:nowrap;cursor:pointer}' +
+      '.atm-fullscreen:hover{background:#0c5360}' +
       '.atm-sheet-content{position:relative;flex:1;min-height:0;overflow:auto}' +
       '.atm-sheet-frame{--atm-sheet-zoom:1;position:absolute;inset:0;width:calc(100% / var(--atm-sheet-zoom));height:calc(100% / var(--atm-sheet-zoom));border:0;background:#fff;transform:scale(var(--atm-sheet-zoom));transform-origin:top left}' +
       '@media(max-width:760px){.atm-sheet-toolbar{flex-wrap:wrap}.atm-active-info{order:2;flex-basis:100%}.atm-view-controls{margin-left:auto}.atm-fullscreen{font-size:0;padding:0 9px}.atm-fullscreen:after{content:"⛶";font-size:17px}}' +
+      '@media(max-width:640px){.atm-desktop-table-wrapper{display:none}.atm-mobile-list{display:block}.atm-route-content{padding:0 7px 7px}.atm-mobile-field .atm-date{font-size:10px}.atm-mobile-actions .atm-access{min-width:100px;height:36px}}' +
       '@media(max-width:640px){.atm-head{align-items:stretch}.atm-tools{width:100%}.atm-search{max-width:none}.atm-add{flex:none}.atm-modal-body{grid-template-columns:1fr}.atm-modal-body label.wide{grid-column:auto}}' +
     '</style>' +
     '<div class="atm-head">' +
@@ -211,10 +225,12 @@ function _atencionMunicipiosRenderTable() {
       '<summary><span class="atm-route">R-' + _atencionMunicipiosEsc(route) + '</span>' +
       '<span class="atm-route-label">' + _atencionMunicipiosEsc(/^\d+$/.test(route) ? 'Ruta ' + route : route) + '</span>' +
       '<span class="atm-route-count">' + members.length + ' municipio' + (members.length === 1 ? '' : 's') + '</span></summary>' +
-      '<div class="atm-route-content"><div class="atm-table-wrap"><table class="atm-table">' +
+      '<div class="atm-route-content"><div class="atm-table-wrap atm-desktop-table-wrapper"><table class="atm-table">' +
         '<thead><tr><th>Ruta</th><th>Municipio</th><th>Fecha de Atención</th><th>Fecha de entrega</th><th>Estado</th><th>Acciones</th><th></th></tr></thead>' +
         '<tbody>' + members.map(function (row) { return _atencionMunicipiosRow(row, false); }).join('') + '</tbody>' +
-      '</table></div></div></details>';
+      '</table></div><div class="atm-mobile-list">' +
+        members.map(_atencionMunicipiosMobileCard).join('') +
+      '</div></div></details>';
   }).join('');
 
   host.hidden = false;
@@ -271,6 +287,36 @@ function _atencionMunicipiosRow(row, groupStart) {
       '<button type="button" class="atm-icon-btn" data-atm-action="view" data-id="' + id + '" title="Vista previa" aria-label="Vista previa del municipio"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button>' +
       (isAdmin ? '<button type="button" class="atm-icon-btn danger" data-atm-action="delete" data-id="' + id + '" title="Eliminar" aria-label="Eliminar municipio"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M4 7h16M10 11v6m4-6v6M6 7l1 14h10l1-14M9 7V4h6v3"/></svg></button>' : '') +
     '</div></td><td><button type="button" class="atm-access" data-atm-action="access" data-id="' + id + '">ACCEDER</button></td></tr>';
+}
+
+function _atencionMunicipiosMobileCard(row) {
+  var isAdmin = _atencionMunicipiosRole === 'Administrador';
+  var canChangeState = ['Administrador', 'Secretaria', 'Ejecutivo'].indexOf(_atencionMunicipiosRole) !== -1;
+  var id = _atencionMunicipiosEsc(row.id);
+  var state = row.estado || 'Sin Digitalizar';
+  var stateControl = canChangeState
+    ? '<select class="atm-state-select" data-state="' + _atencionMunicipiosEsc(state) + '" data-atm-state data-id="' + id + '" aria-label="Cambiar estado">' +
+        AtencionMunicipiosService.ESTADOS.map(function (value) {
+          return '<option value="' + _atencionMunicipiosEsc(value) + '"' + (value === state ? ' selected' : '') + '>' + _atencionMunicipiosEsc(value) + '</option>';
+        }).join('') + '</select>'
+    : '<span class="atm-state" data-state="' + _atencionMunicipiosEsc(state) + '">' + _atencionMunicipiosEsc(state) + '</span>';
+
+  return '<details class="atm-mobile-card">' +
+    '<summary><svg class="atm-mobile-place-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg>' +
+      '<span class="atm-place-name">' + _atencionMunicipiosEsc(row.municipio) + '</span></summary>' +
+    '<div class="atm-mobile-card-content">' +
+      '<div class="atm-mobile-field"><span class="atm-mobile-field-label">Fecha de atención</span>' + _atencionMunicipiosDateCell(row.fechaAtencion, 'calendar') + '</div>' +
+      '<div class="atm-mobile-field"><span class="atm-mobile-field-label">Fecha de entrega</span>' + _atencionMunicipiosDateCell(row.fechaEntrega, 'delivery') + '</div>' +
+      '<div class="atm-mobile-field atm-mobile-state"><span class="atm-mobile-field-label">Estado</span>' + stateControl + '</div>' +
+      '<div class="atm-mobile-actions">' +
+        '<div class="atm-actions">' +
+          (isAdmin ? '<button type="button" class="atm-icon-btn" data-atm-action="edit" data-id="' + id + '" title="Editar" aria-label="Editar municipio"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="m14 5 5 5M4 20l4.5-1 10-10a2.1 2.1 0 0 0-3-3l-10 10L4 20Z"/></svg></button>' : '') +
+          '<button type="button" class="atm-icon-btn" data-atm-action="view" data-id="' + id + '" title="Vista previa" aria-label="Vista previa del municipio"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button>' +
+          (isAdmin ? '<button type="button" class="atm-icon-btn danger" data-atm-action="delete" data-id="' + id + '" title="Eliminar" aria-label="Eliminar municipio"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M4 7h16M10 11v6m4-6v6M6 7l1 14h10l1-14M9 7V4h6v3"/></svg></button>' : '') +
+        '</div>' +
+        '<button type="button" class="atm-access" data-atm-action="access" data-id="' + id + '">ACCEDER</button>' +
+      '</div>' +
+    '</div></details>';
 }
 
 function _atencionMunicipiosDateCell(value, type) {

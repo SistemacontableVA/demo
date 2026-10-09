@@ -108,14 +108,6 @@ function renderDocumentos() {
         '</div>' +
       '</div>' +
 
-      // Aviso estado
-      '<div class="flex items-start gap-3 bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-3 mb-6">' +
-        '<svg class="w-4 h-4 text-emerald-500 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">' +
-          '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>' +
-        '</svg>' +
-        '<span class="text-xs text-emerald-700"><strong>Solicitud Institucional</strong>, <strong>Solicitud de Espacio</strong> y <strong>Hoja de Convenio</strong> están operativas. Los documentos se generan localmente desde las plantillas.</span>' +
-      '</div>' +
-
       // Grid de tipos
       '<h4 class="font-bold text-verde-oscuro text-sm mb-3">Crear Nuevo Documento</h4>' +
       '<div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">' + tiposHtml + '</div>' +
@@ -192,14 +184,6 @@ function _renderFormSolicitudInstitucional() {
   var dd   = ('0' + hoy.getDate()).slice(-2);
   var fechaHoy = dd + '/' + mm + '/' + yyyy;
 
-  // Aviso: generación local activa
-  var modoAviso = '<div class="flex items-start gap-3 bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-3 mb-5">' +
-    '<svg class="w-4 h-4 text-emerald-500 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">' +
-      '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>' +
-    '</svg>' +
-    '<span class="text-xs text-emerald-700">El documento se genera localmente desde la plantilla HTML. Usa <strong>Ctrl+P</strong> para guardar como PDF.</span>' +
-  '</div>';
-
   contenedor.innerHTML =
     '<div class="fade-in">' +
 
@@ -226,8 +210,6 @@ function _renderFormSolicitudInstitucional() {
 
       // ── Tarjeta del formulario ──
       '<div class="bg-white rounded-xl shadow-soft p-6 max-w-2xl">' +
-
-        modoAviso +
 
         // Grid de campos 2 columnas
         '<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">' +
@@ -364,6 +346,7 @@ function _enviarSolicitudInstitucional() {
         var regex = new RegExp('\\{\\{' + clave + '\\}\\}', 'g');
         doc = doc.replace(regex, datos[clave]);
       });
+      doc = window.empresaBrand.preparePrintHtml(doc);
 
       var ventana = window.open('', '_blank', 'width=900,height=700');
       ventana.document.write(doc);
@@ -462,14 +445,6 @@ function _renderFormSolicitudEspacio() {
   var dd   = ('0' + hoy.getDate()).slice(-2);
   var fechaHoy = dd + '/' + mm + '/' + yyyy;
 
-  // Aviso: generación local activa
-  var modoAviso = '<div class="flex items-start gap-3 bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-3 mb-5">' +
-    '<svg class="w-4 h-4 text-emerald-500 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">' +
-      '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>' +
-    '</svg>' +
-    '<span class="text-xs text-emerald-700">El documento se genera localmente desde la plantilla. Usa <strong>Ctrl+P</strong> para guardar como PDF.</span>' +
-  '</div>';
-
   contenedor.innerHTML =
     '<div class="fade-in">' +
 
@@ -497,8 +472,6 @@ function _renderFormSolicitudEspacio() {
 
       // ── Tarjeta del formulario ──
       '<div class="bg-white rounded-xl shadow-soft p-6 max-w-2xl">' +
-
-        modoAviso +
 
         // Grid de campos 2 columnas
         '<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">' +
@@ -627,6 +600,7 @@ function _enviarSolicitudEspacio() {
         var regex = new RegExp('\\{\\{' + clave + '\\}\\}', 'g');
         doc = doc.replace(regex, datos[clave]);
       });
+      doc = window.empresaBrand.preparePrintHtml(doc);
 
       // Abrir en nueva ventana y disparar impresión
       var ventana = window.open('', '_blank', 'width=900,height=700');
@@ -837,13 +811,6 @@ function _renderFormHojaConvenioPersonalizable() {
 
       '<div class="bg-white rounded-xl shadow-soft p-6 max-w-2xl">' +
 
-        '<div class="flex items-start gap-3 bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-3 mb-5">' +
-          '<svg class="w-4 h-4 text-emerald-500 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">' +
-            '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>' +
-          '</svg>' +
-          '<span class="text-xs text-emerald-700">El documento se genera localmente desde la plantilla. Usa <strong>Ctrl+P</strong> para guardar como PDF.</span>' +
-        '</div>' +
-
         '<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">' +
           _campoInput('hcp-sres',               'Dirigido a (Sres.)',        '', 'text', true,  'Ej: Laboratorio Clinico Floresta') +
           _campoInput('hcp-fecha',              'Fecha',                     '', 'text', true,  'Ej: 13 de agosto de 2026') +
@@ -966,6 +933,7 @@ function _enviarHojaConvenioPersonalizable() {
         var regex = new RegExp('\\{\\{' + clave + '\\}\\}', 'g');
         doc = doc.replace(regex, datos[clave]);
       });
+      doc = window.empresaBrand.preparePrintHtml(doc);
 
       var ventana = window.open('', '_blank', 'width=900,height=700');
       ventana.document.write(doc);
@@ -1052,13 +1020,6 @@ function _renderFormPermisoPolicial() {
 
       // ── Tarjeta ──
       '<div class="bg-white rounded-xl shadow-soft p-6 max-w-2xl">' +
-
-        '<div class="flex items-start gap-3 bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-3 mb-5">' +
-          '<svg class="w-4 h-4 text-emerald-500 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">' +
-            '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>' +
-          '</svg>' +
-          '<span class="text-xs text-emerald-700">El documento se genera localmente desde la plantilla. Usa <strong>Ctrl+P</strong> para guardar como PDF.</span>' +
-        '</div>' +
 
         // Grid de campos
         '<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">' +
@@ -1443,6 +1404,7 @@ function _enviarPermisoPolicial() {
         // Una sola página: reemplazar las firmas originales con las correctas
         doc = doc.replace(/<section class="signatures">[\s\S]*?<\/section>/, firmasPag1);
       }
+      doc = window.empresaBrand.preparePrintHtml(doc);
 
       var ventana = window.open('', '_blank', 'width=900,height=700');
       ventana.document.write(doc);
@@ -1518,13 +1480,6 @@ function _renderFormPublicidad() {
 
         // Formulario
         '<div class="bg-white rounded-xl shadow-soft p-6">' +
-
-          '<div class="flex items-start gap-3 bg-pink-50 border border-pink-200 rounded-xl px-4 py-3 mb-5">' +
-            '<svg class="w-4 h-4 text-pink-500 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">' +
-              '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>' +
-            '</svg>' +
-            '<span class="text-xs text-pink-700">Los datos se colocan sobre la imagen de la plantilla. Usa <strong>Ctrl+P</strong> para guardar como PDF o imagen.</span>' +
-          '</div>' +
 
           '<div class="space-y-4 mb-6">' +
             _campoInput('pub-municipio',        'Municipio',                   '',           'text',  true,  'Ej: Ejido') +
@@ -1668,6 +1623,7 @@ function _generarPublicidad() {
         var regex = new RegExp('\\{\\{' + clave + '\\}\\}', 'g');
         doc = doc.replace(regex, datos[clave]);
       });
+      doc = window.empresaBrand.preparePrintHtml(doc);
 
       // Guardar el HTML generado para el botón de imprimir
       window._pubHtmlGenerado = doc;
