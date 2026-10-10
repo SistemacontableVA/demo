@@ -417,6 +417,10 @@
       padding: 16px 12px;
     }
 
+    .panel-resumen::before {
+      height: 64px;
+    }
+
     .panel-resumen .icon-circle-big {
       width: 48px;
       height: 48px;

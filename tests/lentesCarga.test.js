@@ -51,3 +51,16 @@ test('el parser conserva columnas cuando una celda intermedia está vacía', () 
   assert.equal(filas[0].lentesSencillos, 2);
   assert.equal(filas[0].totalLentes, 2);
 });
+
+test('la consulta de jornadas solo incluye el criterio seleccionado', () => {
+  const valores = {
+    fecha: '2026-10-10',
+    municipio: 'Guayabones',
+    asesor: 'Ana Pérez'
+  };
+
+  assert.deepEqual(modulo.crearFiltrosConsultaJornadas('fecha', valores), { fecha: '2026-10-10' });
+  assert.deepEqual(modulo.crearFiltrosConsultaJornadas('municipio', valores), { municipio: 'Guayabones' });
+  assert.deepEqual(modulo.crearFiltrosConsultaJornadas('asesor', valores), { asesor: 'Ana Pérez' });
+  assert.deepEqual(modulo.crearFiltrosConsultaJornadas('otro', valores), {});
+});

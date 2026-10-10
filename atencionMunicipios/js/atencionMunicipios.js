@@ -28,26 +28,29 @@ function _atencionMunicipiosRenderShell() {
 
   root.innerHTML =
     '<style>' +
-      '.atm-head{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:20px}' +
-      '.atm-title{margin:0;color:#123c37;font-size:22px;font-weight:750}' +
-      '.atm-subtitle{margin:4px 0 0;color:#7a8784;font-size:12px}' +
+      '.atm-head{position:relative;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;overflow:hidden;margin-bottom:18px;padding:19px 21px;border:1px solid #176a68;border-radius:16px;background:linear-gradient(112deg,#123d5a 0%,#126b69 58%,#07865d 100%);box-shadow:0 12px 24px -18px #0c3c4ca6}' +
+      '.atm-head:after{position:absolute;top:-65px;right:34%;width:168px;height:168px;border:1px solid #ffffff20;border-radius:50%;content:"";pointer-events:none}' +
+      '.atm-title{margin:0;color:#fff;font-size:21px;font-weight:800}' +
+      '.atm-subtitle{margin:4px 0 0;color:#e1f1ec;font-size:12px}' +
       '.atm-tools{display:flex;align-items:center;gap:10px;flex-wrap:wrap}' +
       '.atm-search{position:relative;min-width:230px;max-width:340px;flex:1}' +
-      '.atm-search input{width:100%;height:38px;padding:0 12px 0 36px;border:1px solid #e0e5e3;border-radius:20px;background:#f6f8f7;font-size:12px;outline:none}' +
-      '.atm-search input:focus{border-color:#7aa69a;background:#fff}' +
-      '.atm-search svg{position:absolute;left:12px;top:11px;width:16px;height:16px;color:#98a29f}' +
-      '.atm-filter select{height:38px;min-width:128px;padding:0 28px 0 11px;border:1px solid #e0e5e3;border-radius:20px;background:#fff;color:#40514c;font-size:11px;outline:none}' +
-      '.atm-route-accordion{margin-bottom:9px;border:1px solid #e3e9e6;border-radius:10px;background:#fff;box-shadow:0 2px 5px #142d2808;overflow:hidden}' +
-      '.atm-route-accordion summary{display:flex;align-items:center;gap:10px;min-height:46px;padding:7px 13px;cursor:pointer;list-style:none}' +
+      '.atm-search input{width:100%;height:40px;padding:0 12px 0 36px;border:1px solid #ffffff55;border-radius:11px;background:#ffffffed;color:#263a35;font-size:12px;outline:none}' +
+      '.atm-search input:focus{border-color:#b8ead7;background:#fff;box-shadow:0 0 0 3px #ffffff25}' +
+      '.atm-search svg{position:absolute;left:12px;top:12px;width:16px;height:16px;color:#54736b}' +
+      '.atm-filter select{height:40px;min-width:128px;padding:0 28px 0 11px;border:1px solid #dce8e2;border-radius:11px;background:#fff;color:#40514c;font-size:11px;outline:none}' +
+      '.atm-filter select:focus{border-color:#79aa97;box-shadow:0 0 0 3px #ffffff25}' +
+      '.atm-route-accordion{margin-bottom:10px;border:1px solid #d8e4df;border-radius:13px;background:#fff;box-shadow:0 8px 22px -19px #0f2d3e70;overflow:hidden;transition:border-color .16s,box-shadow .16s}' +
+      '.atm-route-accordion:hover{border-color:#b6d0c5}' +
+      '.atm-route-accordion summary{display:flex;align-items:center;gap:10px;min-height:51px;padding:8px 14px;cursor:pointer;list-style:none;background:linear-gradient(100deg,#f8fbf9,#fff)}' +
       '.atm-route-accordion summary::-webkit-details-marker{display:none}' +
       '.atm-route-accordion summary:after{content:"⌄";margin-left:auto;color:#7a8784;font-size:17px;transition:transform .15s}' +
       '.atm-route-accordion[open] summary:after{transform:rotate(180deg)}' +
-      '.atm-route-accordion[open] summary{border-bottom:1px solid #e8edeb}' +
-      '.atm-route-label{color:#263a35;font-size:12px;font-weight:750}' +
-      '.atm-route-count{color:#82908b;font-size:10px}' +
-      '.atm-route-content{padding:0 9px 4px}' +
+      '.atm-route-accordion[open] summary{border-bottom:1px solid #e8edeb;background:linear-gradient(100deg,#edf7f1,#fff)}' +
+      '.atm-route-label{color:#173b52;font-size:12px;font-weight:800}' +
+      '.atm-route-count{color:#71817a;font-size:10px}' +
+      '.atm-route-content{padding:3px 10px 8px}' +
       '.atm-mobile-list{display:none}' +
-      '.atm-mobile-card{margin:9px 0;border:1px solid #dce8e3;border-left:3px solid #5b9b83;border-radius:9px;background:#fff;box-shadow:0 2px 5px #142d2808;overflow:hidden}' +
+      '.atm-mobile-card{margin:9px 0;border:1px solid #d8e4df;border-left:3px solid #5b9b83;border-radius:12px;background:#fff;box-shadow:0 8px 20px -18px #0f2d3e70;overflow:hidden}' +
       '.atm-mobile-card summary{display:flex;align-items:center;gap:9px;min-height:48px;padding:8px 11px;cursor:pointer;list-style:none}' +
       '.atm-mobile-card summary::-webkit-details-marker{display:none}' +
       '.atm-mobile-card summary:after{content:"⌄";margin-left:auto;color:#7a8784;font-size:18px;transition:transform .15s}' +
@@ -59,15 +62,15 @@ function _atencionMunicipiosRenderShell() {
       '.atm-mobile-field-label{color:#84908c;font-size:9px;font-weight:700;text-transform:uppercase}' +
       '.atm-mobile-state,.atm-mobile-actions{grid-column:1/-1}' +
       '.atm-mobile-actions{display:flex;align-items:center;justify-content:space-between;gap:8px;padding-top:3px}' +
-      '.atm-add{height:38px;padding:0 15px;border:0;border-radius:20px;background:linear-gradient(110deg,#082c4a,#008a69);color:#fff;font-size:12px;font-weight:700;cursor:pointer;box-shadow:0 3px 9px #082c4a25}' +
-      '.atm-add:hover{background:linear-gradient(110deg,#0c5360,#008a69)}' +
-      '.atm-table-wrap{overflow-x:auto;border-radius:10px}' +
-      '.atm-table{width:100%;min-width:900px;border-collapse:separate;border-spacing:0 7px;font-size:12px}' +
-      '.atm-table thead th{padding:0 10px 5px;text-align:left;color:#53615e;font-size:11px;font-weight:700;white-space:nowrap}' +
-      '.atm-row td{height:45px;padding:7px 10px;background:#fff;border-top:1px solid #e7ece9;border-bottom:1px solid #e7ece9;white-space:nowrap}' +
-      '.atm-row td:first-child{border-left:1px solid #e7ece9;border-radius:9px 0 0 9px}' +
-      '.atm-row td:last-child{border-right:1px solid #e7ece9;border-radius:0 9px 9px 0}' +
-      '.atm-row{filter:drop-shadow(0 2px 3px #142d2810)}' +
+      '.atm-add{height:40px;padding:0 15px;border:1px solid #ffffff35;border-radius:11px;background:linear-gradient(110deg,#082c4a,#008a69);color:#fff;font-size:12px;font-weight:800;cursor:pointer;box-shadow:0 4px 12px #062d2730;transition:transform .16s,box-shadow .16s}' +
+      '.atm-add:hover{transform:translateY(-1px);background:linear-gradient(110deg,#0c5360,#008a69);box-shadow:0 7px 15px #062d2740}' +
+      '.atm-table-wrap{overflow-x:auto;padding:0 1px 3px;border-radius:12px}' +
+      '.atm-table{width:100%;min-width:900px;border-collapse:separate;border-spacing:0 6px;font-size:12px}' +
+      '.atm-table thead th{padding:0 10px 5px;text-align:left;color:#526b61;font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}' +
+      '.atm-row td{height:47px;padding:7px 10px;background:#fff;border-top:1px solid #dfe9e4;border-bottom:1px solid #dfe9e4;white-space:nowrap}' +
+      '.atm-row td:first-child{border-left:1px solid #dfe9e4;border-radius:10px 0 0 10px}' +
+      '.atm-row td:last-child{border-right:1px solid #dfe9e4;border-radius:0 10px 10px 0}' +
+      '.atm-row{filter:drop-shadow(0 3px 4px #142d280b)}' +
       '.atm-group-start td{border-top:2px solid #dce4e1}' +
       '.atm-route{display:grid;width:32px;height:32px;place-items:center;border-radius:50%;background:#082c4a;color:#fff;font-size:10px;font-weight:800}' +
       '.atm-place{display:flex;align-items:center;gap:9px;min-width:175px;white-space:normal}' +
@@ -89,9 +92,9 @@ function _atencionMunicipiosRenderShell() {
       '.atm-icon-btn svg{width:15px;height:15px}' +
       '.atm-icon-btn.danger{color:#a44640}' +
       '.atm-icon-btn.danger:hover{background:#fff1f0}' +
-      '.atm-access{min-width:76px;height:30px;padding:0 12px;border:0;border-radius:17px;background:#008a69;color:#fff;font-size:10px;font-weight:800;cursor:pointer}' +
-      '.atm-access:hover{background:#0c5360}' +
-      '.atm-loading,.atm-empty,.atm-error{padding:32px 15px;text-align:center;color:#77837f;font-size:13px}' +
+      '.atm-access{min-width:76px;height:32px;padding:0 12px;border:0;border-radius:9px;background:#008a69;color:#fff;font-size:10px;font-weight:800;cursor:pointer;transition:background .16s,transform .16s}' +
+      '.atm-access:hover{transform:translateY(-1px);background:#0c5360}' +
+      '.atm-loading,.atm-empty,.atm-error{padding:28px 15px;border:1px dashed #cbdad3;border-radius:13px;background:#f8fbf9;text-align:center;color:#77837f;font-size:13px}' +
       '.atm-error{color:#9a3530}' +
       '.atm-modal-backdrop{position:fixed;inset:0;z-index:1000;display:grid;place-items:center;padding:16px;background:#10232180}' +
       '.atm-modal{width:min(100%,620px);max-height:90vh;overflow:auto;border-radius:12px;background:#fff;box-shadow:0 18px 55px #0003}' +
@@ -120,7 +123,7 @@ function _atencionMunicipiosRenderShell() {
       '.atm-fullscreen:hover{background:#0c5360}' +
       '.atm-sheet-content{position:relative;flex:1;min-height:0;overflow:auto}' +
       '.atm-sheet-frame{--atm-sheet-zoom:1;position:absolute;inset:0;width:calc(100% / var(--atm-sheet-zoom));height:calc(100% / var(--atm-sheet-zoom));border:0;background:#fff;transform:scale(var(--atm-sheet-zoom));transform-origin:top left}' +
-      '@media(max-width:760px){.atm-sheet-toolbar{flex-wrap:wrap}.atm-active-info{order:2;flex-basis:100%}.atm-view-controls{margin-left:auto}.atm-fullscreen{font-size:0;padding:0 9px}.atm-fullscreen:after{content:"⛶";font-size:17px}}' +
+      '@media(max-width:760px){.atm-head{align-items:stretch;padding:16px}.atm-head:after{right:-42px}.atm-sheet-toolbar{flex-wrap:wrap}.atm-active-info{order:2;flex-basis:100%}.atm-view-controls{margin-left:auto}.atm-fullscreen{font-size:0;padding:0 9px}.atm-fullscreen:after{content:"⛶";font-size:17px}}' +
       '@media(max-width:640px){.atm-desktop-table-wrapper{display:none}.atm-mobile-list{display:block}.atm-route-content{padding:0 7px 7px}.atm-mobile-field .atm-date{font-size:10px}.atm-mobile-actions .atm-access{min-width:100px;height:36px}}' +
       '@media(max-width:640px){.atm-head{align-items:stretch}.atm-tools{width:100%}.atm-search{max-width:none}.atm-add{flex:none}.atm-modal-body{grid-template-columns:1fr}.atm-modal-body label.wide{grid-column:auto}}' +
     '</style>' +

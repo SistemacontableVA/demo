@@ -11,6 +11,16 @@
     return Number.isFinite(numero) ? numero : 0;
   }
 
+  function crearFiltrosConsultaJornadas(criterio, valores) {
+    if (['fecha', 'municipio', 'asesor'].indexOf(criterio) === -1) return {};
+    var valor = valores && valores[criterio] !== undefined && valores[criterio] !== null
+      ? String(valores[criterio]).trim()
+      : '';
+    var filtros = {};
+    filtros[criterio] = valor;
+    return filtros;
+  }
+
   function normalizarNombrePromotor(nombre) {
     if (nombre === null || nombre === undefined) return '';
     return String(nombre)
@@ -434,12 +444,12 @@
     var resultado = document.getElementById('lentes-jornadas-resultado');
     if (!resultado) return;
     resultado.innerHTML = 'Leyendo jornadas...';
-    var filtros = {
+    var criterio = document.getElementById('lentes-criterio').value;
+    var filtros = crearFiltrosConsultaJornadas(criterio, {
       fecha: document.getElementById('lentes-editar-fecha') ? document.getElementById('lentes-editar-fecha').value : '',
-      ruta: document.getElementById('lentes-editar-ruta') ? document.getElementById('lentes-editar-ruta').value.trim() : '',
       municipio: document.getElementById('lentes-editar-municipio') ? document.getElementById('lentes-editar-municipio').value.trim() : '',
       asesor: document.getElementById('lentes-editar-asesor') ? document.getElementById('lentes-editar-asesor').value.trim() : ''
-    };
+    });
     LentesCargaService.listarJornadasLentes(filtros).then(function (respuesta) {
       if (!respuesta || !respuesta.ok) {
         resultado.innerHTML = '<div class="text-red-700">' + escaparHtml(respuesta && respuesta.error ? respuesta.error : 'No se pudieron leer las jornadas.') + '</div>';
@@ -449,10 +459,34 @@
       var totalJornadas = window._lentesJornadas.reduce(function (total, registro) { return total + Number(registro.totalLentes || 0); }, 0);
       var asesoresJornada = {};
       window._lentesJornadas.forEach(function (registro) { if (registro.asesor) asesoresJornada[registro.asesor] = true; });
-      var resumen = window._lentesJornadas.length ? '<div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4"><div class="bg-verde-suave rounded-xl px-4 py-3"><p class="text-[10px] uppercase tracking-wide text-slate-500 font-bold">Registros</p><p class="text-xl font-bold text-verde-oscuro mt-1">' + window._lentesJornadas.length + '</p></div><div class="bg-slate-50 rounded-xl px-4 py-3"><p class="text-[10px] uppercase tracking-wide text-slate-500 font-bold">Promotores</p><p class="text-xl font-bold text-slate-700 mt-1">' + Object.keys(asesoresJornada).length + '</p></div><div class="bg-amber-50 rounded-xl px-4 py-3"><p class="text-[10px] uppercase tracking-wide text-slate-500 font-bold">Total lentes</p><p class="text-xl font-bold text-amber-700 mt-1">' + totalJornadas + '</p></div></div>' : '';
-      resultado.innerHTML = window._lentesJornadas.length ? resumen + '<div class="flex items-center justify-between mb-2"><h4 class="text-sm font-bold text-slate-700">Jornadas encontradas</h4><span class="text-xs text-slate-400">Selecciona una acción</span></div>' + window._lentesJornadas.map(function (registro, index) {
-        return '<div class="flex flex-wrap items-center justify-between gap-3 border border-slate-200 rounded-lg px-3 py-3 mb-2 text-xs hover:border-verde-oscuro/30"><span class="min-w-0"><strong class="text-slate-700">' + escaparHtml(registro.fecha) + '</strong><span class="text-slate-400"> · </span>' + escaparHtml(registro.ruta) + '<span class="text-slate-400"> · </span>' + escaparHtml(registro.municipio) + '<span class="text-slate-400"> · </span>' + escaparHtml(registro.asesor) + '<span class="text-slate-400"> · Total: </span><strong>' + registro.totalLentes + '</strong></span><span class="flex items-center gap-2 shrink-0"><button type="button" class="btn-primario text-white font-bold px-3 py-1.5 rounded-lg text-[11px] hover:bg-verde-oscuro transition-colors" data-editar-jornada="' + index + '" title="Abrir ventana para editar esta jornada"><span aria-hidden="true">✎</span> Editar</button><button type="button" class="font-bold px-3 py-1.5 rounded-lg border border-red-200 bg-red-50 text-red-600 hover:bg-red-100 transition-colors text-[11px]" data-suprimir-jornada="' + index + '" title="Suprimir el contenido de esta jornada">Suprimir</button></span></div>';
-      }).join('') : '<div class="py-2 text-xs text-slate-500">No hay jornadas que coincidan con los filtros.</div>';
+      var resumen = window._lentesJornadas.length
+        ? '<div class="lentes-search-summary">' +
+            '<div class="lentes-search-metric"><span>Registros</span><strong>' + window._lentesJornadas.length + '</strong></div>' +
+            '<div class="lentes-search-metric"><span>Promotores</span><strong>' + Object.keys(asesoresJornada).length + '</strong></div>' +
+            '<div class="lentes-search-metric"><span>Total lentes</span><strong>' + totalJornadas + '</strong></div>' +
+          '</div>'
+        : '';
+      resultado.innerHTML = window._lentesJornadas.length
+        ? resumen +
+          '<div class="lentes-results-heading"><h4>Jornadas encontradas</h4><span>' + window._lentesJornadas.length + ' resultados</span></div>' +
+          '<div class="lentes-results-list">' + window._lentesJornadas.map(function (registro, index) {
+            var totalLentes = registro.totalLentes === null || registro.totalLentes === undefined || registro.totalLentes === ''
+              ? '—'
+              : escaparHtml(registro.totalLentes);
+            return '<article class="lentes-jornada-card">' +
+              '<div class="lentes-jornada-date"><span>Fecha</span><strong>' + escaparHtml(registro.fecha || '—') + '</strong></div>' +
+              '<div class="lentes-jornada-details">' +
+                '<div class="lentes-jornada-meta"><span class="lentes-jornada-route">Ruta ' + escaparHtml(registro.ruta || '—') + '</span><span class="lentes-jornada-place">' + escaparHtml(registro.municipio || 'Municipio sin indicar') + '</span></div>' +
+                '<strong class="lentes-jornada-promoter">' + escaparHtml(registro.asesor || 'Promotor sin indicar') + '</strong>' +
+              '</div>' +
+              '<div class="lentes-jornada-total"><span>Total lentes</span><strong>' + totalLentes + '</strong></div>' +
+              '<div class="lentes-jornada-actions">' +
+                '<button type="button" class="lentes-result-edit" data-editar-jornada="' + index + '" title="Abrir ventana para editar esta jornada"><span aria-hidden="true">✎</span> Editar</button>' +
+                '<button type="button" class="lentes-result-delete" data-suprimir-jornada="' + index + '" title="Suprimir el contenido de esta jornada">Suprimir</button>' +
+              '</div>' +
+            '</article>';
+          }).join('') + '</div>'
+        : '<div class="lentes-empty-results">No hay jornadas que coincidan con los filtros.</div>';
     });
   }
 
@@ -523,20 +557,20 @@
     var contenedor = document.getElementById('admin-content');
     if (!contenedor) return;
     contenedor.innerHTML = [
-      '<div class="fade-in space-y-5">',
+      '<div class="fade-in space-y-5 lentes-workspace lentes-workspace--gestion">',
       '  <div class="flex items-center justify-between gap-3">',
-      '    <div><h3 class="text-verde-oscuro font-bold text-lg">Gestión de lentes por jornada</h3><p class="text-slate-400 text-sm mt-0.5">Selecciona un criterio para consultar únicamente las jornadas que necesitas.</p></div>',
-      '    <button id="lentes-volver" type="button" class="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:bg-white hover:shadow-sm" title="Volver al menú de Gestión de lentes"><span aria-hidden="true">←</span> Volver</button>',
+      '    <div class="lentes-module-heading"><span class="lentes-module-heading-icon" aria-hidden="true">⌕</span><div><span class="lentes-module-heading-tag">Consulta y edición</span><h3>Gestión de lentes por jornada</h3><p>Selecciona un criterio para consultar únicamente las jornadas que necesitas.</p></div></div>',
+      '    <button id="lentes-volver" type="button" class="lentes-back-button" title="Volver al menú de Gestión de lentes"><span aria-hidden="true">←</span> Volver</button>',
       '  </div>',
-      '  <div class="bg-white rounded-xl shadow-soft p-4 sm:p-5">',
-      '    <div class="flex items-center gap-2 mb-4"><span class="w-8 h-8 rounded-lg bg-verde-suave flex items-center justify-center text-verde-oscuro" aria-hidden="true">⌕</span><div><h4 class="font-bold text-slate-700 text-sm">Buscar una jornada</h4><p class="text-xs text-slate-400">Elige un criterio para consultar.</p></div></div>',
-      '    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">',
+      '  <div class="lentes-form-panel">',
+      '    <div class="lentes-form-panel-heading"><span class="lentes-form-panel-icon" aria-hidden="true">⌕</span><div><h4>Buscar una jornada</h4><p>Filtra los registros por fecha, municipio o promotor.</p></div></div>',
+      '    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">',
       '      <label class="text-xs text-slate-600">Buscar por<select id="lentes-criterio" class="mt-1 w-full rounded border border-slate-200 px-2 py-2 text-sm"><option value="fecha">Fecha</option><option value="municipio">Municipio</option><option value="asesor">Promotor</option></select></label>',
       '      <label class="text-xs text-slate-600" id="lentes-filtro-fecha">Fecha<input id="lentes-editar-fecha" type="date" class="mt-1 w-full rounded border border-slate-200 px-2 py-2 text-sm"></label>',
       '      <label class="text-xs text-slate-600 hidden" id="lentes-filtro-municipio">Municipio<select id="lentes-editar-municipio" class="mt-1 w-full rounded border border-slate-200 px-2 py-2 text-sm"><option value="">Cargando municipios...</option></select></label>',
       '      <label class="text-xs text-slate-600 hidden" id="lentes-filtro-asesor">Promotor<select id="lentes-editar-asesor" class="mt-1 w-full rounded border border-slate-200 px-2 py-2 text-sm"><option value="">Cargando promotores...</option></select></label>',
       '    </div>',
-      '    <div class="flex flex-wrap items-center gap-3 mt-4"><button id="lentes-leer-jornadas" type="button" class="btn-primario text-white px-4 py-2 rounded-lg text-sm font-semibold" title="Consultar jornadas usando el criterio seleccionado">Consultar jornada</button><button id="lentes-limpiar-filtros" type="button" class="px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:bg-slate-100" title="Limpiar el criterio y los resultados">Limpiar</button><span class="text-xs text-slate-400">La fecha es obligatoria si buscas por fecha.</span></div>',
+      '    <div class="lentes-form-actions"><div class="flex flex-wrap items-center gap-2"><button id="lentes-leer-jornadas" type="button" class="btn-primario text-white px-4 py-2 rounded-lg text-sm font-semibold" title="Consultar jornadas usando el criterio seleccionado">Consultar jornada</button><button id="lentes-limpiar-filtros" type="button" class="lentes-secondary-button" title="Limpiar el criterio y los resultados">Limpiar</button></div><span class="text-xs text-slate-500">La fecha es obligatoria si buscas por fecha.</span></div>',
       '    <div id="lentes-jornadas-resultado" class="mt-4"></div>',
       '  </div>',
       '  <div id="lentes-editor-modal" class="hidden fixed inset-0 z-50 bg-black/40 p-4 flex items-center justify-center"></div>',
@@ -553,7 +587,14 @@
     };
     var criterio = document.getElementById('lentes-criterio');
     criterio.onchange = function () {
-      ['fecha', 'municipio', 'asesor'].forEach(function (campo) { document.getElementById('lentes-filtro-' + campo).classList.toggle('hidden', criterio.value !== campo); });
+      ['fecha', 'municipio', 'asesor'].forEach(function (campo) {
+        var filtro = document.getElementById('lentes-filtro-' + campo);
+        filtro.classList.toggle('hidden', criterio.value !== campo);
+        if (criterio.value !== campo) {
+          var control = document.getElementById('lentes-editar-' + campo);
+          if (control) control.value = '';
+        }
+      });
     };
     LentesCargaService.listarCatalogosJornadasLentes().then(function (respuesta) {
       var municipio = document.getElementById('lentes-editar-municipio');
@@ -564,7 +605,12 @@
       }
     });
     document.getElementById('lentes-leer-jornadas').onclick = function () {
-      if (criterio.value === 'fecha' && !document.getElementById('lentes-editar-fecha').value) { alert('Selecciona una fecha para consultar.'); return; }
+      var valorSeleccionado = document.getElementById('lentes-editar-' + criterio.value).value;
+      if (!valorSeleccionado) {
+        var etiquetaCriterio = criterio.value === 'fecha' ? 'una fecha' : criterio.value === 'municipio' ? 'un municipio' : 'un promotor';
+        alert('Selecciona ' + etiquetaCriterio + ' para consultar.');
+        return;
+      }
       cargarJornadasExistentes();
     };
     document.getElementById('lentes-jornadas-resultado').addEventListener('click', function (event) {
@@ -590,9 +636,9 @@
       contenedor.innerHTML = [
         '<div class="fade-in space-y-5">',
         '  <div><h3 class="text-verde-oscuro font-bold text-lg">Gestión de lentes</h3><p class="text-slate-400 text-sm mt-0.5">Administra la carga y consulta las jornadas registradas.</p></div>',
-        '  <div class="grid grid-cols-1 md:grid-cols-2 gap-5">',
-        '    <button id="lentes-card-carga" type="button" class="group bg-white rounded-xl shadow-soft p-6 text-left border border-slate-100 hover:border-petroleo/30 hover:shadow-lg transition-all" title="Abrir carga de lentes en sistema"><div class="w-11 h-11 rounded-xl bg-verde-suave flex items-center justify-center mb-5 text-verde-oscuro text-2xl" aria-hidden="true">↥</div><h4 class="font-bold text-verde-oscuro text-base">Carga de Lentes en sistema</h4><p class="text-slate-500 text-sm mt-2 leading-relaxed">Pega los resultados de Excel, valida los promotores y registra una nueva jornada.</p><span class="inline-flex items-center gap-2 mt-5 text-sm font-semibold text-petroleo group-hover:gap-3 transition-all">Abrir carga <span aria-hidden="true">→</span></span></button>',
-        '    <button id="lentes-card-gestion" type="button" class="group bg-white rounded-xl shadow-soft p-6 text-left border border-slate-100 hover:border-petroleo/30 hover:shadow-lg transition-all" title="Abrir gestión de lentes por jornada"><div class="w-11 h-11 rounded-xl bg-amber-50 flex items-center justify-center mb-5 text-amber-700 text-2xl" aria-hidden="true">⌕</div><h4 class="font-bold text-verde-oscuro text-base">Gestión de lentes por jornada</h4><p class="text-slate-500 text-sm mt-2 leading-relaxed">Consulta una fecha, municipio o promotor y edita registros existentes.</p><span class="inline-flex items-center gap-2 mt-5 text-sm font-semibold text-petroleo group-hover:gap-3 transition-all">Abrir gestión <span aria-hidden="true">→</span></span></button>',
+        '  <div class="grid grid-cols-1 md:grid-cols-2 gap-3">',
+        '    <button id="lentes-card-carga" type="button" class="lentes-action-card lentes-action-card--carga group" title="Abrir carga de lentes en sistema"><span class="lentes-action-card-icon" aria-hidden="true">↥</span><span class="lentes-action-card-content"><span class="lentes-action-card-tag">Nueva jornada</span><h4>Carga de Lentes en sistema</h4><p>Pega los resultados de Excel, valida los promotores y registra una nueva jornada.</p><span class="lentes-action-card-link">Abrir carga <span aria-hidden="true">→</span></span></span></button>',
+        '    <button id="lentes-card-gestion" type="button" class="lentes-action-card lentes-action-card--gestion group" title="Abrir gestión de lentes por jornada"><span class="lentes-action-card-icon" aria-hidden="true">⌕</span><span class="lentes-action-card-content"><span class="lentes-action-card-tag">Consulta y edición</span><h4>Gestión de lentes por jornada</h4><p>Consulta una fecha, municipio o promotor y edita registros existentes.</p><span class="lentes-action-card-link">Abrir gestión <span aria-hidden="true">→</span></span></span></button>',
         '  </div>',
         '</div>'
       ].join('');
@@ -602,21 +648,18 @@
     }
 
     contenedor.innerHTML = [
-      '<div class="fade-in space-y-5">',
+      '<div class="fade-in space-y-5 lentes-workspace lentes-workspace--carga">',
       '  <div class="flex items-center justify-between gap-3">',
-      '    <div>',
-      '      <h3 class="text-verde-oscuro font-bold text-lg">Gestión de Lentes</h3>',
-      '      <p class="text-slate-400 text-sm mt-0.5">Pega el rango de Excel para validar nombres y preparar una nueva jornada.</p>',
-      '    </div>',
-      '    <button id="lentes-carga-volver" type="button" class="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:bg-white hover:shadow-sm" title="Volver al menú de Gestión de lentes"><span aria-hidden="true">←</span> Volver</button>',
+      '    <div class="lentes-module-heading"><span class="lentes-module-heading-icon" aria-hidden="true">↥</span><div><span class="lentes-module-heading-tag">Nueva jornada</span><h3>Gestión de Lentes</h3><p>Pega el rango de Excel para validar nombres y preparar una nueva jornada.</p></div></div>',
+      '    <button id="lentes-carga-volver" type="button" class="lentes-back-button" title="Volver al menú de Gestión de lentes"><span aria-hidden="true">←</span> Volver</button>',
       '  </div>',
-      '  <div class="bg-white rounded-xl shadow-soft p-4">',
-      '    <div class="grid grid-cols-1 gap-4">',
+      '  <div class="lentes-form-panel">',
+      '    <div class="lentes-form-panel-heading"><span class="lentes-form-panel-icon" aria-hidden="true">1</span><div><h4>Datos de la jornada</h4><p>Completa la información de la brigada antes de pegar los datos.</p></div></div>',
+      '    <div class="grid grid-cols-1 lg:grid-cols-4 gap-3">',
       '      <div>',
       '        <label class="block text-[10px] font-bold uppercase tracking-wide text-slate-500 mb-2">Ruta</label>',
       '        <input id="lentes-ruta" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm" placeholder="Ruta 1">',
       '      </div>',
-      '      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">',
       '        <div>',
       '          <label class="block text-[10px] font-bold uppercase tracking-wide text-slate-500 mb-2">Brigada empresa</label>',
       '          <input id="lentes-brigada-empresa" type="number" min="1" step="1" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm" value="1">',
@@ -629,17 +672,17 @@
       '          <label class="block text-[10px] font-bold uppercase tracking-wide text-slate-500 mb-2">Municipio</label>',
       '          <input id="lentes-municipio" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm" placeholder="Municipio">',
       '        </div>',
-      '      </div>',
-      '      <div>',
+      '      <div class="lentes-paste-heading lg:col-span-4"><span class="lentes-form-panel-icon" aria-hidden="true">2</span><div><h4>Datos desde Excel</h4><p>Pega el rango completo, incluidos sus encabezados.</p></div></div>',
+      '      <div class="lg:col-span-4">',
       '        <label class="block text-[10px] font-bold uppercase tracking-wide text-slate-500 mb-2">Rango pegado desde Excel</label>',
-      '        <textarea id="lentes-paste" rows="10" class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm font-mono" placeholder="Promotor\tAfiliaciones\tAsistidos\tVenta Especial\tVenta Normal\tTotal Venta\nElizabeth Quintero\t13\t6\t3\t2\t5"></textarea>',
+      '        <textarea id="lentes-paste" rows="7" class="lentes-paste-area w-full px-3 py-2 border border-slate-200 rounded-lg text-sm font-mono" placeholder="Promotor\tAfiliaciones\tAsistidos\tVenta Especial\tVenta Normal\tTotal Venta\nElizabeth Quintero\t13\t6\t3\t2\t5"></textarea>',
       '      </div>',
-      '      <div class="flex items-center gap-3">',
+      '      <div class="flex items-center gap-3 lg:col-span-4">',
       '        <button id="lentes-leer" class="btn-primario text-white px-4 py-2 rounded-lg font-semibold text-sm">Leer datos</button>',
-      '        <span class="text-slate-400 text-xs">La carga solo escribe en Relacion Lentes.</span>',
+      '        <span class="text-slate-500 text-xs">La carga solo escribe en Relacion Lentes.</span>',
       '      </div>',
-      '      <div id="lentes-error" class="hidden rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"></div>',
-      '      <div id="lentes-preview" class="overflow-x-auto"></div>',
+      '      <div id="lentes-error" class="hidden rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700 lg:col-span-4"></div>',
+      '      <div id="lentes-preview" class="overflow-x-auto lg:col-span-4"></div>',
       '    </div>',
       '  </div>',
       '</div>'
@@ -675,6 +718,7 @@
   }
 
   var api = {
+    crearFiltrosConsultaJornadas: crearFiltrosConsultaJornadas,
     parsearDatosPegados: parsearDatosPegados,
     normalizarNombrePromotor: normalizarNombrePromotor,
     renderCargaLentes: renderCargaLentes,

@@ -67,7 +67,7 @@ function _dashShellHtml(perfil) {
     var enlaceAttr = (f.url && f.url !== '#')
       ? 'href="' + f.url + '" target="_blank" rel="noopener"'
       : 'href="#" onclick="return false;"';
-    return '<div class="flex items-center gap-3 py-2.5 border-b border-slate-50 last:border-0' +
+    return '<div class="dash-resource-row flex items-center gap-3 py-2.5 border-b border-slate-50 last:border-0' +
       ' hover:bg-slate-50 rounded-lg px-2 -mx-2 transition-colors group">' +
       '<div class="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center flex-shrink-0">' +
       '<svg class="w-4 h-4 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">' +
@@ -96,7 +96,7 @@ function _dashShellHtml(perfil) {
     var target = a.url && a.url !== '#' ? '_blank' : '_self';
     var rel = target === '_blank' ? ' rel="noopener"' : '';
     var enlace = a.url && a.url !== '#' ? a.url : 'javascript:void(0)';
-    return '<div class="flex items-center gap-3 py-2.5 border-b border-slate-50 last:border-0' +
+    return '<div class="dash-resource-row flex items-center gap-3 py-2.5 border-b border-slate-50 last:border-0' +
       ' hover:bg-slate-50 rounded-lg px-2 -mx-2 transition-colors group">' +
       '<div class="w-8 h-8 rounded-lg bg-verde-suave flex items-center justify-center flex-shrink-0">' +
       '<svg class="w-4 h-4 text-verde-oscuro" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">' +
@@ -120,7 +120,7 @@ function _dashShellHtml(perfil) {
 
   var accesosHtml = accesos.map(function (a) {
     return '<button onclick="adminNavegar(\'' + a.ruta.replace('#/admin/', '') + '\')"' +
-      ' class="flex flex-col items-center gap-2 p-4 bg-white rounded-xl shadow-soft' +
+      ' class="dash-quick-button flex flex-col items-center gap-2 p-4 bg-white rounded-xl shadow-soft' +
       ' hover:shadow-card transition-all hover:-translate-y-0.5 active:scale-95 border border-slate-100">' +
       '<div class="w-10 h-10 rounded-xl bg-verde-suave flex items-center justify-center">' +
       '<svg class="w-5 h-5 text-verde-oscuro" fill="none" viewBox="0 0 24 24" stroke="currentColor">' +
@@ -134,7 +134,7 @@ function _dashShellHtml(perfil) {
   return '<div class="fade-in">' +
 
     // Saludo
-    '<div class="mb-6">' +
+    '<div class="dash-welcome mb-6">' +
     '<h3 class="text-verde-oscuro font-bold text-lg">' + saludo + '</h3>' +
     '<p class="text-slate-400 text-sm mt-0.5" id="dash-subtitulo">Cargando datos...</p>' +
     '</div>' +
@@ -149,30 +149,29 @@ function _dashShellHtml(perfil) {
     '</div>' +
 
     // Fila central: Accesos Frecuentes (izquierda en layout final) + Centro de Recursos (derecha)
-    '<div class="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-4">' +
+    '<div class="dash-main-grid grid grid-cols-1 lg:grid-cols-[minmax(240px,0.8fr)_minmax(0,1.7fr)] gap-4">' +
 
     // ── Panel lateral derecho (ahora renderizado primero para quedar a la izquierda en pantallas grandes): Accesos Frecuentes del router ──
-    '<div class="bg-gris-claro rounded-xl p-4 min-w-[200px]">' +
-    '<h4 class="font-bold text-verde-oscuro text-sm mb-3">Accesos Frecuentes</h4>' +
-    '<div class="grid grid-cols-2 gap-2">' + accesosHtml + '</div>' +
+    '<section class="dash-panel dash-quick-panel min-w-[200px]">' +
+    '<div class="dash-panel-heading">' +
+    '<span class="dash-panel-icon dash-panel-icon--blue" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 3H6a2 2 0 00-2 2v14a2 2 0 002 2h12a2 2 0 002-2v-7"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 3h6v6m0-6l-9 9"/></svg></span>' +
+    '<div><h4>Accesos Frecuentes</h4><p>Atajos a tus módulos de trabajo</p></div>' +
     '</div>' +
+    '<div class="dash-quick-grid grid grid-cols-2 gap-2">' + accesosHtml + '</div>' +
+    '</section>' +
 
     // ── Card: Centro de Recursos Operativos (ahora a la derecha en pantallas grandes) ────────────────
-    '<div class="bg-white rounded-xl shadow-soft p-4">' +
-    '<div class="flex items-center justify-between mb-4">' +
+    '<section class="dash-panel dash-resource-panel">' +
+    '<div class="dash-panel-heading dash-resource-heading">' +
+    '<span class="dash-panel-icon dash-panel-icon--green" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 7.5A2.5 2.5 0 016.5 5H10l2 2h5.5A2.5 2.5 0 0120 9.5v8a2.5 2.5 0 01-2.5 2.5h-11A2.5 2.5 0 014 17.5z"/><path stroke-linecap="round" stroke-linejoin="round" d="M4 10h16"/></svg></span>' +
     '<div>' +
-    '<h4 class="font-bold text-verde-oscuro text-sm leading-tight">Centro de Recursos Operativos</h4>' +
-    '<p class="text-[10px] text-slate-400 mt-0.5 font-medium">Formatos y accesos directos de uso frecuente</p>' +
-    '</div>' +
-    '<div class="w-7 h-7 rounded-lg bg-verde-suave flex items-center justify-center flex-shrink-0">' +
-    '<svg class="w-3.5 h-3.5 text-verde-oscuro" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">' +
-    '<path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>' +
-    '</svg>' +
+    '<h4>Centro de Recursos Operativos</h4>' +
+    '<p>Formatos y accesos directos de uso frecuente</p>' +
     '</div>' +
     '</div>' +
 
     // Grid interno: 2 columnas (1 en móvil)
-    '<div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-0">' +
+    '<div class="dash-resource-grid grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-0">' +
 
     // Columna izquierda: Formatos PDF
     '<div>' +
@@ -184,29 +183,31 @@ function _dashShellHtml(perfil) {
     '</div>' +
 
     // Columna derecha: Accesos directos
-    '<div class="sm:border-l sm:border-slate-100 sm:pl-6">' +
+    '<div class="dash-resource-column sm:border-l sm:border-slate-100 sm:pl-6">' +
     '<div class="flex items-center gap-1.5 mb-2">' +
     '<span class="text-base leading-none">🔗</span>' +
     '<span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Accesos Rápidos / Drive</span>' +
     '</div>' +
     accesosDirectosHtml +
     '</div>' +
-
     '</div>' +
-    '</div>' +
+    '</section>' +
 
     '</div>' +
 
     // Estado del sistema
-    '<div class="mt-4 bg-white rounded-xl shadow-soft p-4">' +
-    '<h4 class="font-bold text-verde-oscuro text-sm mb-3">Estado del Sistema</h4>' +
-    '<div class="grid grid-cols-2 sm:grid-cols-4 gap-3">' +
+    '<section class="dash-panel dash-system-panel mt-4">' +
+    '<div class="dash-panel-heading dash-status-heading">' +
+    '<span class="dash-panel-icon dash-panel-icon--blue" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3l8 4v5c0 4.5-3.1 7.5-8 9-4.9-1.5-8-4.5-8-9V7z"/><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4"/></svg></span>' +
+    '<div><h4>Estado del Sistema</h4><p>Información operativa y de licencia</p></div>' +
+    '</div>' +
+    '<div class="dash-status-grid grid grid-cols-2 sm:grid-cols-4 gap-3">' +
     _estadoChip('Sistema Administrativo', 'Activo', 'emerald') +
     _estadoChip('Estado de Licencia', licenciaEstaActiva ? 'Activo' : 'Inactivo', licenciaEstaActiva ? 'emerald' : 'amber') +
     _estadoChip('Vencimiento', vencimientoLicencia, 'blue') +
     _estadoChip('Versión', configuracion.version, 'blue') +
     '</div>' +
-    '</div>' +
+    '</section>' +
 
     '</div>';
 }
@@ -283,13 +284,13 @@ function _dashRenderKpis(m, perfil) {
 
 function _estadoChip(label, estado, color) {
   var colores = {
-    emerald: 'bg-emerald-50 text-emerald-700',
-    amber: 'bg-amber-50 text-amber-700',
-    blue: 'bg-verde-suave text-verde-oscuro'
+    emerald: 'dash-status-item--green',
+    amber: 'dash-status-item--amber',
+    blue: 'dash-status-item--blue'
   };
-  return '<div class="rounded-lg px-3 py-2.5 ' + (colores[color] || 'bg-slate-50 text-slate-600') + '">' +
-    '<div class="text-[10px] font-semibold uppercase tracking-wide opacity-70">' + label + '</div>' +
-    '<div class="text-xs font-bold mt-0.5">' + estado + '</div>' +
+  return '<div class="dash-status-item ' + (colores[color] || 'dash-status-item--blue') + '">' +
+    '<div class="dash-status-label">' + label + '</div>' +
+    '<div class="dash-status-value"><span class="dash-status-dot" aria-hidden="true"></span>' + estado + '</div>' +
     '</div>';
 }
 

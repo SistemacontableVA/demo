@@ -28,24 +28,28 @@ function renderGerencia() {
 function _gerenciaRenderShell(root) {
   root.innerHTML =
     '<style>' +
-      '.gm-head{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:20px}' +
-      '.gm-title{margin:0;color:#123c37;font-size:22px;font-weight:750}' +
-      '.gm-subtitle{margin:4px 0 0;color:#7a8784;font-size:12px}' +
+      '.gm-head{position:relative;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;overflow:hidden;margin-bottom:18px;padding:19px 21px;border:1px solid #176a68;border-radius:16px;background:linear-gradient(112deg,#123d5a 0%,#126b69 58%,#07865d 100%);box-shadow:0 12px 24px -18px #0c3c4ca6}' +
+      '.gm-head:after{position:absolute;top:-66px;right:32%;width:170px;height:170px;border:1px solid #ffffff20;border-radius:50%;content:"";pointer-events:none}' +
+      '.gm-title{margin:0;color:#fff;font-size:21px;font-weight:800}' +
+      '.gm-subtitle{margin:4px 0 0;color:#e1f1ec;font-size:12px}' +
       '.gm-toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap}' +
-      '.gm-search{height:38px;min-width:220px;padding:0 12px;border:1px solid #e0e5e3;border-radius:20px;background:#f6f8f7;font-size:12px;outline:none}' +
-      '.gm-search:focus{border-color:#7aa69a;background:#fff}' +
-      '.gm-add{height:38px;padding:0 15px;border:0;border-radius:20px;background:linear-gradient(110deg,#082c4a,#008a69);color:#fff;font-size:12px;font-weight:700;cursor:pointer}' +
-      '.gm-add:hover{background:linear-gradient(110deg,#0c5360,#008a69)}' +
-      '.gm-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,280px),1fr));gap:14px}' +
-      '.gm-card{display:flex;flex-direction:column;min-height:190px;padding:17px;border:1px solid #e3e9e6;border-radius:12px;background:#fff;box-shadow:0 2px 8px #142d2808}' +
-      '.gm-card h2{margin:0;color:#263a35;font-size:15px;font-weight:750;overflow-wrap:anywhere}' +
-      '.gm-description{flex:1;margin:8px 0 15px;color:#687671;font-size:12px;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere}' +
+      '.gm-search{height:40px;min-width:220px;padding:0 14px;border:1px solid #ffffff55;border-radius:11px;background:#ffffffed;color:#263a35;font-size:12px;outline:none}' +
+      '.gm-search:focus{border-color:#b8ead7;background:#fff;box-shadow:0 0 0 3px #ffffff25}' +
+      '.gm-add{height:40px;padding:0 15px;border:1px solid #ffffff35;border-radius:11px;background:linear-gradient(110deg,#082c4a,#008a69);color:#fff;font-size:12px;font-weight:800;cursor:pointer;box-shadow:0 4px 12px #062d2730;transition:transform .16s,box-shadow .16s}' +
+      '.gm-add:hover{transform:translateY(-1px);background:linear-gradient(110deg,#0c5360,#008a69);box-shadow:0 7px 15px #062d2740}' +
+      '.gm-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,290px),1fr));gap:13px}' +
+      '.gm-card{position:relative;display:flex;flex-direction:column;min-height:176px;overflow:hidden;padding:18px;border:1px solid #d8e4df;border-radius:14px;background:linear-gradient(155deg,#fff 0%,#fff 75%,#f8fbf9 100%);box-shadow:0 10px 26px -22px #0f2d3e59,0 1px 3px #0f2d3e0a;transition:transform .16s,border-color .16s,box-shadow .16s}' +
+      '.gm-card:before{position:absolute;inset:0 0 auto;height:3px;background:linear-gradient(90deg,#16466a,#07865d);content:""}' +
+      '.gm-card:hover{transform:translateY(-2px);border-color:#aacbbd;box-shadow:0 12px 24px -18px #0c3c4c70}' +
+      '.gm-card h2{margin:0;color:#173b52;font-size:15px;font-weight:800;overflow-wrap:anywhere}' +
+      '.gm-description{flex:1;margin:9px 0 16px;color:#64748b;font-size:12px;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere}' +
       '.gm-link{display:flex;justify-content:flex-end;gap:7px;flex-wrap:wrap}' +
-      '.gm-btn{min-height:32px;padding:0 11px;border:1px solid #d4dfda;border-radius:7px;background:#fff;color:#465550;font-size:11px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center}' +
-      '.gm-btn:hover{background:#f1f6f3;color:#008a69}' +
+      '.gm-btn{min-height:34px;padding:0 12px;border:1px solid #d7e3dd;border-radius:9px;background:#fff;color:#465b54;font-size:11px;font-weight:750;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;transition:background .16s,border-color .16s,transform .16s}' +
+      '.gm-btn:hover{transform:translateY(-1px);border-color:#a9cbbd;background:#f2f8f4;color:#08764f}' +
       '.gm-btn.primary{border-color:#008a69;background:#008a69;color:#fff}' +
-      '.gm-btn.danger{color:#a44640}' +
-      '.gm-state{padding:34px 15px;text-align:center;color:#77837f;font-size:13px}' +
+      '.gm-btn.primary:hover{border-color:#0c5360;background:#0c5360;color:#fff}' +
+      '.gm-btn.danger{border-color:#f0d3d1;background:#fff7f6;color:#a44640}' +
+      '.gm-state{padding:28px 15px;border:1px dashed #cbdad3;border-radius:13px;background:#f8fbf9;text-align:center;color:#77837f;font-size:13px}' +
       '.gm-error{color:#9a3530}' +
       '.gm-modal-backdrop{position:fixed;inset:0;z-index:1200;display:grid;place-items:center;padding:16px;background:#10232180}' +
       '.gm-modal{width:min(100%,560px);max-height:90vh;overflow:auto;border-radius:12px;background:#fff;box-shadow:0 18px 55px #0003}' +
@@ -69,7 +73,7 @@ function _gerenciaRenderShell(root) {
       '.gm-zoom button{width:30px;height:29px;border:0;border-radius:6px;background:#082c4a;color:#fff;font-size:18px;line-height:1;cursor:pointer}' +
       '.gm-zoom-value{min-width:40px;text-align:center;color:#334155;font-size:10px;font-weight:750}' +
       '.gm-fullscreen{min-height:33px;padding:0 10px;border:0;border-radius:7px;background:#008a69;color:#fff;font-size:10px;font-weight:700;white-space:nowrap;cursor:pointer}' +
-      '@media(max-width:760px){.gm-head{align-items:stretch}.gm-toolbar{width:100%}.gm-search{flex:1;min-width:0}.gm-add{flex:none}.gm-viewer-toolbar{flex-wrap:wrap}.gm-view-controls{margin-left:auto}.gm-fullscreen{font-size:0;padding:0 9px}.gm-fullscreen:after{content:"⛶";font-size:17px}}' +
+      '@media(max-width:760px){.gm-head{align-items:stretch;padding:16px}.gm-head:after{right:-42px}.gm-toolbar{width:100%}.gm-search{flex:1;min-width:0}.gm-add{flex:none}.gm-viewer-toolbar{flex-wrap:wrap}.gm-view-controls{margin-left:auto}.gm-fullscreen{font-size:0;padding:0 9px}.gm-fullscreen:after{content:"⛶";font-size:17px}}' +
     '</style>' +
     '<section class="gm-head">' +
       '<div><h1 class="gm-title">Centro de Datos</h1><p class="gm-subtitle">Accesos directos a las herramientas administrativas.</p></div>' +

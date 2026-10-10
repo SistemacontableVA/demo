@@ -110,7 +110,7 @@ function _rptShellHtml() {
     '<div id="rpt-root" class="fade-in">',
 
     /* ── Encabezado ── */
-    '<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">',
+    '<div class="rpt-page-heading flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">',
       '<div>',
         '<h3 class="text-verde-oscuro font-bold text-lg">Reportes de Lentes y Desempeño</h3>',
         '<p class="text-slate-400 text-sm mt-0.5">Datos consolidados desde las hojas GENERAL y Relacion Lentes</p>',
@@ -118,7 +118,7 @@ function _rptShellHtml() {
     '</div>',
 
     /* ── Barra de filtros ── */
-    '<div class="bg-white rounded-xl shadow-soft p-4 mb-5">',
+    '<div class="rpt-filter-panel bg-white rounded-xl shadow-soft p-4 mb-5">',
       '<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 items-end">',
 
         /* Fecha inicio */
