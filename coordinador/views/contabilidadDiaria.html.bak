@@ -1,0 +1,3310 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema Contable de Campo - Óptica Angelus Visión</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* Paleta del sistema Angelus Visión */
+      --navy:        #1E293B;
+      --navy-mid:    #0F172A;
+      --navy-light:  #A0C4FF;
+      --gold:        #DDB400;
+      --gold-light:  #FFE880;
+      --gold-subtle: #E2E8F0;
+
+      --deduccion-fondo: #F4EEF8;
+      --deduccion-texto: #1E293B;
+      --deduccion-monto: #9E2A2B;
+
+      --tabla-encabezado-fondo: #ecf0f5;
+      --tabla-encabezado-texto: #1E293B;
+      --tabla-encabezado-borde: #94ccb8;
+
+      /* Colores editables de los botones superiores */
+      --boton-restablecer-fondo: #E8F5F1;
+      --boton-restablecer-texto: #087F5B;
+      --boton-restablecer-borde: #A7DCCB;
+
+      --boton-guardar-fondo: #008F73;
+      --boton-guardar-texto: #FFFFFF;
+
+      --boton-validar-fondo: #124E8C;
+      --boton-validar-texto: #FFFFFF;
+
+      --boton-cerrar-fondo: #0B3A5B;
+      --boton-cerrar-texto: #FFFFFF;
+
+      --boton-reporte-fondo: #16A085;
+      --boton-reporte-texto: #FFFFFF;
+      --boton-reporte-borde: #12856F;
+
+      --boton-agregar-asesor-fondo: #008F73;
+      --boton-agregar-asesor-texto: #ffffff;
+      --boton-agregar-gasto-fondo: #008F73;
+      --boton-agregar-gasto-texto: #ffffff;
+
+      --green:       #A8E6CF;
+      --green-light: #E8F8F2;
+      --green-text:  #2D6A4F;
+
+      --red:         #FFB7B2;
+      --red-dark:    #9E2A2B;
+      --red-light:   #FFECEB;
+      --red-text:    #9E2A2B;
+
+      --white:       #FFFFFF;
+      --bg:          #F4F7F6;
+      --surface:     #FFFFFF;
+      --border:      #E2E8F0;
+      --border-dark: #CBD5E1;
+      --text:        #0F172A;
+      --text-soft:   #334155;
+      --text-muted:  #64748B;
+
+      /* Linked fields (vinculados entre hojas) */
+      --linked-bg:   #EBF2FF;
+      --linked-text: #1E3A5F;
+      --linked-bdr:  #bdd6ff;
+
+      /* Sobre fondo oscuro */
+      --on-dark-strong: rgba(255, 255, 255, 0.90);
+      --on-dark-mid:    rgba(255, 255, 255, 0.70);
+      --on-dark-soft:   rgba(255, 255, 255, 0.45);
+      --on-dark-bg:     rgba(255, 255, 255, 0.10);
+      --on-dark-border: rgba(255, 255, 255, 0.12);
+
+      --shadow-sm:   0 1px 3px rgba(12, 45, 72, 0.10);
+      --shadow-md:   0 4px 14px rgba(12, 45, 72, 0.14);
+      --shadow-lg:   0 8px 28px rgba(12, 45, 72, 0.20);
+      --radius-sm:   6px;
+      --radius-md:   10px;
+      --radius-lg:   14px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      padding: 0;
+      min-height: 100vh;
+    }
+
+    .app-container {
+      max-width: none;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      padding-bottom: 1.5rem;
+    }
+
+    /* ─── HEADER ─────────────────────────────────── */
+    .header-card {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      padding: 0.8rem 1.25rem;
+      display: grid;
+      grid-template-columns: 1fr;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .header-main {
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .brand-icon {
+      width: 36px;
+      height: 36px;
+      background: var(--gold);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+    }
+
+    .brand-title h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--navy);
+      line-height: 1.2;
+    }
+
+    .brand-title p {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+    }
+
+    .nav-tabs {
+      display: flex;
+      gap: 0.35rem;
+      background: var(--bg);
+      padding: 0.28rem;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      box-shadow: none;
+    }
+
+    .tab-btn {
+      padding: 0.48rem 1rem;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      cursor: pointer;
+      background: transparent;
+      color: var(--text-muted);
+      transition: all 0.2s ease;
+      white-space: nowrap;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+    }
+
+    .tab-btn.active {
+      background: var(--surface);
+      color: var(--navy);
+      border-color: var(--border);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .tab-btn:hover {
+      color: var(--navy);
+      background: var(--surface);
+      transform: translateY(-1px);
+    }
+
+    .tab-btn.active:hover {
+      background: var(--surface);
+      transform: translateY(-1px);
+    }
+
+    .btn-print {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.45rem 0.9rem;
+      border: 1px solid var(--boton-reporte-borde);
+      border-radius: var(--radius-sm);
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      background: var(--boton-reporte-fondo);
+      color: var(--boton-reporte-texto);
+      transition: all 0.18s ease;
+    }
+
+    .btn-print:hover { background: color-mix(in srgb, var(--boton-reporte-fondo) 88%, #000000 12%); color: var(--boton-reporte-texto); filter: none; }
+
+    .btn-reset {
+      background: var(--boton-restablecer-fondo);
+      color: var(--boton-restablecer-texto);
+      border: 1px solid var(--boton-restablecer-borde);
+      margin-left: 1.1rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn-reset:hover { background: color-mix(in srgb, var(--boton-restablecer-fondo) 88%, #000000 12%); color: var(--boton-restablecer-texto); filter: none; }
+
+    .header-actions .btn-guardar { background: var(--boton-guardar-fondo); color: var(--boton-guardar-texto); }
+    .header-actions .btn-validar { background: var(--boton-validar-fondo); color: var(--boton-validar-texto); }
+    .header-actions .btn-cerrar { background: var(--boton-cerrar-fondo); color: var(--boton-cerrar-texto); }
+    .header-actions .btn-guardar:hover { background: color-mix(in srgb, var(--boton-guardar-fondo) 88%, #000000 12%); color: var(--boton-guardar-texto); filter: none; }
+    .header-actions .btn-validar:hover { background: color-mix(in srgb, var(--boton-validar-fondo) 88%, #000000 12%); color: var(--boton-validar-texto); filter: none; }
+    .header-actions .btn-cerrar:hover { background: color-mix(in srgb, var(--boton-cerrar-fondo) 88%, #000000 12%); color: var(--boton-cerrar-texto); filter: none; }
+    .header-actions .btn-print:hover { background: color-mix(in srgb, var(--boton-reporte-fondo) 88%, #000000 12%); color: var(--boton-reporte-texto); filter: none; }
+
+    /* Hover único: solo se oscurece el fondo de cada botón. */
+    .tab-btn:hover,
+    .tab-btn.active:hover { background: color-mix(in srgb, var(--surface) 88%, #000000 12%); color: var(--navy); }
+    .btn-primary:hover { background: color-mix(in srgb, var(--green) 88%, #000000 12%); color: var(--green-text); filter: none; }
+    .btn-danger:hover { background: color-mix(in srgb, var(--red) 88%, #000000 12%); color: var(--white); filter: none; }
+    .btn-agregar-asesor:hover { background: color-mix(in srgb, var(--boton-agregar-asesor-fondo) 88%, #000000 12%); color: var(--boton-agregar-asesor-texto); filter: none; }
+    .add-expense-button:hover { background: color-mix(in srgb, var(--boton-agregar-gasto-fondo) 88%, #000000 12%); color: var(--boton-agregar-gasto-texto); filter: none; }
+
+    .btn-agregar-asesor {
+      background: var(--boton-agregar-asesor-fondo);
+      color: var(--boton-agregar-asesor-texto);
+    }
+
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      background: rgba(12, 45, 72, 0.52);
+      backdrop-filter: blur(3px);
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 0.2s ease, visibility 0.2s ease;
+      z-index: 1000;
+    }
+
+    .modal-backdrop.visible {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    .app-modal {
+      width: min(440px, 100%);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+      transform: translateY(8px);
+      transition: transform 0.2s ease;
+    }
+
+    .modal-backdrop.visible .app-modal {
+      transform: translateY(0);
+    }
+
+    .app-modal-header {
+      background: linear-gradient(135deg, var(--navy), var(--navy-mid));
+      color: var(--white);
+      padding: 1rem 1.1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .app-modal-header h3 {
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .app-modal-close {
+      border: none;
+      background: rgba(255,255,255,0.12);
+      color: var(--white);
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1.1rem;
+    }
+
+    .app-modal-body {
+      padding: 1.1rem;
+      color: var(--text-soft);
+      display: flex;
+      flex-direction: column;
+      gap: 0.9rem;
+    }
+
+    .app-modal-body p {
+      font-size: 0.88rem;
+      line-height: 1.5;
+    }
+
+    .app-modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.6rem;
+      margin-top: 0.25rem;
+    }
+
+    .app-modal-btn {
+      border: none;
+      border-radius: 10px;
+      padding: 0.75rem 1rem;
+      font-weight: 700;
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: transform 0.15s ease, opacity 0.15s ease;
+    }
+
+    .app-modal-btn:hover { transform: translateY(-1px); }
+
+    .app-modal-btn.secondary {
+      background: var(--bg);
+      color: var(--text-soft);
+      border: 1px solid var(--border);
+    }
+
+    .app-modal-btn.primary {
+      background: linear-gradient(135deg, var(--red), var(--red-dark));
+      color: var(--white);
+    }
+
+    /* Meta Fields Row */
+    .meta-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 0.625rem;
+    }
+
+    @media (max-width: 760px) {
+      .header-card {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+        padding: 0.75rem;
+        width: 100%;
+      }
+
+      .brand-title {
+        text-align: center;
+      }
+
+      .brand-title h1,
+      .brand-title p {
+        text-align: center;
+      }
+
+      .header-main,
+      .header-top,
+      .header-actions,
+      .nav-tabs {
+        width: 100%;
+        min-width: 0;
+      }
+
+      .header-top {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.6rem;
+      }
+
+      .header-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.5rem;
+        align-items: stretch;
+      }
+
+      .header-actions .nav-tabs {
+        grid-column: 1 / -1;
+      }
+
+      .btn-reset {
+        margin-left: 0;
+      }
+
+      .nav-tabs {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .tab-btn {
+        min-width: 0;
+        white-space: normal;
+        line-height: 1.15;
+        padding: 0.5rem 0.35rem;
+      }
+
+      .btn-print {
+        display: flex;
+        width: 100%;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+      }
+    }
+
+    .meta-field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+
+    .meta-field label {
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--white);
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .meta-field input {
+      padding: 0.45rem 0.625rem;
+      border: 1px solid var(--on-dark-border);
+      border-radius: var(--radius-sm);
+      font-size: 0.825rem;
+      background: rgba(255,255,255,0.08);
+      color: var(--white);
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .meta-field input:focus { border-color: var(--gold); }
+
+    /* ─── TAB CONTENT ────────────────────────────── */
+    .tab-content { display: none; flex-direction: column; gap: 1rem; }
+    .tab-content.active { display: flex; }
+
+    /* ─── STAT CARDS ─────────────────────────────── */
+    .summary-cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1.75fr;
+      gap: 0.7rem;
+      align-items: stretch;
+      margin-bottom: 0.2rem;
+    }
+
+    .stat-card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.96), rgba(247,250,252,0.96));
+      padding: 0.8rem 0.9rem;
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(148,163,184,0.22);
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255,255,255,0.7);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.65rem;
+      min-height: 78px;
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 28px rgba(15, 23, 42, 0.12), inset 0 1px 0 rgba(255,255,255,0.7);
+    }
+
+    .stat-card .sc-header {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .stat-card .sc-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      background: var(--gold-subtle);
+      color: var(--gold);
+      flex-shrink: 0;
+    }
+
+    .stat-card .label {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: rgb(100, 116, 139);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      line-height: 1.2;
+      overflow-wrap: anywhere;
+    }
+
+    .stat-card .value {
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: var(--navy);
+      line-height: 1.1;
+      padding-left: 0.65rem;
+      border-left: 1px solid rgba(148, 163, 184, 0.45);
+      white-space: nowrap;
+      flex-shrink: 0;
+      text-align: right;
+    }
+
+    .stat-card.sc-blue  {
+      background: linear-gradient(180deg, #0d2741 0%, #123a5b 100%);
+      border: 1px solid rgba(255,255,255,0.06);
+      box-shadow: 0 12px 24px rgba(13, 39, 65, 0.26);
+    }
+    .stat-card.sc-blue .label  { color: rgba(255,255,255,0.75); }
+    .stat-card.sc-blue .value  { color: var(--white); border-left-color: rgba(255,255,255,0.28); }
+    .stat-card.sc-blue .sc-icon{ background: rgba(255,255,255,0.08); color: var(--white); }
+
+    .stat-card.sc-green {
+      background: linear-gradient(180deg, #1ea95f 0%, #178a4d 100%);
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 12px 24px rgba(22, 163, 74, 0.28);
+    }
+    .stat-card.sc-green .label { color: rgba(255,255,255,0.78); }
+    .stat-card.sc-green .value { color: var(--white); border-left-color: rgba(255,255,255,0.28); }
+    .stat-card.sc-green .sc-icon{ background: rgba(255,255,255,0.12); color: var(--white); }
+
+    .stat-card.sc-navy  {
+      background: linear-gradient(180deg, #122b48 0%, #0b1f36 100%);
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 14px 28px rgba(11, 31, 54, 0.28);
+    }
+    .stat-card.sc-navy .label  { color: rgba(255,255,255,0.8); }
+    .stat-card.sc-navy .value  { color: var(--gold-light); border-left-color: rgba(255,255,255,0.28); }
+    .stat-card.sc-navy .sc-icon{ background: rgba(255,255,255,0.08); color: var(--gold-light); }
+
+    .summary-final-card {
+      padding: 0.8rem 1rem;
+      min-height: 96px;
+      grid-column: auto;
+      min-width: 0;
+      flex: none;
+      width: 100%;
+    }
+
+    .summary-final-card .sc-summary-content {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .summary-final-card .sc-formula {
+      font-size: 0.7rem;
+      color: var(--on-dark-soft);
+      line-height: 1.3;
+      white-space: normal;
+    }
+
+    .summary-final-card .sc-detail {
+      font-size: 0.72rem;
+      color: var(--gold-light);
+      font-weight: 600;
+      line-height: 1.3;
+    }
+
+    .summary-final-card .value {
+      font-size: 1.9rem;
+      min-width: 120px;
+    }
+
+    /* ─── TABLE CARD (wrapper) ───────────────────── */
+    .table-card {
+      background: var(--surface);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-md);
+      overflow: hidden;
+    }
+
+    .table-wrapper { overflow-x: auto; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+      min-width: 980px;
+    }
+
+    thead th {
+      background: var(--tabla-encabezado-fondo);
+      color: var(--tabla-encabezado-texto);
+      font-weight: 700;
+      font-size: 0.67rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding: 0.75rem 0.5rem;
+      border-bottom: 2px solid var(--tabla-encabezado-borde);
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    tbody tr { transition: background 0.12s; }
+    tbody tr:hover { background: var(--gold-subtle); }
+
+    tbody td {
+      padding: 0.5rem 0.4rem;
+      border-bottom: 1px solid var(--border);
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    td input, td select {
+      width: 100%;
+      padding: 0.38rem 0.3rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 0.82rem;
+      text-align: center;
+      background: var(--surface);
+      outline: none;
+      color: var(--text);
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    td input:focus, td select:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 2px rgba(212, 161, 56, 0.15);
+    }
+
+    td input[readonly] {
+      background: var(--bg);
+      color: var(--text-soft);
+      font-weight: 600;
+      border-color: transparent;
+      cursor: default;
+    }
+
+    .net-recaudo-cell {
+      background: var(--green-light) !important;
+      color: var(--green-text) !important;
+      font-weight: 700 !important;
+      border-color: var(--border-dark) !important;
+    }
+
+    tfoot tr { background: var(--navy); color: var(--white); }
+
+    tfoot td {
+      padding: 0.8rem 0.5rem !important;
+      font-size: 0.875rem;
+      font-weight: 700;
+      vertical-align: middle;
+      color: var(--white);
+      border: none !important;
+    }
+
+    /* ─── TABLE BOTTOM BAR ───────────────────────── */
+    .table-footer-bar {
+      padding: 0.75rem 1rem;
+      background: var(--bg);
+      border-top: 1px solid var(--border);
+    }
+
+    /* ─── SECTION CARD (form panel) ─────────────── */
+    .section-card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(248,250,252,0.98));
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(148,163,184,0.18);
+      box-shadow: 0 12px 26px rgba(15, 23, 42, 0.08);
+      overflow: hidden;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 1rem;
+      background: linear-gradient(180deg, rgba(240,248,245,0.96), rgba(232,244,237,0.96));
+      border-bottom: 2px solid var(--green);
+    }
+
+    .section-header-left {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .section-badge {
+      width: 22px;
+      height: 22px;
+      background: var(--green);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      font-weight: 800;
+      color: var(--white);
+      flex-shrink: 0;
+    }
+
+    .section-badge-warning {
+      background: var(--gold);
+    }
+
+    .section-badge-danger {
+      background: var(--red);
+    }
+
+    .section-title-text {
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: var(--navy);
+    }
+
+    .section-subtitle {
+      font-size: 0.72rem;
+      color: rgb(100, 116, 139);
+    }
+
+    /* ─── FORM ROWS ──────────────────────────────── */
+    .form-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.45rem 0.875rem;
+      border-bottom: 1px solid var(--border);
+      min-height: 42px;
+    }
+
+    .form-row:last-child { border-bottom: none; }
+
+    .form-row-label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-soft);
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      white-space: nowrap;
+      flex-shrink: 0;
+      min-width: 160px;
+    }
+
+    .form-row-label .row-icon {
+      font-size: 0.8rem;
+      color: var(--green-text);
+    }
+
+    .form-row-inputs {
+      display: flex;
+      gap: 0.4rem;
+      align-items: center;
+      flex: 1;
+    }
+
+    .form-row-inputs input,
+    .form-row-inputs select {
+      padding: 0.35rem 0.45rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 0.8rem;
+      background: var(--surface);
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .form-row-inputs input:focus,
+    .form-row-inputs select:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 2px rgb(22 163 74 / 0.12);
+    }
+
+    .form-row-inputs input[readonly] {
+      background: var(--bg);
+      color: var(--text-soft);
+      font-weight: 600;
+      border-color: transparent;
+    }
+
+    .extra-expenses {
+      padding: 0.55rem 0.875rem 0.7rem;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .extra-expense-row {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-bottom: 0.35rem;
+    }
+
+    .extra-expense-row:last-child { margin-bottom: 0; }
+
+    .extra-expense-row input {
+      padding: 0.35rem 0.45rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 0.8rem;
+      background: var(--surface);
+      color: var(--text);
+      outline: none;
+      min-width: 0;
+    }
+
+    .extra-expense-row input:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 2px rgb(22 163 74 / 0.12);
+    }
+
+    .extra-expense-row .expense-amount { width: 120px; }
+    .extra-expense-row .expense-description { flex: 1; }
+
+    .extra-expense-icon {
+      color: var(--green-text);
+      font-size: 0.85rem;
+      flex-shrink: 0;
+    }
+
+    .extra-expense-label {
+      min-width: 70px;
+      color: var(--text-soft);
+      font-size: 0.78rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .add-expense-button {
+      margin-top: 0.5rem;
+      padding: 0.35rem 0.7rem;
+      border: 1px solid var(--green);
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+      color: var(--green-text);
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .add-expense-button:hover { background: var(--green-light); }
+
+    /* sub-label inline (para grupos con etiqueta encima del input) */
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.1rem;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .input-group .sub-label {
+      font-size: 0.58rem;
+      font-weight: 700;
+      color: rgb(100, 116, 139);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .input-group input,
+    .input-group select {
+      padding: 0.32rem 0.4rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 0.79rem;
+      background: var(--surface);
+      color: var(--text);
+      outline: none;
+      width: 100%;
+      transition: border-color 0.15s;
+    }
+
+    .input-group input:focus,
+    .input-group select:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 2px rgb(22 163 74 / 0.12);
+    }
+
+    .input-group input[readonly] {
+      background: var(--bg);
+      color: var(--text-soft);
+      font-weight: 600;
+      border-color: transparent;
+    }
+
+    .linked-field {
+      background: var(--linked-bg) !important;
+      color: var(--linked-text) !important;
+      font-weight: 700 !important;
+      border-color: var(--linked-bdr) !important;
+    }
+
+    .sub-label {
+      font-size: 0.6rem;
+      font-weight: 700;
+      color: rgb(100, 116, 139);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      display: block;
+    }
+
+    /* ─── DUAL CURRENCY ROW ──────────────────────── */
+    .form-row-blue { background: rgba(212, 161, 56, 0.07); }
+
+    /* ─── TOTAL ROWS ─────────────────────────────── */
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.8rem 1rem;
+      background: linear-gradient(180deg, #0f233d 0%, #122b48 100%);
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .total-row-label {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--white);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      letter-spacing: 0.02em;
+    }
+
+    .total-row-value {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--gold-light);
+      min-width: 100px;
+      text-align: right;
+    }
+
+    .total-row input[readonly] {
+      background: transparent;
+      color: var(--gold-light);
+      font-weight: 800;
+      font-size: 1.15rem;
+      border: none;
+      text-align: left;
+      width: 82px;
+      padding: 0;
+      outline: none;
+    }
+
+    .total-amount {
+      display: inline-flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 0;
+      min-width: 0;
+    }
+
+    .total-amount .currency-prefix {
+      color: var(--gold-light);
+      font-size: 1.15rem;
+      font-weight: 800;
+    }
+
+    .total-row-purple { background: var(--navy-mid); border-top: 2px solid rgba(255,255,255,0.08); }
+    .total-row-purple input[readonly] { color: var(--gold-light); }
+    .total-row-purple .total-row-label { color: var(--white); }
+
+    /* ─── BALANCE BOX ────────────────────────────── */
+    .balance-box {
+      background: var(--navy);
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(255,255,255,0.08);
+      padding: 1rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: var(--shadow-lg);
+      gap: 1.5rem;
+    }
+
+    .balance-box-left {
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .balance-box-label {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--white);
+      white-space: nowrap;
+    }
+
+    .balance-box-formula {
+      font-size: 0.78rem;
+      color: var(--on-dark-soft);
+      margin-top: 0.15rem;
+    }
+
+    .balance-box-detalle {
+      font-size: 0.78rem;
+      color: var(--gold-light);
+      margin-top: 0.1rem;
+      font-weight: 600;
+    }
+
+    .balance-total {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--gold-light);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    /* ─── LAYOUT GRID CONTABILIDAD ───────────────── */
+    .coordinacion-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    @media (max-width: 1100px) {
+      .coordinacion-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 560px) {
+      .summary-cards {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 0.5rem;
+      }
+
+      .summary-final-card {
+        grid-column: span 2;
+        min-height: 108px;
+      }
+
+      .summary-final-card .sc-formula,
+      .summary-final-card .sc-detail {
+        white-space: normal;
+      }
+
+      .stat-card {
+        min-height: 76px;
+        padding: 0.55rem 0.65rem;
+      }
+
+      .stat-card .sc-header {
+        gap: 0.35rem;
+      }
+
+      .stat-card .value {
+        font-size: 1rem;
+        padding-left: 0.45rem;
+      }
+    }
+
+    .left-col { display: flex; flex-direction: column; gap: 1rem; }
+
+    /* ─── BUTTONS ────────────────────────────────── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.18s ease;
+    }
+
+    .btn-primary {
+      background: var(--green);
+      color: var(--white);
+      box-shadow: 0 4px 12px rgba(22, 163, 74, 0.28);
+    }
+
+    .btn-primary:hover { background: rgb(21, 128, 61); }
+
+    .btn-danger {
+      background: var(--red);
+      color: var(--white);
+      padding: 0.25rem 0.45rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+    }
+
+    .btn-danger:hover { background: var(--red); filter: brightness(0.88); }
+
+    .meta-field label { color: var(--text-muted); }
+    .meta-field input { background: #F9FBFC; color: var(--text); border-color: var(--border); }
+    .meta-field input:focus { border-color: #83C5BE; }
+
+    .stat-card { background: var(--surface); border-color: var(--border); box-shadow: var(--shadow-md); }
+    .stat-card .sc-icon { background: var(--gold-subtle); color: var(--gold-light); }
+    .stat-card .label { color: var(--text-muted); }
+    .stat-card .value { color: var(--navy); }
+    .stat-card.sc-green { background: linear-gradient(180deg, #A8E6CF, #83C5BE); border-color: rgba(45,106,79,0.14); box-shadow: var(--shadow-md); }
+    .stat-card.sc-green .label, .stat-card.sc-green .value { color: #2D6A4F; }
+
+    .section-card { background: var(--surface); border-color: var(--border); box-shadow: var(--shadow-md); }
+    .section-header { background: #F9FBFC; border-bottom-color: #83C5BE; }
+    .section-title-text { color: var(--navy); }
+    .section-badge { background: var(--green); color: var(--green-text); }
+    .section-badge-warning { background: #FFDAC1; color: #9A5B19; }
+    .section-badge-danger { background: var(--red); color: var(--red-dark); }
+
+    .form-row-blue { background: #EBF2FF; }
+    .form-row-inputs input, .form-row-inputs select,
+    .input-group input, .input-group select,
+    .extra-expense-row input { background: var(--surface); border-color: var(--border); color: var(--text); }
+    .form-row-inputs input:focus, .form-row-inputs select:focus,
+    .input-group input:focus, .input-group select:focus,
+    .extra-expense-row input:focus { border-color: #83C5BE; box-shadow: 0 0 0 2px rgba(131,197,190,0.2); }
+    .extra-expenses { background: #F9FBFC; }
+    .add-expense-button {
+      border-color: var(--boton-agregar-gasto-texto);
+      background: var(--boton-agregar-gasto-fondo);
+      color: var(--boton-agregar-gasto-texto);
+    }
+
+    .total-row { background: var(--navy); }
+    .total-row-purple { background: var(--deduccion-fondo); }
+    .total-row-purple .total-row-label { color: var(--deduccion-texto); }
+    .total-row-purple input[readonly], .total-row-purple .currency-prefix { color: var(--deduccion-monto); }
+    .balance-box { background: linear-gradient(135deg, var(--navy), var(--navy-mid)); }
+    .balance-total { color: var(--gold-light); }
+
+    .btn-primary { background: var(--green); color: var(--green-text); box-shadow: var(--shadow-sm); }
+    .btn-reset { background: var(--boton-restablecer-fondo); color: var(--boton-restablecer-texto); border-color: var(--boton-restablecer-borde); }
+
+    .header-actions .btn-guardar:hover { background: color-mix(in srgb, var(--boton-guardar-fondo) 88%, #000000 12%); color: var(--boton-guardar-texto); filter: none; }
+    .header-actions .btn-validar:hover { background: color-mix(in srgb, var(--boton-validar-fondo) 88%, #000000 12%); color: var(--boton-validar-texto); filter: none; }
+    .header-actions .btn-cerrar:hover { background: color-mix(in srgb, var(--boton-cerrar-fondo) 88%, #000000 12%); color: var(--boton-cerrar-texto); filter: none; }
+    .header-actions .btn-print:hover { background: color-mix(in srgb, var(--boton-reporte-fondo) 88%, #000000 12%); color: var(--boton-reporte-texto); filter: none; }
+    .header-actions .btn-reset:hover { background: color-mix(in srgb, var(--boton-restablecer-fondo) 88%, #000000 12%); color: var(--boton-restablecer-texto); filter: none; }
+
+    /* ─── PRINT ──────────────────────────────────── */
+    .print-header { display: none; }
+
+    @media print {
+      @page {
+        size: letter landscape;
+        margin: 8mm 10mm 10mm 10mm;
+      }
+
+      * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      html, body {
+        width: 100%;
+        background: #fff;
+        font-size: 9pt;
+      }
+
+      body {
+        padding: 0;
+        margin: 0;
+      }
+
+      .btn, .btn-danger, .btn-print { display: none !important; }
+
+      .nav-tabs {
+        display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+      }
+
+      .tab-btn {
+        background: rgba(12, 45, 72, 0.10) !important;
+        color: var(--white) !important;
+        border: 1px solid rgba(12, 45, 72, 0.20) !important;
+      }
+
+      .tab-btn.active {
+        background: var(--green) !important;
+        color: var(--white) !important;
+      }
+
+      .print-header { display: block !important; }
+
+      .app-container {
+        max-width: 100% !important;
+        width: 100% !important;
+        gap: 0.4rem !important;
+        margin: 0 auto;
+      }
+
+      .header-card {
+        border-radius: 14px !important;
+        overflow: hidden !important;
+        margin-bottom: 0.3rem;
+        padding: 0.6rem 1rem;
+        grid-template-columns: 110px 1fr;
+        gap: 0.6rem;
+        display: flex !important;
+        flex-direction: column !important;
+      }
+
+      .header-top {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        flex-wrap: nowrap !important;
+      }
+
+      .header-actions {
+        display: flex !important;
+        justify-content: flex-end !important;
+      }
+
+      .header-card img { width: 100px; }
+
+      .brand-title h1 { font-size: 0.95rem; }
+      .brand-title p { display: block !important; }
+      .brand-title p { font-size: 0.62rem; }
+
+      .meta-row { grid-template-columns: repeat(3, 1fr); gap: 0.5rem; }
+      .meta-field label { font-size: 0.58rem; }
+      .meta-field input { font-size: 0.72rem; padding: 0.3rem 0.45rem; }
+
+      /* PÁGINA 1: Recepción Afiliaciones */
+      #tab-afiliaciones {
+        display: block !important;
+        page-break-after: always;
+        page-break-inside: avoid;
+      }
+
+      /* PÁGINA 2: Contabilidad Coordinador */
+      #tab-contabilidad {
+        display: block !important;
+        page-break-after: avoid;
+        page-break-inside: avoid;
+      }
+
+      .tab-content { display: block !important; gap: 0.5rem !important; }
+
+      .table-card, .section-card, .stat-card, .balance-box {
+        border: 1px solid #000 !important;
+        box-shadow: none !important;
+        border-radius: 10px !important;
+        page-break-inside: avoid;
+      }
+
+      .summary-cards {
+        grid-template-columns: 1fr 1fr 1fr 1.6fr !important;
+        gap: 0.35rem !important;
+      }
+
+      .summary-final-card {
+        grid-column: auto !important;
+      }
+
+      .stat-card {
+        padding: 0.5rem 0.65rem !important;
+        min-height: 58px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+      }
+
+      .stat-card .sc-header {
+        display: flex !important;
+        align-items: center !important;
+        min-width: 0 !important;
+        flex: 1 1 auto !important;
+      }
+
+      .stat-card .value {
+        font-size: 0.96rem !important;
+        padding-left: 0.45rem !important;
+        border-left: 1px solid rgba(148, 163, 184, 0.45) !important;
+        margin-left: 0.25rem !important;
+        white-space: nowrap !important;
+      }
+
+      .stat-card .label { font-size: 0.58rem !important; line-height: 1.15 !important; }
+      .stat-card .sc-icon { width: 22px !important; height: 22px !important; font-size: 0.72rem !important; flex-shrink: 0 !important; }
+
+      .table-wrapper { overflow: visible !important; }
+
+      table {
+        width: 100% !important;
+        min-width: 0 !important;
+        table-layout: fixed !important;
+        font-size: 7.2pt !important;
+      }
+
+      thead th {
+        white-space: normal !important;
+        word-break: break-word;
+        line-height: 1.15;
+        padding: 4px 2px !important;
+        font-size: 0.58rem;
+      }
+
+      tbody td { padding: 2px !important; }
+
+      th, td { border: 1px solid #000 !important; padding: 2px !important; }
+
+      /* La columna de borrar filas no aporta nada en el PDF impreso */
+      .table-card th:last-child, .table-card td:last-child { display: none !important; }
+
+      td input, td select { font-size: 7.2pt !important; padding: 1px !important; border: none !important; background: transparent !important; }
+
+      input, select { border: none !important; background: transparent !important; }
+
+      thead { display: table-header-group; }
+      tbody tr { page-break-inside: avoid; }
+
+      /* Contabilidad en dos columnas para landscape */
+      .coordinacion-grid {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 0.5rem !important;
+      }
+
+      .section-header { padding: 0.5rem 0.7rem; }
+      .section-title-text { font-size: 0.78rem; }
+      .section-badge { width: 18px; height: 18px; font-size: 0.58rem; }
+
+      .form-row { padding: 0.35rem 0.6rem; min-height: 32px; }
+      .form-row-label { font-size: 0.68rem; min-width: 120px; }
+      .form-row-inputs input, .form-row-inputs select { font-size: 0.7rem; padding: 0.25rem 0.35rem; }
+
+      .input-group .sub-label { font-size: 0.52rem; }
+      .input-group input, .input-group select { font-size: 0.7rem; padding: 0.25rem 0.35rem; }
+
+      .total-row { padding: 0.5rem 0.7rem; }
+      .total-row-label { font-size: 0.72rem; }
+      .total-row input[readonly] { font-size: 0.88rem; }
+      .total-amount .currency-prefix { font-size: 0.88rem; }
+
+      .balance-box { padding: 0.7rem 1rem; }
+      .balance-box-label { font-size: 0.85rem; }
+      .balance-box-formula { font-size: 0.62rem; }
+      .balance-box-detalle { font-size: 0.62rem; }
+      .balance-total { font-size: 1.4rem; }
+
+      .extra-expenses { padding: 0.4rem 0.6rem; }
+      .extra-expense-row { margin-bottom: 0.25rem; }
+      .extra-expense-row input { font-size: 0.7rem; padding: 0.25rem 0.35rem; }
+      .extra-expense-label { font-size: 0.68rem; min-width: 55px; }
+    }
+  </style>
+</head>
+
+<body>
+<div class="app-container">
+
+  <!-- ═══ HEADER ═══ -->
+  <div class="header-card">
+    <div class="header-main">
+      <div class="header-top">
+        <div class="brand-title">
+          <h1 data-empresa-nombre>Óptica Angelus Visión</h1>
+          <p>Sistema Operativo y Contable de Campo</p>
+        </div>
+        <div class="header-actions">
+          <div class="nav-tabs">
+            <button class="tab-btn active" onclick="switchTab('tab-afiliaciones', this)">1. Recepción Afiliaciones</button>
+            <button class="tab-btn" onclick="switchTab('tab-contabilidad', this)">2. Contabilidad Coordinador</button>
+          </div>
+          <button class="btn btn-reset" type="button" onclick="mostrarModalReset()">↺ Reestablecer</button>
+          <button class="btn btn-primary btn-guardar" type="button" onclick="guardarYSincronizarContabilidad()">💾 Guardar borrador</button>
+          <button class="btn btn-primary btn-validar" type="button" onclick="validarCierreContabilidad()">✓ Validar cierre</button>
+          <button class="btn btn-primary btn-cerrar" type="button" onclick="mostrarConfirmacionCierreContabilidad()">🔒 Cerrar contabilidad</button>
+          <button class="btn-print" onclick="mostrarReporteCierreContabilidad()">🖨️ Generar reporte</button>
+        </div>
+      </div>
+      <div class="meta-row">
+        <div class="meta-field">
+          <label>📅 Fecha Jornada</label>
+          <input type="date" id="global-fecha" value="">
+        </div>
+        <div class="meta-field">
+          <label>📍 Municipio</label>
+          <input type="text" id="global-municipio" value="">
+        </div>
+        <div class="meta-field">
+          <label>👤 Coordinador</label>
+          <input type="text" id="global-coordinador" value="">
+        </div>
+        <div class="meta-field">
+          <label>🗂️ Estado</label>
+          <input type="text" id="estado-draft-contabilidad" value="Borrador local" readonly>
+        </div>
+      </div>
+      <div class="meta-row" id="resumen-cierre-contabilidad" style="margin-top:0.6rem; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08); padding: 0.7rem 0.85rem; border-radius: 12px; display:flex; flex-wrap:wrap; gap:0.75rem; align-items:center; color:#fff;">
+        <span style="font-size:0.72rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; opacity:0.8;">Estado jornada:</span>
+        <strong id="estado-jornada-resumen" style="font-size:0.82rem;">Borrador</strong>
+        <span style="font-size:0.72rem; opacity:0.8;">|</span>
+        <span style="font-size:0.72rem; opacity:0.8;">Total afiliaciones: <strong id="resumen-total-afiliaciones">0</strong></span>
+        <span style="font-size:0.72rem; opacity:0.8;">|</span>
+        <span style="font-size:0.72rem; opacity:0.8;">Saldo final: <strong id="resumen-saldo-final">$0</strong></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ PESTAÑA 1: RECEPCIÓN DE AFILIACIONES ═══ -->
+  <div id="tab-afiliaciones" class="tab-content active">
+
+    <div class="summary-cards">
+      <div class="stat-card">
+        <div class="sc-header">
+          <div class="sc-icon">👥</div>
+          <div class="label">Total Afiliaciones</div>
+        </div>
+        <div class="value" id="card-tot-aff">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="sc-header">
+          <div class="sc-icon">💵</div>
+          <div class="label">Recaudo Abono</div>
+        </div>
+        <div class="value" id="card-tot-abono">$0</div>
+      </div>
+      <div class="stat-card">
+        <div class="sc-header">
+          <div class="sc-icon">🍽️</div>
+          <div class="label">Almuerzos Campo</div>
+        </div>
+        <div class="value" id="card-tot-almuerzo">$0</div>
+      </div>
+      <div class="stat-card sc-navy">
+        <div class="sc-header">
+          <div class="sc-icon">✅</div>
+          <div class="label">Recaudo Neto Asesores</div>
+        </div>
+        <div class="value" id="card-tot-neto">$0</div>
+      </div>
+    </div>
+
+    <div class="table-card">
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:30px;">N°</th>
+              <th style="width:146px;">Asesor / Promotor</th>
+              <th style="width:88px;">Rol</th>
+              <th style="width:50px;">Nº Aff</th>
+              <th style="width:74px;">Recaudo ($)</th>
+              <th style="width:60px;">Almuerzo</th>
+              <th style="width:57px;">Cena</th>
+              <th style="width:60px;">T. Urbano</th>
+              <th style="width:60px;">T. Vereda</th>
+              <th style="width:69px;">A. Adic ($)</th>
+              <th style="width:69px;">A. Ganado ($)</th>
+              <th style="width:80px;">Recaudo Neto</th>
+              <th style="width:67px;">Préstamo</th>
+              <th style="width:30px;"></th>
+            </tr>
+          </thead>
+          <tbody id="tbody-afiliaciones">
+            <!-- Cargado vía JS -->
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="3" style="text-align:left; padding-left:1rem; letter-spacing:0.05em;">TOTALES</td>
+              <td id="tot-aff">0</td>
+              <td id="tot-rec-abono">$0</td>
+              <td id="tot-almuerzo">$0</td>
+              <td id="tot-cena">$0</td>
+              <td id="tot-urbano">$0</td>
+              <td id="tot-vereda">$0</td>
+              <td id="tot-abono-adic">$0</td>
+              <td id="tot-abono-ganado">$0</td>
+              <td id="tot-recaudo-neto">$0</td>
+              <td id="tot-prestamo">$0</td>
+              <td></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+      <div class="table-footer-bar">
+        <button class="btn btn-primary btn-agregar-asesor" onclick="agregarFilaAfiliacion()">+ Agregar Asesor</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ═══ PESTAÑA 2: CONTABILIDAD COORDINADOR ═══ -->
+  <div id="tab-contabilidad" class="tab-content">
+
+    <!-- Header para impresión página 2 -->
+    <div class="print-header">
+      <div class="header-card">
+        <div class="header-main">
+          <div class="header-top">
+            <div class="brand-title">
+              <h1 data-empresa-nombre>Óptica Angelus Visión</h1>
+              <p>Sistema Operativo y Contable de Campo</p>
+            </div>
+          </div>
+          <div class="meta-row">
+            <div class="meta-field">
+              <label>📅 Fecha Jornada</label>
+              <input type="date" id="global-fecha-print" value="">
+            </div>
+            <div class="meta-field">
+              <label>📍 Municipio</label>
+              <input type="text" id="global-municipio-print" value="">
+            </div>
+            <div class="meta-field">
+              <label>👤 Coordinador</label>
+              <input type="text" id="global-coordinador-print" value="">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="summary-cards">
+      <div class="stat-card">
+        <div class="sc-header">
+          <div class="sc-icon">💼</div>
+          <div class="label">Saldo Inicial Caja</div>
+        </div>
+        <div class="value" id="card-coor-saldo-init"></div>
+      </div>
+      <div class="stat-card">
+        <div class="sc-header">
+          <div class="sc-icon">📈</div>
+          <div class="label">Total Ingresos</div>
+        </div>
+        <div class="value" id="card-coor-ingresos"></div>
+      </div>
+      <div class="stat-card">
+        <div class="sc-header">
+          <div class="sc-icon">📉</div>
+          <div class="label">Total Egresos / Gastos</div>
+        </div>
+        <div class="value" id="card-coor-gastos"></div>
+      </div>
+      <div class="stat-card sc-navy summary-final-card">
+        <div class="sc-summary-content">
+          <div class="sc-header">
+            <div class="sc-icon">🏦</div>
+            <div class="label">Saldo Final a Rendir</div>
+          </div>
+          <div class="sc-formula">(Saldo Inicial + Ingresos) − Deducción − Egresos</div>
+          <div class="sc-detail" id="balance-detalle"></div>
+        </div>
+        <div class="value" id="card-coor-saldo-final"></div>
+        <div class="value" id="coor-saldo-final-big" style="display:none;"></div>
+      </div>
+    </div>
+
+    <div class="coordinacion-grid">
+
+      <!-- ── COLUMNA IZQUIERDA ── -->
+      <div class="left-col">
+
+        <!-- 1. INGRESOS -->
+        <div class="section-card">
+          <div class="section-header">
+            <div class="section-header-left">
+              <div class="section-badge">1</div>
+              <span class="section-title-text">Ingresos y entradas de caja</span>
+            </div>
+          </div>
+
+          <div class="form-row" style="background: var(--green-light);">
+            <div class="form-row-label"><span class="row-icon">💵</span> Saldo Inicial en Caja</div>
+            <div class="form-row-inputs">
+              <input type="number" id="coor-saldo-inicial" value="" oninput="calcularContabilidad()" placeholder="Monto ($)" style="max-width:120px;">
+              <input type="text" id="saldo-inicial-origen" value="" placeholder="Origen">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-row-label"><span class="row-icon">👥</span> Afiliaciones y Recaudo</div>
+            <div class="form-row-inputs">
+              <div class="input-group">
+                <span class="sub-label">Cant. Aff</span>
+                <input type="number" id="ingreso-cant-aff" class="linked-field" value="" readonly>
+              </div>
+              <div class="input-group">
+                <span class="sub-label">Recaudo Base ($)</span>
+                <input type="number" id="ingreso-recaudo-base" class="linked-field" value="" readonly>
+              </div>
+              <div class="input-group">
+                <span class="sub-label">Abonos Adic. ($)</span>
+                <input type="number" id="ingreso-abonos-adic" class="linked-field" value="" readonly>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row form-row-blue">
+            <div class="form-row-label"><span class="row-icon">💸</span> Giros / Consignaciones</div>
+            <div class="form-row-inputs">
+              <div class="input-group">
+                <span class="sub-label">Moneda</span>
+                <select id="giros-moneda" onchange="toggleMonedaGiros()">
+                  <option value="BS">Bolívares (Bs)</option>
+                  <option value="USD">Divisa ($)</option>
+                </select>
+              </div>
+              <div class="input-group">
+                <span class="sub-label">Monto</span>
+                <input type="number" id="giros-monto-input" oninput="calcularGiros()" placeholder="Monto">
+              </div>
+              <div class="input-group">
+                <span class="sub-label">Tasa Cambio</span>
+                <input type="number" id="giros-tasa" placeholder="Tasa" oninput="calcularGiros()">
+              </div>
+              <div class="input-group">
+                <span class="sub-label">Total ($)</span>
+                <input type="number" id="ingreso-giros" value="0" readonly class="linked-field" placeholder="$">
+              </div>
+            </div>
+          </div>
+
+          <div class="total-row">
+            <span class="total-row-label">📊 TOTAL INGRESOS</span>
+            <span class="total-amount"><span class="currency-prefix">$</span><input type="number" id="total-ingresos" value="" readonly></span>
+          </div>
+        </div>
+
+        <!-- 2. DEDUCCIÓN -->
+        <div class="section-card">
+          <div class="section-header">
+            <div class="section-header-left">
+              <div class="section-badge section-badge-warning">2</div>
+              <span class="section-title-text">Deducción de Ingreso</span>
+            </div>
+          </div>
+
+          <div class="form-row form-row-blue">
+            <div class="form-row-label"><span class="row-icon">🏦</span> Consignaciones / Transf.</div>
+            <div class="form-row-inputs">
+              <div class="input-group">
+                <span class="sub-label">Moneda</span>
+                <select id="consig-moneda" onchange="toggleMonedaConsig()">
+                  <option value="BS" selected>Bolívares (Bs)</option>
+                  <option value="USD">Divisa ($)</option>
+                </select>
+              </div>
+              <div class="input-group">
+                <span class="sub-label">Monto Pago</span>
+                <input type="number" id="consig-monto-input" value="0" oninput="calcularConsig()">
+              </div>
+              <div class="input-group">
+                <span class="sub-label">Tasa Cambio</span>
+                <input type="number" id="consig-tasa" value="0" placeholder="Ej: 45" oninput="calcularConsig()">
+              </div>
+              <div class="input-group">
+                <span class="sub-label">Total ($)</span>
+                <input type="number" id="gasto-consignaciones" value="0" readonly style="font-weight:700;">
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-row-label"><span class="row-icon">💳</span> Pago Abonos Ganados</div>
+            <div class="form-row-inputs">
+              <span style="font-size:0.75rem; color:var(--text-muted); white-space:nowrap;">Vinculado a recepción</span>
+              <input type="number" id="gasto-abonos-ganados" class="linked-field" value="0" readonly placeholder="$" style="max-width:120px; margin-left:auto;">
+            </div>
+          </div>
+
+          <div class="total-row total-row-purple">
+            <span class="total-row-label">🔻 TOTAL DEDUCCIÓN</span>
+            <span class="total-amount"><span class="currency-prefix">$</span><input type="number" id="total-deduccion" value="" readonly></span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ── COLUMNA DERECHA: EGRESOS ── -->
+      <div class="section-card">
+        <div class="section-header">
+          <div class="section-header-left">
+            <div class="section-badge section-badge-danger">3</div>
+            <span class="section-title-text">Egresos / Gastos Operativos</span>
+          </div>
+          <span class="section-subtitle">Liquidación Diaria</span>
+        </div>
+
+        <div class="form-row">
+          <div class="form-row-label"><span class="row-icon">🍽️</span> Comidas Coordinador</div>
+          <div class="form-row-inputs">
+            <input type="number" id="gasto-comida-coor" value="" oninput="calcularContabilidad()" placeholder="Monto ($)" style="max-width:120px;">
+            <input type="text" id="gasto-comida-coor-detalle" placeholder="Detalle / descripción">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-row-label"><span class="row-icon">☕</span> Desayunos Brigada</div>
+          <div class="form-row-inputs">
+            <input type="number" id="gasto-desayunos" value="" oninput="calcularContabilidad()" placeholder="Monto ($)" style="max-width:120px;">
+            <input type="text" id="gasto-desayunos-detalle" value="" placeholder="Detalle">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-row-label"><span class="row-icon">🥘</span> Comidas de Campo</div>
+          <div class="form-row-inputs">
+            <div class="input-group">
+              <span class="sub-label">Almuerzos ($)</span>
+              <input type="number" id="gasto-almuerzos" class="linked-field" value="" readonly>
+            </div>
+            <div class="input-group">
+              <span class="sub-label">Cenas Ganadas ($)</span>
+              <input type="number" id="gasto-cenas-ganadas" class="linked-field" value="" readonly>
+            </div>
+            <div class="input-group">
+              <span class="sub-label">Cenas / Préstamos ($)</span>
+              <input type="number" id="gasto-cenas-prestadas" class="linked-field" value="" readonly>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row form-row-blue">
+          <div class="form-row-label"><span class="row-icon">🏨</span> Hotel / Hospedaje</div>
+          <div class="form-row-inputs">
+            <div class="input-group">
+              <span class="sub-label">Moneda</span>
+              <select id="hotel-moneda" onchange="toggleMonedaHotel()">
+                <option value="BS">Bolívares (Bs)</option>
+                <option value="USD">Divisa ($)</option>
+              </select>
+            </div>
+            <div class="input-group">
+              <span class="sub-label">Monto Pago</span>
+              <input type="number" id="hotel-monto-input" value="" oninput="calcularHotel()">
+            </div>
+            <div class="input-group">
+              <span class="sub-label">Tasa Cambio</span>
+                <input type="number" id="hotel-tasa" value="" placeholder="Ej: 45.5" oninput="calcularHotel()">
+            </div>
+            <div class="input-group">
+              <span class="sub-label">Total ($)</span>
+              <input type="number" id="gasto-hotel" value="" readonly style="font-weight:700;">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-row-label"><span class="row-icon">🚌</span> Transporte Urb. / Vereda</div>
+          <div class="form-row-inputs">
+            <input type="number" id="gasto-trans-urbano" oninput="calcularContabilidad()" placeholder="Monto Urbano">
+            <input type="number" id="gasto-trans-vereda" oninput="calcularContabilidad()" placeholder="Monto Vereda">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-row-label"><span class="row-icon">📦</span> Gastos Varios / Recargas</div>
+          <div class="form-row-inputs">
+            <input type="number" id="gasto-varios" oninput="calcularContabilidad()" placeholder="Monto ($)" style="max-width:130px;">
+            <input type="text" id="gasto-varios-detalle" placeholder="Especificar gasto">
+          </div>
+        </div>
+
+        <div class="extra-expenses" id="extra-expenses">
+          <div class="extra-expense-row">
+            <span class="extra-expense-icon" aria-hidden="true">📦</span>
+            <span class="extra-expense-label">Gasto 1</span>
+            <input class="expense-amount" type="number" placeholder="Monto ($)" oninput="calcularContabilidad()">
+            <input class="expense-description" type="text" placeholder="Detalle del gasto">
+          </div>
+          <div class="extra-expense-row">
+            <span class="extra-expense-icon" aria-hidden="true">📦</span>
+            <span class="extra-expense-label">Gasto 2</span>
+            <input class="expense-amount" type="number" placeholder="Monto ($)" oninput="calcularContabilidad()">
+            <input class="expense-description" type="text" placeholder="Detalle del gasto">
+          </div>
+          <div class="extra-expense-row">
+            <span class="extra-expense-icon" aria-hidden="true">📦</span>
+            <span class="extra-expense-label">Gasto 3</span>
+            <input class="expense-amount" type="number" placeholder="Monto ($)" oninput="calcularContabilidad()">
+            <input class="expense-description" type="text" placeholder="Detalle del gasto">
+          </div>
+          <button type="button" class="add-expense-button" onclick="agregarGastoExtra()">+ Agregar más gastos</button>
+        </div>
+
+        <div class="total-row">
+          <span class="total-row-label">📊 TOTAL EGRESOS / GASTOS</span>
+          <span class="total-amount"><span class="currency-prefix">$</span><input type="number" id="total-egresos" value="" readonly></span>
+        </div>
+
+      </div>
+
+    </div><!-- /coordinacion-grid -->
+
+  </div><!-- /tab-contabilidad -->
+
+</div><!-- /app-container -->
+
+    </div><!-- /coordinacion-grid -->
+
+  </div><!-- /tab-contabilidad -->
+
+</div><!-- /app-container -->
+<div id="modal-bienvenida-contabilidad" class="modal-backdrop hidden" aria-hidden="true">
+  <div class="app-modal" role="dialog" aria-modal="true" aria-labelledby="modal-bienvenida-title">
+    <div class="app-modal-header">
+      <h3 id="modal-bienvenida-title">Bienvenido a Contabilidad Diaria</h3>
+      <button type="button" class="app-modal-close" aria-label="Cerrar modal" onclick="cerrarModalBienvenidaContabilidad(false)">×</button>
+    </div>
+
+    <div class="app-modal-body">
+      <p>
+        Esta vista se prepara para registrar la jornada del día.
+      </p>
+      <p>
+        <strong>Antes de seguir, recuerda registrar a cada uno de los promotores en cada fila.</strong>
+      </p>
+
+      <div class="app-modal-actions" style="justify-content: space-between; gap: 0.75rem;">
+        <button type="button" class="app-modal-btn secondary" onclick="cerrarModalBienvenidaContabilidad(false)">
+          Nuevo
+        </button>
+        <button type="button" class="app-modal-btn primary" onclick="abrirModalCargaBorradoresContabilidad()">
+          Cargar borrador
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modal-cargar-borradores-contabilidad" class="modal-backdrop hidden" aria-hidden="true">
+  <div class="app-modal" role="dialog" aria-modal="true" aria-labelledby="modal-cargar-borradores-title">
+    <div class="app-modal-header">
+      <h3 id="modal-cargar-borradores-title">Borradores guardados</h3>
+      <button type="button" class="app-modal-close" aria-label="Cerrar modal" onclick="cerrarModalCargaBorradoresContabilidad()">×</button>
+    </div>
+
+    <div class="app-modal-body">
+      <p id="modal-borradores-loading" class="text-xs text-slate-500 mb-2">Espera, estamos cargando los borradores disponibles...</p>
+      <div id="modal-borradores-contabilidad" class="w-full mb-2 hidden">
+        <label for="select-borrador-contabilidad" class="block text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">Borradores disponibles</label>
+        <select id="select-borrador-contabilidad" class="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-700 bg-white hidden"></select>
+      </div>
+
+      <div class="app-modal-actions" style="justify-content: space-between; gap: 0.75rem;">
+        <button type="button" class="app-modal-btn secondary" onclick="cerrarModalCargaBorradoresContabilidad(true)">
+          Cancelar
+        </button>
+        <button id="btn-confirmar-carga-borrador" type="button" class="app-modal-btn primary hidden" onclick="confirmarCargaBorradorSeleccionadoContabilidad()">
+          Confirmar carga
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modal-estado-contabilidad" class="modal-backdrop hidden" aria-hidden="true">
+  <div class="app-modal" role="dialog" aria-modal="true" aria-labelledby="modal-estado-title">
+    <div class="app-modal-header">
+      <h3 id="modal-estado-title">Procesando</h3>
+    </div>
+    <div class="app-modal-body text-center">
+      <div class="spinner w-10 h-10 mx-auto mb-4 border-4"></div>
+      <p id="modal-estado-texto" class="text-sm text-slate-600">Guardando borrador...</p>
+    </div>
+  </div>
+</div>
+
+<div id="modal-reporte-cierre-contabilidad" class="modal-backdrop hidden" aria-hidden="true">
+  <div class="app-modal" role="dialog" aria-modal="true" aria-labelledby="modal-reporte-title">
+    <div class="app-modal-header">
+      <h3 id="modal-reporte-title">Confirmar cierre de contabilidad</h3>
+      <button type="button" class="app-modal-close" aria-label="Cancelar cierre" onclick="cerrarReporteCierreContabilidad()">×</button>
+    </div>
+    <div class="app-modal-body">
+      <div id="contenido-reporte-cierre-contabilidad" class="space-y-3 text-sm text-slate-700"></div>
+      <div class="app-modal-actions" style="justify-content:flex-end; margin-top:1rem;">
+        <button type="button" class="app-modal-btn secondary" onclick="cerrarReporteCierreContabilidad()">Cancelar</button>
+        <button type="button" class="app-modal-btn primary" onclick="cerrarContabilidad()">Confirmar cierre</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modal-reset" class="modal-backdrop" aria-hidden="true">
+  <div class="app-modal" role="dialog" aria-modal="true" aria-labelledby="modal-reset-title">
+    <div class="app-modal-header">
+      <h3 id="modal-reset-title">¿Borrar datos de la jornada?</h3>
+      <button type="button" class="app-modal-close" aria-label="Cerrar modal" onclick="cerrarModalReset()">×</button>
+    </div>
+
+<div class="app-modal-body">
+  <p>
+    Se restablecerán todos los datos cargados de esta jornada.
+  </p>
+  <p>
+    <strong>Esta acción no se puede deshacer.</strong>
+  </p>
+
+  <div class="app-modal-actions">
+    <button type="button" class="app-modal-btn secondary" onclick="cerrarModalReset()">
+      Cancelar
+    </button>
+    <button type="button" class="app-modal-btn primary" onclick="confirmarResetContabilidad()">
+      Sí, borrar datos
+    </button>
+  </div>
+</div>
+
+  </div>
+</div>
+
+
+<script src="../../assets/js/api-config.js"></script>
+<script src="../../assets/js/empresa-brand.js"></script>
+<script src="../../assets/js/utils.js"></script>
+<script src="../../administracion/services/promotoresService.js"></script>
+<script src="../../coordinador/services/contabilidadDiariaService.js"></script>
+<script>
+  const contabilidadPromotores = [];
+  const CONTABILIDAD_DRAFT_KEY = 'contabilidad_diaria_draft_v1';
+
+  function syncUrlContabilidad() {
+    const defaultUrl = 'https://script.google.com/macros/s/AKfycbxeNcVqxyVVKPDAWFjj1IQjx8O--o5tPwOL7OP0R5lPX5tDWD1cOlMAMARQl0DKL0Otgg/exec';
+    const configUrl = window.ApiConfig && window.ApiConfig.contabilidad && window.ApiConfig.contabilidad.baseUrl
+      ? window.ApiConfig.contabilidad.baseUrl
+      : defaultUrl;
+    const localUrl = (() => {
+      try {
+        return localStorage.getItem('ks_contabilidad_gas_url') || '';
+      } catch (error) {
+        return '';
+      }
+    })();
+    const apiUrl = (window.API_URL_CONTABILIDAD || configUrl || localUrl || defaultUrl).replace(/\/$/, '');
+
+    if (apiUrl && (!window.API_URL_CONTABILIDAD || window.API_URL_CONTABILIDAD !== apiUrl)) {
+      window.API_URL_CONTABILIDAD = apiUrl;
+    }
+
+    if (!window.API_URL_CONTABILIDAD) {
+      window.API_URL_CONTABILIDAD = defaultUrl;
+    }
+
+    return window.API_URL_CONTABILIDAD || '';
+  }
+
+  function obtenerSnapshotContabilidad() {
+    const filas = [];
+    const fechaInput = document.getElementById('global-fecha') || document.getElementById('global-fecha-print');
+    const municipioInput = document.getElementById('global-municipio') || document.getElementById('global-municipio-print');
+    const coordinadorInput = document.getElementById('global-coordinador') || document.getElementById('global-coordinador-print');
+
+    document.querySelectorAll('#tbody-afiliaciones tr').forEach(function (tr) {
+      const selectorAsesor = tr.querySelector('.select-asesor');
+      const nombreAsesor = selectorAsesor
+        ? ((selectorAsesor.value || (selectorAsesor.selectedOptions[0] && selectorAsesor.selectedOptions[0].textContent) || '').trim())
+        : '';
+      const fila = {
+        asesor: nombreAsesor,
+        rol: tr.querySelector('.select-rol') ? tr.querySelector('.select-rol').value : 'PROMOTOR',
+        aff: parseFloat(tr.querySelector('.input-aff')?.value || 0) || 0,
+        recAbono: parseFloat(tr.querySelector('.input-rec-abono')?.value || 0) || 0,
+        almuerzo: parseFloat(tr.querySelector('.input-almuerzo')?.value || 0) || 0,
+        cena: parseFloat(tr.querySelector('.input-cena')?.value || 0) || 0,
+        urbano: parseFloat(tr.querySelector('.input-urbano')?.value || 0) || 0,
+        vereda: parseFloat(tr.querySelector('.input-vereda')?.value || 0) || 0,
+        adic: parseFloat(tr.querySelector('.input-abono-adic')?.value || 0) || 0,
+        ganado: parseFloat(tr.querySelector('.input-abono-ganado')?.value || 0) || 0,
+        recaudoNeto: parseFloat(tr.querySelector('.input-recaudo-neto')?.value || 0) || 0,
+        prestamo: parseFloat(tr.querySelector('.input-prestamo')?.value || 0) || 0
+      };
+      filas.push(fila);
+    });
+
+    return {
+      id: 'jornada-' + (fechaInput?.value || Date.now()),
+      fecha: fechaInput?.value || '',
+      municipio: municipioInput?.value || '',
+      coordinador: coordinadorInput?.value || '',
+      estado: 'borrador',
+      sincronizado: false,
+      actualizadoEn: new Date().toISOString(),
+      afiliaciones: filas,
+      gastos: {
+        comidaCoor: parseFloat(document.getElementById('gasto-comida-coor')?.value || 0) || 0,
+        desayunos: parseFloat(document.getElementById('gasto-desayunos')?.value || 0) || 0,
+        almuerzos: parseFloat(document.getElementById('gasto-almuerzos')?.value || 0) || 0,
+        cenasGanadas: parseFloat(document.getElementById('gasto-cenas-ganadas')?.value || 0) || 0,
+        cenasPrestadas: parseFloat(document.getElementById('gasto-cenas-prestadas')?.value || 0) || 0,
+        hotel: parseFloat(document.getElementById('gasto-hotel')?.value || 0) || 0,
+        transUrbano: parseFloat(document.getElementById('gasto-trans-urbano')?.value || 0) || 0,
+        transVereda: parseFloat(document.getElementById('gasto-trans-vereda')?.value || 0) || 0,
+        varios: parseFloat(document.getElementById('gasto-varios')?.value || 0) || 0,
+        consignaciones: parseFloat(document.getElementById('gasto-consignaciones')?.value || 0) || 0,
+        abonosGanados: parseFloat(document.getElementById('gasto-abonos-ganados')?.value || 0) || 0,
+        giros: parseFloat(document.getElementById('ingreso-giros')?.value || 0) || 0,
+        recaudoBase: parseFloat(document.getElementById('ingreso-recaudo-base')?.value || 0) || 0,
+        abonosAdic: parseFloat(document.getElementById('ingreso-abonos-adic')?.value || 0) || 0,
+        extra: Array.from(document.querySelectorAll('.extra-expense-row')).map(function (row) {
+          return {
+            numero: row.querySelector('.extra-expense-label')?.textContent || '',
+            monto: parseFloat(row.querySelector('.expense-amount')?.value || 0) || 0,
+            detalle: row.querySelector('.expense-description')?.value || ''
+          };
+        })
+      },
+      detalle: {
+        saldoInicialOrigen: document.getElementById('saldo-inicial-origen')?.value || '',
+        comidaCoordinador: document.getElementById('gasto-comida-coor-detalle')?.value || '',
+        desayunos: document.getElementById('gasto-desayunos-detalle')?.value || '',
+        varios: document.getElementById('gasto-varios-detalle')?.value || '',
+        hotel: {
+          moneda: document.getElementById('hotel-moneda')?.value || 'BS',
+          monto: parseFloat(document.getElementById('hotel-monto-input')?.value || 0) || 0,
+          tasa: parseFloat(document.getElementById('hotel-tasa')?.value || 0) || 0
+        },
+        consignaciones: {
+          moneda: document.getElementById('consig-moneda')?.value || 'BS',
+          monto: parseFloat(document.getElementById('consig-monto-input')?.value || 0) || 0,
+          tasa: parseFloat(document.getElementById('consig-tasa')?.value || 0) || 0
+        },
+        giros: {
+          moneda: document.getElementById('giros-moneda')?.value || 'BS',
+          monto: parseFloat(document.getElementById('giros-monto-input')?.value || 0) || 0,
+          tasa: parseFloat(document.getElementById('giros-tasa')?.value || 0) || 0
+        }
+      },
+      totales: {
+        totalIngresos: parseFloat(document.getElementById('total-ingresos')?.value || 0) || 0,
+        totalDeduccion: parseFloat(document.getElementById('total-deduccion')?.value || 0) || 0,
+        totalEgresos: parseFloat(document.getElementById('total-egresos')?.value || 0) || 0,
+        saldoInicial: parseFloat(document.getElementById('coor-saldo-inicial')?.value || 0) || 0
+      }
+    };
+  }
+
+  function mostrarEstadoContabilidad(mensaje, tipo = 'info') {
+    const modal = document.getElementById('modal-estado-contabilidad');
+    const texto = document.getElementById('modal-estado-texto');
+    const titulo = document.getElementById('modal-estado-title');
+    if (!modal || !texto || !titulo) return;
+
+    titulo.textContent = tipo === 'success' ? 'Guardado correctamente' : (tipo === 'error' ? 'No se pudo guardar' : 'Procesando');
+    texto.textContent = mensaje;
+
+    modal.classList.remove('hidden');
+    modal.classList.add('visible');
+    modal.style.display = 'flex';
+    modal.style.opacity = '1';
+    modal.style.visibility = 'visible';
+    modal.style.pointerEvents = 'auto';
+    modal.setAttribute('aria-hidden', 'false');
+  }
+
+  function ocultarEstadoContabilidad() {
+    const modal = document.getElementById('modal-estado-contabilidad');
+    if (!modal) return;
+
+    modal.classList.remove('visible');
+    modal.classList.add('hidden');
+    modal.style.display = 'none';
+    modal.style.opacity = '0';
+    modal.style.visibility = 'hidden';
+    modal.style.pointerEvents = 'none';
+    modal.setAttribute('aria-hidden', 'true');
+  }
+
+  function actualizarEstadoDraftContabilidad(texto) {
+    const estado = document.getElementById('estado-draft-contabilidad');
+    if (estado && texto) {
+      estado.value = texto;
+    }
+  }
+
+  function obtenerResumenCierreContabilidad() {
+    const draft = obtenerSnapshotContabilidad();
+    const totalAfiliaciones = Array.isArray(draft.afiliaciones) ? draft.afiliaciones.length : 0;
+    const totalIngresos = Number(draft.totales && draft.totales.totalIngresos) || 0;
+    const totalEgresos = Number(draft.totales && draft.totales.totalEgresos) || 0;
+    const totalDeduccion = Number(draft.totales && draft.totales.totalDeduccion) || 0;
+    const saldoInicial = Number(draft.totales && draft.totales.saldoInicial) || 0;
+    const saldoFinal = saldoInicial + totalIngresos - totalDeduccion - totalEgresos;
+
+    return {
+      fecha: draft.fecha || '',
+      municipio: draft.municipio || '',
+      coordinador: draft.coordinador || '',
+      estado: draft.estado || 'borrador',
+      totalAfiliaciones: totalAfiliaciones,
+      totalIngresos: totalIngresos,
+      totalEgresos: totalEgresos,
+      totalDeduccion: totalDeduccion,
+      saldoInicial: saldoInicial,
+      saldoFinal: saldoFinal
+    };
+  }
+
+  function renderResumenCierreContabilidad() {
+    const resumen = obtenerResumenCierreContabilidad();
+    const estadoResumen = document.getElementById('estado-jornada-resumen');
+    const totalAfiliaciones = document.getElementById('resumen-total-afiliaciones');
+    const saldoFinal = document.getElementById('resumen-saldo-final');
+
+    if (estadoResumen) {
+      const label = resumen.estado === 'validada' ? 'Validada' : (resumen.estado === 'cerrada' ? 'Cerrada' : 'Borrador');
+      estadoResumen.textContent = label;
+    }
+    if (totalAfiliaciones) totalAfiliaciones.textContent = String(resumen.totalAfiliaciones || 0);
+    if (saldoFinal) saldoFinal.textContent = '$' + Number(resumen.saldoFinal || 0).toLocaleString('es-VE', { maximumFractionDigits: 2 });
+  }
+
+  function mostrarReporteCierreContabilidad() {
+    const resumen = obtenerResumenCierreContabilidad();
+    const contenedor = document.getElementById('contenido-reporte-cierre-contabilidad');
+    const modal = document.getElementById('modal-reporte-cierre-contabilidad');
+    if (!contenedor || !modal) return;
+
+    contenedor.innerHTML = `
+      <div style="display:flex; flex-direction:column; gap:0.75rem;">
+        <div style="border:1px solid #dfe7f1; background:#f8fafc; border-radius:12px; padding:0.8rem;">
+          <div style="font-size:0.72rem; text-transform:uppercase; letter-spacing:0.08em; color:#475569; font-weight:700;">Jornada</div>
+          <div style="margin-top:0.35rem; font-weight:700;">${resumen.fecha || 'Sin fecha'} · ${resumen.municipio || 'Sin municipio'} · ${resumen.coordinador || 'Sin coordinador'}</div>
+        </div>
+        <div style="display:grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap:0.75rem;">
+          <div style="border:1px solid #dfe7f1; border-radius:10px; padding:0.7rem; background:#fff;">
+            <div style="font-size:0.7rem; text-transform:uppercase; letter-spacing:0.08em; color:#64748b;">Estado</div>
+            <div style="margin-top:0.3rem; font-weight:700;">${resumen.estado === 'cerrada' ? 'Cerrada' : (resumen.estado === 'validada' ? 'Validada' : 'Borrador')}</div>
+          </div>
+          <div style="border:1px solid #dfe7f1; border-radius:10px; padding:0.7rem; background:#fff;">
+            <div style="font-size:0.7rem; text-transform:uppercase; letter-spacing:0.08em; color:#64748b;">Total afiliaciones</div>
+            <div style="margin-top:0.3rem; font-weight:700;">${resumen.totalAfiliaciones}</div>
+          </div>
+          <div style="border:1px solid #dfe7f1; border-radius:10px; padding:0.7rem; background:#fff;">
+            <div style="font-size:0.7rem; text-transform:uppercase; letter-spacing:0.08em; color:#64748b;">Ingresos</div>
+            <div style="margin-top:0.3rem; font-weight:700;">$${Number(resumen.totalIngresos || 0).toLocaleString('es-VE', { maximumFractionDigits: 2 })}</div>
+          </div>
+          <div style="border:1px solid #dfe7f1; border-radius:10px; padding:0.7rem; background:#fff;">
+            <div style="font-size:0.7rem; text-transform:uppercase; letter-spacing:0.08em; color:#64748b;">Egresos</div>
+            <div style="margin-top:0.3rem; font-weight:700;">$${Number(resumen.totalEgresos || 0).toLocaleString('es-VE', { maximumFractionDigits: 2 })}</div>
+          </div>
+          <div style="border:1px solid #dfe7f1; border-radius:10px; padding:0.7rem; background:#fff;">
+            <div style="font-size:0.7rem; text-transform:uppercase; letter-spacing:0.08em; color:#64748b;">Deducción</div>
+            <div style="margin-top:0.3rem; font-weight:700;">$${Number(resumen.totalDeduccion || 0).toLocaleString('es-VE', { maximumFractionDigits: 2 })}</div>
+          </div>
+          <div style="border:1px solid #dfe7f1; border-radius:10px; padding:0.7rem; background:#fff;">
+            <div style="font-size:0.7rem; text-transform:uppercase; letter-spacing:0.08em; color:#64748b;">Saldo final</div>
+            <div style="margin-top:0.3rem; font-weight:700;">$${Number(resumen.saldoFinal || 0).toLocaleString('es-VE', { maximumFractionDigits: 2 })}</div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    modal.classList.remove('hidden');
+    modal.classList.add('visible');
+    modal.style.display = 'flex';
+    modal.style.opacity = '1';
+    modal.style.visibility = 'visible';
+    modal.style.pointerEvents = 'auto';
+    modal.setAttribute('aria-hidden', 'false');
+  }
+
+  function mostrarConfirmacionCierreContabilidad() {
+    const draft = obtenerSnapshotContabilidad();
+    if (!draft.fecha || !draft.municipio || !draft.coordinador) {
+      mostrarEstadoContabilidad('Completa la fecha, municipio y coordinador antes de cerrar la contabilidad.', 'error');
+      setTimeout(ocultarEstadoContabilidad, 1500);
+      return;
+    }
+
+    mostrarReporteCierreContabilidad();
+  }
+
+  function cerrarReporteCierreContabilidad() {
+    const modal = document.getElementById('modal-reporte-cierre-contabilidad');
+    if (!modal) return;
+    modal.classList.remove('visible');
+    modal.classList.add('hidden');
+    modal.style.display = 'none';
+    modal.style.opacity = '0';
+    modal.style.visibility = 'hidden';
+    modal.style.pointerEvents = 'none';
+    modal.setAttribute('aria-hidden', 'true');
+  }
+
+  function validarCierreContabilidad() {
+    const draft = obtenerSnapshotContabilidad();
+    if (!draft.fecha || !draft.municipio || !draft.coordinador) {
+      mostrarEstadoContabilidad('Completa la fecha, municipio y coordinador antes de validar el cierre.', 'error');
+      setTimeout(ocultarEstadoContabilidad, 1500);
+      return { ok: false, error: 'Faltan metadatos de la jornada.' };
+    }
+
+    const resumen = obtenerResumenCierreContabilidad();
+    draft.estado = 'pendiente_de_validacion';
+    draft.actualizadoEn = new Date().toISOString();
+    draft.totales = draft.totales || {};
+    draft.totales.totalIngresos = resumen.totalIngresos;
+    draft.totales.totalDeduccion = resumen.totalDeduccion;
+    draft.totales.totalEgresos = resumen.totalEgresos;
+    draft.totales.saldoInicial = resumen.saldoInicial;
+    draft.totales.saldoFinal = resumen.saldoFinal;
+
+    const result = window.ContabilidadDiariaService && typeof window.ContabilidadDiariaService.saveDraft === 'function'
+      ? window.ContabilidadDiariaService.saveDraft(draft)
+      : { ok: true, draft: draft };
+
+    if (result && result.ok) {
+      actualizarEstadoDraftContabilidad('Pendiente de validación');
+      renderResumenCierreContabilidad();
+      mostrarEstadoContabilidad('El cierre quedó pendiente de validación administrativa.', 'info');
+      setTimeout(ocultarEstadoContabilidad, 1200);
+      return { ok: true, draft: draft };
+    }
+
+    return { ok: false, error: 'No se pudo guardar la validación del cierre.' };
+  }
+
+  function cerrarContabilidad() {
+    const draft = obtenerSnapshotContabilidad();
+    if (!draft.fecha || !draft.municipio || !draft.coordinador) {
+      mostrarEstadoContabilidad('Completa la fecha, municipio y coordinador antes de cerrar la contabilidad.', 'error');
+      setTimeout(ocultarEstadoContabilidad, 1500);
+      return { ok: false, error: 'Faltan metadatos de la jornada.' };
+    }
+
+    const validado = validarCierreContabilidad();
+    if (!validado.ok) return validado;
+
+    const draftCerrado = obtenerSnapshotContabilidad();
+    draftCerrado.estado = 'cerrada';
+    draftCerrado.actualizadoEn = new Date().toISOString();
+    const result = window.ContabilidadDiariaService && typeof window.ContabilidadDiariaService.saveDraft === 'function'
+      ? window.ContabilidadDiariaService.saveDraft(draftCerrado)
+      : { ok: true, draft: draftCerrado };
+
+    if (result && result.ok) {
+      actualizarEstadoDraftContabilidad('Cerrada');
+      renderResumenCierreContabilidad();
+      cerrarReporteCierreContabilidad();
+      mostrarEstadoContabilidad('Contabilidad cerrada localmente. Sincronizando el cierre con Google Sheets...', 'info');
+      const sincronizacion = window.ContabilidadDiariaService && typeof window.ContabilidadDiariaService.syncDraft === 'function'
+        ? window.ContabilidadDiariaService.syncDraft(draftCerrado)
+        : Promise.resolve({ ok: true });
+      Promise.resolve(sincronizacion).then(function (respuesta) {
+        mostrarEstadoContabilidad(respuesta && respuesta.ok
+          ? 'Contabilidad cerrada correctamente. El administrador ya puede revisarla.'
+          : 'Contabilidad cerrada localmente. Quedó pendiente de sincronización.', respuesta && respuesta.ok ? 'success' : 'info');
+        setTimeout(ocultarEstadoContabilidad, 1600);
+      });
+      return { ok: true, draft: draftCerrado };
+    }
+
+    mostrarEstadoContabilidad('No se pudo cerrar la contabilidad.', 'error');
+    setTimeout(ocultarEstadoContabilidad, 1400);
+    return { ok: false, error: 'No se pudo cerrar la contabilidad.' };
+  }
+
+  function guardarBorradorContabilidad(mostrarFeedback = true) {
+    if (!window.ContabilidadDiariaService) {
+      return { ok: false, error: 'Servicio de borrador no disponible.' };
+    }
+
+    const draft = obtenerSnapshotContabilidad();
+    if (!draft.fecha || !draft.municipio || !draft.coordinador) {
+      if (mostrarFeedback) {
+        mostrarEstadoContabilidad('Completa fecha, municipio y coordinador antes de guardar.', 'error');
+        setTimeout(ocultarEstadoContabilidad, 1500);
+      } else {
+        actualizarEstadoDraftContabilidad('Faltan datos');
+      }
+      return { ok: false, error: 'Faltan datos obligatorios del borrador.' };
+    }
+
+    const result = window.ContabilidadDiariaService.saveDraft(draft);
+
+    if (result && result.ok) {
+      const estadoActual = (draft.estado === 'cerrada' || draft.estado === 'pendiente_de_validacion' || draft.estado === 'validada') ? draft.estado : 'Autoguardado';
+      actualizarEstadoDraftContabilidad(estadoActual === 'Autoguardado' ? 'Autoguardado' : estadoActual);
+      renderResumenCierreContabilidad();
+      if (mostrarFeedback) {
+        mostrarEstadoContabilidad('Borrador guardado localmente. Se mantiene autoguardado.', 'success');
+        setTimeout(ocultarEstadoContabilidad, 850);
+      }
+    }
+
+    return result;
+  }
+
+  function guardarYSincronizarContabilidad() {
+    if (!window.ContabilidadDiariaService) {
+      return { ok: false, error: 'Servicio de borrador no disponible.' };
+    }
+
+    const draft = obtenerSnapshotContabilidad();
+    if (!draft.fecha || !draft.municipio || !draft.coordinador) {
+      mostrarEstadoContabilidad('Completa fecha, municipio y coordinador antes de sincronizar.', 'error');
+      setTimeout(ocultarEstadoContabilidad, 1500);
+      return { ok: false, error: 'Faltan datos obligatorios del borrador.' };
+    }
+
+    mostrarEstadoContabilidad('Guardando borrador en Google Sheets...', 'info');
+
+    const result = window.ContabilidadDiariaService.syncDraft(draft);
+
+    if (result && typeof result.then === 'function') {
+      return result.then(function (respuesta) {
+        const estado = document.getElementById('estado-draft-contabilidad');
+        if (estado) {
+          estado.value = respuesta && respuesta.ok ? 'Sincronizado con Google Sheets' : 'Guardado localmente. Pendiente de sincronización';
+        }
+        mostrarEstadoContabilidad(respuesta && respuesta.ok ? 'Borrador sincronizado con Google Sheets.' : 'Guardado localmente. Pendiente de sincronización.', respuesta && respuesta.ok ? 'success' : 'info');
+        setTimeout(ocultarEstadoContabilidad, 1200);
+        return respuesta;
+      });
+    }
+
+    const estado = document.getElementById('estado-draft-contabilidad');
+    if (estado) {
+      estado.value = result && result.ok ? 'Sincronizado con Google Sheets' : 'Guardado localmente. Pendiente de sincronización';
+    }
+    mostrarEstadoContabilidad(result && result.ok ? 'Borrador sincronizado con Google Sheets.' : 'Guardado localmente. Pendiente de sincronización.', result && result.ok ? 'success' : 'info');
+    setTimeout(ocultarEstadoContabilidad, 1200);
+    return result;
+  }
+
+  function formatDateInputValue(value) {
+    if (!value) return '';
+    if (typeof value !== 'string') value = String(value);
+
+    if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return value;
+
+    const fecha = new Date(value);
+    if (Number.isNaN(fecha.getTime())) return value;
+
+    const year = fecha.getFullYear();
+    const month = String(fecha.getMonth() + 1).padStart(2, '0');
+    const day = String(fecha.getDate()).padStart(2, '0');
+    return year + '-' + month + '-' + day;
+  }
+
+  function normalizarFechaSeleccionada(value) {
+    return formatDateInputValue(value);
+  }
+
+  function restaurarBorradorContabilidad(draftOverride = null) {
+    if (!window.ContabilidadDiariaService) return false;
+
+    const draft = draftOverride || window.ContabilidadDiariaService.loadDraft();
+    if (!draft) return false;
+
+    const metaCampos = [
+      ['global-fecha', formatDateInputValue(draft.fecha || '')],
+      ['global-municipio', draft.municipio || ''],
+      ['global-coordinador', draft.coordinador || '']
+    ];
+
+    metaCampos.forEach(function ([id, value]) {
+      const el = document.getElementById(id);
+      if (el) el.value = value;
+    });
+
+    const tbody = document.getElementById('tbody-afiliaciones');
+    if (tbody) {
+      tbody.innerHTML = '';
+      if (Array.isArray(draft.afiliaciones) && draft.afiliaciones.length) {
+        draft.afiliaciones.forEach(function (filaDatos) {
+          agregarFilaAfiliacion(filaDatos);
+        });
+      } else {
+        agregarFilaAfiliacion();
+      }
+    }
+
+    const gastos = (draft.gastos && typeof draft.gastos === 'object' && !Array.isArray(draft.gastos)) ? draft.gastos : {};
+    const camposGastos = [
+      ['gasto-comida-coor', gastos.comidaCoor],
+      ['gasto-desayunos', gastos.desayunos],
+      ['gasto-almuerzos', gastos.almuerzos],
+      ['gasto-cenas-ganadas', gastos.cenasGanadas],
+      ['gasto-cenas-prestadas', gastos.cenasPrestadas],
+      ['gasto-hotel', gastos.hotel],
+      ['gasto-trans-urbano', gastos.transUrbano],
+      ['gasto-trans-vereda', gastos.transVereda],
+      ['gasto-varios', gastos.varios],
+      ['gasto-consignaciones', gastos.consignaciones],
+      ['gasto-abonos-ganados', gastos.abonosGanados],
+      ['ingreso-giros', gastos.giros],
+      ['ingreso-recaudo-base', gastos.recaudoBase],
+      ['ingreso-abonos-adic', gastos.abonosAdic],
+      ['coor-saldo-inicial', gastos.saldoInicial],
+      ['total-ingresos', gastos.totalIngresos],
+      ['total-deduccion', gastos.totalDeduccion],
+      ['total-egresos', gastos.totalEgresos]
+    ];
+
+    camposGastos.forEach(function ([id, value]) {
+      const el = document.getElementById(id);
+      if (el && value !== undefined && value !== null && value !== '') {
+        el.value = value;
+      }
+    });
+
+    const totales = (draft.totales && typeof draft.totales === 'object' && !Array.isArray(draft.totales)) ? draft.totales : {};
+    if (totales.saldoInicial !== undefined) document.getElementById('coor-saldo-inicial').value = totales.saldoInicial;
+    if (totales.totalIngresos !== undefined) document.getElementById('total-ingresos').value = totales.totalIngresos;
+    if (totales.totalDeduccion !== undefined) document.getElementById('total-deduccion').value = totales.totalDeduccion;
+    if (totales.totalEgresos !== undefined) document.getElementById('total-egresos').value = totales.totalEgresos;
+
+    if (Array.isArray(gastos.extra) && gastos.extra.length) {
+      const contenedor = document.getElementById('extra-expenses');
+      if (contenedor) {
+        contenedor.querySelectorAll('.extra-expense-row').forEach(function (fila) { fila.remove(); });
+        gastos.extra.forEach(function (item, index) {
+          const monto = item && typeof item === 'object' ? item.monto : item;
+          const detalle = item && typeof item === 'object' ? item.detalle : '';
+          if (index === 0) {
+            document.getElementById('gasto-varios').value = monto;
+            const detalleVarios = document.querySelector('#gasto-varios')?.parentElement?.querySelector('input[type="text"]');
+            if (detalleVarios) detalleVarios.value = detalle || '';
+          } else {
+            agregarGastoExtra();
+            const row = contenedor.querySelectorAll('.extra-expense-row')[index - 1];
+            if (row) {
+              const input = row.querySelector('.expense-amount');
+              if (input) input.value = monto;
+              const descripcion = row.querySelector('.expense-description');
+              if (descripcion) descripcion.value = detalle || '';
+            }
+          }
+        });
+      }
+    }
+
+    const detalle = draft.detalle || (gastos && gastos.detalle) || {};
+    const camposDetalle = [
+      ['saldo-inicial-origen', detalle.saldoInicialOrigen],
+      ['gasto-comida-coor-detalle', detalle.comidaCoordinador],
+      ['gasto-desayunos-detalle', detalle.desayunos],
+      ['gasto-varios-detalle', detalle.varios]
+    ];
+    camposDetalle.forEach(function ([id, value]) {
+      const campo = document.getElementById(id);
+      if (campo && value !== undefined && value !== null) campo.value = value;
+    });
+    const aplicarMovimiento = function (prefijo, movimiento) {
+      if (!movimiento) return;
+      const moneda = document.getElementById(prefijo + '-moneda');
+      const monto = document.getElementById(prefijo + '-monto-input');
+      const tasa = document.getElementById(prefijo + '-tasa');
+      if (moneda && movimiento.moneda) moneda.value = movimiento.moneda;
+      if (monto && movimiento.monto !== undefined) monto.value = movimiento.monto;
+      if (tasa && movimiento.tasa !== undefined) tasa.value = movimiento.tasa;
+    };
+    aplicarMovimiento('hotel', detalle.hotel);
+    aplicarMovimiento('consig', detalle.consignaciones);
+    aplicarMovimiento('giros', detalle.giros);
+    if (typeof toggleMonedaHotel === 'function') toggleMonedaHotel();
+    if (typeof toggleMonedaConsig === 'function') toggleMonedaConsig();
+    if (typeof toggleMonedaGiros === 'function') toggleMonedaGiros();
+
+    recalcularTodo();
+    renderResumenCierreContabilidad();
+    return true;
+  }
+
+  function registrarAutosaveContabilidad() {
+    const campos = document.querySelectorAll('#tab-contabilidad input, #tab-contabilidad select');
+
+    if (!campos.length) return;
+
+    const alreadyBound = document.body.dataset.contabilidadAutosaveBound === 'true';
+    if (alreadyBound) return;
+    document.body.dataset.contabilidadAutosaveBound = 'true';
+
+    campos.forEach(function (campo) {
+      if (campo.dataset.contabilidadAutosaveBound === 'true') return;
+      campo.dataset.contabilidadAutosaveBound = 'true';
+
+      let timerAutosave = null;
+      const dispararAutosave = function () {
+        if (timerAutosave) clearTimeout(timerAutosave);
+        timerAutosave = setTimeout(function () {
+          actualizarEstadoDraftContabilidad('Guardando...');
+          guardarBorradorContabilidad(false);
+        }, 250);
+      };
+
+      campo.addEventListener('input', dispararAutosave);
+      campo.addEventListener('change', dispararAutosave);
+    });
+  }
+
+  function obtenerBaseApiContabilidad() {
+    const contextos = [window.parent, window.top, window].filter(Boolean);
+    for (const contexto of contextos) {
+      if (contexto && contexto.API_URL_CONTABILIDAD && typeof contexto.API_URL_CONTABILIDAD === 'string') {
+        return contexto.API_URL_CONTABILIDAD.replace(/\/$/, '');
+      }
+      if (contexto && contexto.ApiConfig && contexto.ApiConfig.contabilidad && contexto.ApiConfig.contabilidad.baseUrl) {
+        return contexto.ApiConfig.contabilidad.baseUrl.replace(/\/$/, '');
+      }
+      try {
+        if (contexto && contexto.localStorage) {
+          const gasUrl = contexto.localStorage.getItem('ks_contabilidad_gas_url') || contexto.localStorage.getItem('ks_lic_gasurl');
+          if (gasUrl) return gasUrl.replace(/\/$/, '');
+        }
+      } catch (e) {
+        // Ignorar errores de acceso a localStorage
+      }
+    }
+    return '';
+  }
+
+  function obtenerPromotoresContabilidad() {
+    const contextos = [window.parent, window.top, window].filter(Boolean);
+
+    for (const contexto of contextos) {
+      if (!contexto) continue;
+      const servicio = contexto.PromotoresService;
+      if (servicio && typeof servicio.getAll === 'function') {
+        return servicio.getAll({ force: true });
+      }
+    }
+
+    const baseUrl = obtenerBaseApiContabilidad();
+    if (!baseUrl) {
+      return Promise.resolve([]);
+    }
+
+    return fetch(baseUrl + '?action=listar-promotores', { cache: 'no-store' })
+      .then(function (res) {
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        return res.json();
+      })
+      .then(function (payload) {
+        if (!payload) return [];
+        if (Array.isArray(payload)) return payload;
+        if (Array.isArray(payload.promotores)) return payload.promotores;
+        if (Array.isArray(payload.data)) return payload.data;
+        return [];
+      });
+  }
+
+  function buildPromotorOptions(selectedValue) {
+    const placeholder = '<option value="">Seleccionar promotor</option>';
+    const options = (contabilidadPromotores || []).map(function (promotor) {
+      const nombre = (promotor && (promotor.nombre || promotor.promotor || '')).toString().trim();
+      if (!nombre) return '';
+      const selected = selectedValue && nombre === selectedValue ? ' selected' : '';
+      return '<option value="' + nombre.replace(/"/g, '&quot;') + '"' + selected + '>' + nombre + '</option>';
+    }).join('');
+    return placeholder + options;
+  }
+
+  async function cargarPromotoresContabilidad() {
+    try {
+      const lista = await obtenerPromotoresContabilidad();
+      contabilidadPromotores.length = 0;
+
+      (lista || []).forEach(function (promotor) {
+        const nombre = (promotor && (promotor.nombre || promotor.promotor || '')).toString().trim();
+        if (nombre) contabilidadPromotores.push({ nombre: nombre });
+      });
+
+      document.querySelectorAll('.select-asesor').forEach(function (select) {
+        const currentValue = select.value || '';
+        select.innerHTML = buildPromotorOptions(currentValue);
+      });
+    } catch (error) {
+      console.warn('[ContabilidadDiaria] No se pudieron cargar los promotores:', error && error.message ? error.message : error);
+      document.querySelectorAll('.select-asesor').forEach(function (select) {
+        select.innerHTML = '<option value="">No se pudo cargar</option>';
+      });
+    }
+  }
+
+  function mostrarModalReset() {
+    const modal = document.getElementById('modal-reset');
+    if (!modal) return;
+    modal.classList.add('visible');
+    modal.setAttribute('aria-hidden', 'false');
+  }
+
+  function cerrarModalReset() {
+    const modal = document.getElementById('modal-reset');
+    if (!modal) return;
+    modal.classList.remove('visible');
+    modal.setAttribute('aria-hidden', 'true');
+  }
+
+  function confirmarResetContabilidad() {
+    cerrarModalReset();
+    restablecerContabilidad();
+  }
+
+  async function mostrarModalBienvenidaContabilidad() {
+    const modal = document.getElementById('modal-bienvenida-contabilidad');
+    if (!modal) return;
+
+    modal.classList.remove('hidden');
+    modal.classList.add('visible');
+    modal.style.display = 'flex';
+    modal.style.opacity = '1';
+    modal.style.visibility = 'visible';
+    modal.style.pointerEvents = 'auto';
+    modal.setAttribute('aria-hidden', 'false');
+  }
+
+  function cerrarModalBienvenidaContabilidad(continuar = true) {
+    const modal = document.getElementById('modal-bienvenida-contabilidad');
+    if (modal) {
+      modal.classList.remove('visible');
+      modal.classList.add('hidden');
+      modal.style.display = 'none';
+      modal.style.opacity = '0';
+      modal.style.visibility = 'hidden';
+      modal.style.pointerEvents = 'none';
+      modal.setAttribute('aria-hidden', 'true');
+    }
+
+    if (!continuar) {
+      restablecerContabilidad();
+      if (!document.querySelector('.select-asesor')) {
+        agregarFilaAfiliacion();
+      }
+    }
+
+    cargarPromotoresContabilidad()
+      .catch(function () {
+        console.warn('[ContabilidadDiaria] No se pudo cargar la lista al continuar desde bienvenida.');
+      })
+      .finally(function () {
+        recalcularTodo();
+      });
+  }
+
+  function cerrarModalCargaBorradoresContabilidad(reabrirBienvenida = false) {
+    const modal = document.getElementById('modal-cargar-borradores-contabilidad');
+    if (modal) {
+      modal.classList.remove('visible');
+      modal.classList.add('hidden');
+      modal.style.display = 'none';
+      modal.style.opacity = '0';
+      modal.style.visibility = 'hidden';
+      modal.style.pointerEvents = 'none';
+      modal.setAttribute('aria-hidden', 'true');
+    }
+
+    if (!reabrirBienvenida) return;
+
+    const modalBienvenida = document.getElementById('modal-bienvenida-contabilidad');
+    if (modalBienvenida) {
+      modalBienvenida.classList.remove('hidden');
+      modalBienvenida.classList.add('visible');
+      modalBienvenida.style.display = 'flex';
+      modalBienvenida.style.opacity = '1';
+      modalBienvenida.style.visibility = 'visible';
+      modalBienvenida.style.pointerEvents = 'auto';
+      modalBienvenida.setAttribute('aria-hidden', 'false');
+    }
+  }
+
+  async function abrirModalCargaBorradoresContabilidad() {
+    const modalBienvenida = document.getElementById('modal-bienvenida-contabilidad');
+    const modalCarga = document.getElementById('modal-cargar-borradores-contabilidad');
+    const select = document.getElementById('select-borrador-contabilidad');
+    const contenedor = document.getElementById('modal-borradores-contabilidad');
+    const loading = document.getElementById('modal-borradores-loading');
+    const confirmar = document.getElementById('btn-confirmar-carga-borrador');
+
+    if (modalBienvenida) {
+      modalBienvenida.classList.remove('visible');
+      modalBienvenida.classList.add('hidden');
+      modalBienvenida.style.display = 'none';
+      modalBienvenida.style.opacity = '0';
+      modalBienvenida.style.visibility = 'hidden';
+      modalBienvenida.style.pointerEvents = 'none';
+      modalBienvenida.setAttribute('aria-hidden', 'true');
+    }
+
+    if (select) {
+      select.innerHTML = '<option value="">Selecciona una fecha para cargar</option>';
+      select.classList.add('hidden');
+    }
+    if (confirmar) confirmar.classList.add('hidden');
+    if (loading) loading.textContent = 'Estamos cargando los borradores dinámicamente...';
+    if (contenedor) contenedor.classList.add('hidden');
+
+    if (modalCarga) {
+      modalCarga.classList.remove('hidden');
+      modalCarga.classList.add('visible');
+      modalCarga.style.display = 'flex';
+      modalCarga.style.opacity = '1';
+      modalCarga.style.visibility = 'visible';
+      modalCarga.style.pointerEvents = 'auto';
+      modalCarga.setAttribute('aria-hidden', 'false');
+    }
+
+    await cargarBorradorSeleccionadoContabilidad();
+  }
+
+  async function cargarBorradorSeleccionadoContabilidad() {
+    const select = document.getElementById('select-borrador-contabilidad');
+    const contenedor = document.getElementById('modal-borradores-contabilidad');
+    const loading = document.getElementById('modal-borradores-loading');
+    const confirmar = document.getElementById('btn-confirmar-carga-borrador');
+
+    if (contenedor) contenedor.classList.remove('hidden');
+    if (loading) loading.textContent = 'Estamos cargando los borradores dinámicamente...';
+    if (confirmar) confirmar.classList.add('hidden');
+
+    let fechas = [];
+    try {
+      if (window.ContabilidadDiariaService && typeof window.ContabilidadDiariaService.loadRemoteDraftHistory === 'function') {
+        const history = await window.ContabilidadDiariaService.loadRemoteDraftHistory();
+        fechas = (history || []).map(function (item) {
+          const valor = item && (item.fecha || item.FECHA) ? String(item.fecha || item.FECHA) : '';
+          return valor ? formatDateInputValue(valor) : '';
+        }).filter(Boolean).sort(function (a, b) { return new Date(b) - new Date(a); });
+      }
+    } catch (error) {
+      console.warn('[ContabilidadDiaria] No se pudo cargar historial de borradores desde Google Sheets:', error);
+    }
+
+    if (!fechas.length && window.ContabilidadDiariaService && typeof window.ContabilidadDiariaService.getDraftHistory === 'function') {
+      const localHistory = window.ContabilidadDiariaService.getDraftHistory();
+      fechas = Object.keys(localHistory || {}).map(function (valor) { return formatDateInputValue(valor); }).filter(Boolean).sort(function (a, b) { return new Date(b) - new Date(a); });
+    }
+
+    if (select) {
+      const opciones = Array.from(new Set(fechas)).map(function (fecha) {
+        return '<option value="' + fecha + '">' + fecha + '</option>';
+      }).join('');
+      select.innerHTML = '<option value="">Selecciona una fecha para cargar</option>' + opciones;
+
+      if (fechas.length) {
+        select.classList.remove('hidden');
+        if (confirmar) confirmar.classList.remove('hidden');
+        if (loading) loading.textContent = 'Borradores disponibles para cargar.';
+      } else {
+        select.classList.add('hidden');
+        if (confirmar) confirmar.classList.add('hidden');
+        if (loading) loading.textContent = 'No hay borradores guardados todavía. Puedes empezar uno nuevo.';
+      }
+    }
+  }
+
+  async function confirmarCargaBorradorSeleccionadoContabilidad() {
+    const select = document.getElementById('select-borrador-contabilidad');
+    const fechaSeleccionada = select ? select.value : '';
+    const fecha = normalizarFechaSeleccionada(fechaSeleccionada);
+
+    if (!fecha) {
+      mostrarEstadoContabilidad('Selecciona una fecha antes de cargar.', 'info');
+      setTimeout(ocultarEstadoContabilidad, 1200);
+      return;
+    }
+
+    mostrarEstadoContabilidad('Cargando borrador de ' + fecha + '...', 'info');
+
+    let draft = null;
+    try {
+      if (window.ContabilidadDiariaService && typeof window.ContabilidadDiariaService.loadRemoteDraftByFecha === 'function') {
+        draft = await window.ContabilidadDiariaService.loadRemoteDraftByFecha(fecha);
+      }
+
+      if (!draft && window.ContabilidadDiariaService && typeof window.ContabilidadDiariaService.loadDraft === 'function') {
+        draft = window.ContabilidadDiariaService.loadDraft(fecha);
+      }
+
+      if (!draft && window.ContabilidadDiariaService && typeof window.ContabilidadDiariaService.getDraftHistory === 'function') {
+        const history = window.ContabilidadDiariaService.getDraftHistory();
+        const match = Object.keys(history || {}).find(function (key) {
+          return formatDateInputValue(key) === fecha;
+        });
+        if (match) {
+          draft = window.ContabilidadDiariaService.loadDraft(match);
+        }
+      }
+    } catch (error) {
+      console.warn('[ContabilidadDiaria] Error al cargar el borrador seleccionado:', error);
+    }
+
+    if (!draft) {
+      mostrarEstadoContabilidad('No se encontró el borrador seleccionado.', 'error');
+      setTimeout(ocultarEstadoContabilidad, 1400);
+      return;
+    }
+
+    const modal = document.getElementById('modal-bienvenida-contabilidad');
+    if (modal) {
+      modal.classList.remove('visible');
+      modal.setAttribute('aria-hidden', 'true');
+    }
+
+    const modalCarga = document.getElementById('modal-cargar-borradores-contabilidad');
+    if (modalCarga) {
+      modalCarga.classList.remove('visible');
+      modalCarga.classList.add('hidden');
+      modalCarga.style.display = 'none';
+      modalCarga.style.opacity = '0';
+      modalCarga.style.visibility = 'hidden';
+      modalCarga.style.pointerEvents = 'none';
+      modalCarga.setAttribute('aria-hidden', 'true');
+    }
+
+    localStorage.setItem(CONTABILIDAD_DRAFT_KEY, JSON.stringify(draft));
+    const serviceResult = window.ContabilidadDiariaService && typeof window.ContabilidadDiariaService.saveDraft === 'function'
+      ? window.ContabilidadDiariaService.saveDraft(draft)
+      : { ok: true };
+
+    if (serviceResult && serviceResult.ok) {
+      const tbody = document.getElementById('tbody-afiliaciones');
+      if (tbody) tbody.innerHTML = '';
+      const result = restaurarBorradorContabilidad(draft);
+      if (!result) {
+        const loaded = await window.ContabilidadDiariaService.loadRemoteDraftByFecha(fecha);
+        if (loaded) {
+          localStorage.setItem(CONTABILIDAD_DRAFT_KEY, JSON.stringify(loaded));
+          restaurarBorradorContabilidad(loaded);
+        }
+      }
+    }
+
+    if (document.getElementById('estado-draft-contabilidad')) {
+      document.getElementById('estado-draft-contabilidad').value = 'Borrador cargado';
+    }
+
+    mostrarEstadoContabilidad('Borrador cargado correctamente desde Google Sheets.', 'success');
+    setTimeout(ocultarEstadoContabilidad, 1200);
+  }
+
+  function limpiarResumenContabilidad() {
+    const textosResumen = [
+      ['tot-aff', '0'],
+      ['tot-rec-abono', '$0'],
+      ['tot-almuerzo', '$0'],
+      ['tot-cena', '$0'],
+      ['tot-urbano', '$0'],
+      ['tot-vereda', '$0'],
+      ['tot-abono-adic', '$0'],
+      ['tot-abono-ganado', '$0'],
+      ['tot-recaudo-neto', '$0'],
+      ['tot-prestamo', '$0'],
+      ['card-tot-aff', '0'],
+      ['card-tot-abono', '$0'],
+      ['card-tot-almuerzo', '$0'],
+      ['card-tot-neto', '$0'],
+      ['card-coor-saldo-init', ''],
+      ['card-coor-ingresos', ''],
+      ['card-coor-gastos', ''],
+      ['card-coor-saldo-final', ''],
+      ['coor-saldo-final-big', ''],
+      ['balance-detalle', '']
+    ];
+
+    textosResumen.forEach(([id, value]) => {
+      const el = document.getElementById(id);
+      if (el) el.innerText = value;
+    });
+
+    ['total-ingresos', 'total-deduccion', 'total-egresos', 'gasto-consignaciones', 'gasto-abonos-ganados', 'gasto-hotel', 'ingreso-giros', 'ingreso-cant-aff', 'ingreso-recaudo-base', 'ingreso-abonos-adic', 'gasto-almuerzos', 'gasto-cenas-ganadas', 'gasto-cenas-prestadas', 'gasto-comida-coor', 'gasto-desayunos', 'gasto-trans-urbano', 'gasto-trans-vereda', 'gasto-varios', 'coor-saldo-inicial'].forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) el.value = '';
+    });
+
+    ['hotel-moneda', 'consig-moneda', 'giros-moneda'].forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) el.selectedIndex = 0;
+    });
+
+    ['hotel-tasa', 'consig-tasa', 'giros-tasa'].forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.value = '0';
+        el.disabled = true;
+      }
+    });
+  }
+
+  function restablecerContabilidad() {
+    const tbody = document.getElementById('tbody-afiliaciones');
+    if (tbody) {
+      tbody.innerHTML = '';
+    }
+
+    const filasExtra = document.querySelectorAll('#extra-expenses .extra-expense-row');
+    filasExtra.forEach(function (fila, index) {
+      if (index >= 3) fila.remove();
+      const inputMonto = fila.querySelector('.expense-amount');
+      const inputDesc = fila.querySelector('.expense-description');
+      if (inputMonto) inputMonto.value = '';
+      if (inputDesc) inputDesc.value = '';
+    });
+
+    document.querySelectorAll('#tab-contabilidad input, #tab-contabilidad select').forEach(function (campo) {
+      if (campo.tagName === 'SELECT') {
+        campo.selectedIndex = 0;
+        return;
+      }
+      if (campo.type === 'number' || campo.type === 'text' || campo.type === 'date') {
+        campo.value = '';
+      }
+    });
+
+    document.getElementById('global-fecha').value = '';
+    document.getElementById('global-municipio').value = '';
+    document.getElementById('global-coordinador').value = '';
+
+    const estadoDraft = document.getElementById('estado-draft-contabilidad');
+    if (estadoDraft) estadoDraft.value = 'Borrador local';
+
+    limpiarResumenContabilidad();
+
+    if (window.ContabilidadDiariaService) {
+      window.ContabilidadDiariaService.clearDraft();
+    }
+
+    if (tbody) {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td class="index-cell">1</td>
+        <td>
+          <select class="select-asesor">
+            ${buildPromotorOptions('')}
+          </select>
+        </td>
+        <td>
+          <select class="select-rol">
+            <option value="PROMOTOR" selected>Promotor</option>
+            <option value="COORDINADOR">Coordinador</option>
+          </select>
+        </td>
+        <td><input type="number" class="input-aff" value="" min="0" oninput="calcularFilaAfiliacion(this.closest('tr'))"></td>
+        <td><input type="number" class="input-rec-abono" value="" oninput="calcularFilaAfiliacion(this.closest('tr'), true)"></td>
+        <td><input type="number" class="input-almuerzo" value="" readonly></td>
+        <td><input type="number" class="input-cena" value="" readonly></td>
+        <td><input type="number" class="input-urbano" value="" oninput="calcularFilaAfiliacion(this.closest('tr'))"></td>
+        <td><input type="number" class="input-vereda" value="" oninput="calcularFilaAfiliacion(this.closest('tr'))"></td>
+        <td><input type="number" class="input-abono-adic" value="" oninput="calcularFilaAfiliacion(this.closest('tr'))"></td>
+        <td><input type="number" class="input-abono-ganado" value="" oninput="calcularFilaAfiliacion(this.closest('tr'))"></td>
+        <td><input type="number" class="input-recaudo-neto net-recaudo-cell" value="" readonly></td>
+        <td><input type="number" class="input-prestamo" value="" oninput="recalcularTodo()"></td>
+        <td><button class="btn btn-danger" onclick="eliminarFilaAfiliacion(this)">✕</button></td>
+      `;
+      tbody.appendChild(tr);
+    }
+  }
+
+  async function intentarRestaurarBorradorRemoto() {
+    if (!window.ContabilidadDiariaService || typeof window.ContabilidadDiariaService.loadRemoteDraftHistory !== 'function') {
+      return false;
+    }
+
+    try {
+      const history = await window.ContabilidadDiariaService.loadRemoteDraftHistory();
+      const fechas = (history || [])
+        .map(function (item) { return item && (item.fecha || item.FECHA) ? String(item.fecha || item.FECHA) : ''; })
+        .filter(Boolean)
+        .sort(function (a, b) { return new Date(b) - new Date(a); });
+
+      if (!fechas.length) return false;
+
+      const primerBorrador = await window.ContabilidadDiariaService.loadRemoteDraftByFecha(fechas[0]);
+      if (!primerBorrador) return false;
+
+      localStorage.setItem(CONTABILIDAD_DRAFT_KEY, JSON.stringify(primerBorrador));
+      return restaurarBorradorContabilidad(primerBorrador);
+    } catch (error) {
+      console.warn('[ContabilidadDiaria] No se pudo restaurar borrador remoto:', error);
+      return false;
+    }
+  }
+
+  window.onload = function () {
+    (async function () {
+      syncUrlContabilidad();
+      mostrarModalBienvenidaContabilidad();
+
+      let draftRestaurado = await intentarRestaurarBorradorRemoto();
+
+      if (!draftRestaurado) {
+        const localHistory = window.ContabilidadDiariaService && typeof window.ContabilidadDiariaService.getDraftHistory === 'function'
+          ? window.ContabilidadDiariaService.getDraftHistory()
+          : {};
+        const fechas = Object.keys(localHistory || {}).sort(function (a, b) { return new Date(b) - new Date(a); });
+
+        if (fechas.length) {
+          const localDraft = window.ContabilidadDiariaService ? window.ContabilidadDiariaService.loadDraft(fechas[0]) : null;
+          if (localDraft) {
+            draftRestaurado = restaurarBorradorContabilidad(localDraft);
+          }
+        }
+      }
+
+      if (draftRestaurado) {
+        cerrarModalBienvenidaContabilidad(true);
+      } else {
+        agregarFilaAfiliacion();
+      }
+
+      renderResumenCierreContabilidad();
+      registrarAutosaveContabilidad();
+    })();
+  };
+
+  function switchTab(tabId, btn) {
+    document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(tb => tb.classList.remove('active'));
+    document.getElementById(tabId).classList.add('active');
+    btn.classList.add('active');
+  }
+
+  function agregarFilaAfiliacion(datos = null) {
+    const tbody = document.getElementById('tbody-afiliaciones');
+    if (!tbody) return;
+
+    const index = tbody.children.length + 1;
+    const tr = document.createElement('tr');
+    const asesorSeleccionado = datos && datos.asesor ? datos.asesor : '';
+
+    tr.innerHTML = `
+      <td class="index-cell">${index}</td>
+      <td>
+        <select class="select-asesor" onchange="calcularFilaAfiliacion(this.closest('tr'))">
+          ${buildPromotorOptions(asesorSeleccionado)}
+        </select>
+      </td>
+      <td>
+        <select class="select-rol" onchange="calcularFilaAfiliacion(this.closest('tr'))">
+          <option value="PROMOTOR"    ${datos && datos.rol === 'PROMOTOR'    ? 'selected' : ''}>Promotor</option>
+          <option value="COORDINADOR" ${datos && datos.rol === 'COORDINADOR' ? 'selected' : ''}>Coordinador</option>
+        </select>
+      </td>
+      <td><input type="number" class="input-aff" value="${datos ? datos.aff    : ''}" min="0" oninput="calcularFilaAfiliacion(this.closest('tr'))"></td>
+      <td><input type="number" class="input-rec-abono" value="${datos ? datos.recAbono : ''}" oninput="calcularFilaAfiliacion(this.closest('tr'), true)"></td>
+      <td><input type="number" class="input-almuerzo" value="${datos ? datos.almuerzo : ''}" readonly></td>
+      <td><input type="number" class="input-cena" value="${datos ? datos.cena : ''}" readonly></td>
+      <td><input type="number" class="input-urbano" value="${datos ? datos.urbano  : ''}" oninput="calcularFilaAfiliacion(this.closest('tr'))"></td>
+      <td><input type="number" class="input-vereda" value="${datos ? datos.vereda  : ''}" oninput="calcularFilaAfiliacion(this.closest('tr'))"></td>
+      <td><input type="number" class="input-abono-adic" value="${datos ? datos.adic    : ''}" oninput="calcularFilaAfiliacion(this.closest('tr'))"></td>
+      <td><input type="number" class="input-abono-ganado" value="${datos ? datos.ganado : ''}" oninput="calcularFilaAfiliacion(this.closest('tr'))"></td>
+      <td><input type="number" class="input-recaudo-neto net-recaudo-cell" value="${datos ? datos.recaudoNeto : ''}" readonly></td>
+      <td><input type="number" class="input-prestamo" value="${datos ? datos.prestamo : ''}" oninput="recalcularTodo()"></td>
+      <td><button class="btn btn-danger" onclick="eliminarFilaAfiliacion(this)">✕</button></td>
+    `;
+
+    tbody.appendChild(tr);
+
+    if (datos) {
+      calcularFilaAfiliacion(tr);
+    }
+  }
+
+  function eliminarFilaAfiliacion(btn) {
+    btn.closest("tr").remove();
+    recalcularTodo();
+  }
+
+  function calcularFilaAfiliacion(tr, recaudoManual = false) {
+    const rol = tr.querySelector(".select-rol").value;
+    const aff = parseInt(tr.querySelector(".input-aff").value) || 0;
+
+    const inputRecAbono = tr.querySelector(".input-rec-abono");
+    if (!recaudoManual) inputRecAbono.value = aff * 3;
+    const recaudoAbono = parseFloat(inputRecAbono.value) || 0;
+
+    const almuerzo = (rol === "PROMOTOR" && aff >= 1) ? 3 : 0;
+    tr.querySelector(".input-almuerzo").value = almuerzo;
+
+    const cena = (rol === "PROMOTOR" && aff >= 10) ? 3 : 0;
+    tr.querySelector(".input-cena").value = cena;
+
+    const urbano     = parseFloat(tr.querySelector(".input-urbano").value)      || 0;
+    const vereda     = parseFloat(tr.querySelector(".input-vereda").value)      || 0;
+    const abonoAdic  = parseFloat(tr.querySelector(".input-abono-adic").value)  || 0;
+    const abonoGanado= parseFloat(tr.querySelector(".input-abono-ganado").value)|| 0;
+
+    const recaudoNeto = (recaudoAbono + abonoAdic) - (almuerzo + cena + urbano + vereda + abonoGanado);
+    tr.querySelector(".input-recaudo-neto").value = recaudoNeto;
+
+    recalcularTodo();
+  }
+
+  function recalcularTodo() {
+    let totAff=0, totRecAbono=0, totAlmuerzo=0, totCena=0;
+    let totUrbano=0, totVereda=0, totAbonoAdic=0, totAbonoGanado=0;
+    let totRecaudoNeto=0, totPrestamo=0;
+
+    document.querySelectorAll("#tbody-afiliaciones tr").forEach(tr => {
+      const alm = parseFloat(tr.querySelector(".input-almuerzo").value) || 0;
+      totAff          += parseInt(tr.querySelector(".input-aff").value)         || 0;
+      totRecAbono     += parseFloat(tr.querySelector(".input-rec-abono").value) || 0;
+      totAlmuerzo     += alm;
+      totCena         += parseFloat(tr.querySelector(".input-cena").value)      || 0;
+      totUrbano       += parseFloat(tr.querySelector(".input-urbano").value)    || 0;
+      totVereda       += parseFloat(tr.querySelector(".input-vereda").value)    || 0;
+      totAbonoAdic    += parseFloat(tr.querySelector(".input-abono-adic").value)   || 0;
+      totAbonoGanado  += parseFloat(tr.querySelector(".input-abono-ganado").value) || 0;
+      totRecaudoNeto  += parseFloat(tr.querySelector(".input-recaudo-neto").value) || 0;
+      totPrestamo     += parseFloat(tr.querySelector(".input-prestamo").value)  || 0;
+    });
+
+    // Totales tabla
+    document.getElementById("tot-aff").innerText         = totAff;
+    document.getElementById("tot-rec-abono").innerText   = "$" + totRecAbono;
+    document.getElementById("tot-almuerzo").innerText    = "$" + totAlmuerzo;
+    document.getElementById("tot-cena").innerText        = "$" + totCena;
+    document.getElementById("tot-urbano").innerText      = "$" + totUrbano;
+    document.getElementById("tot-vereda").innerText      = "$" + totVereda;
+    document.getElementById("tot-abono-adic").innerText  = "$" + totAbonoAdic;
+    document.getElementById("tot-abono-ganado").innerText= "$" + totAbonoGanado;
+    document.getElementById("tot-recaudo-neto").innerText= "$" + totRecaudoNeto;
+    document.getElementById("tot-prestamo").innerText    = "$" + totPrestamo;
+
+    // Stat cards pestaña 1
+    document.getElementById("card-tot-aff").innerText     = totAff;
+    document.getElementById("card-tot-abono").innerText   = "$" + totRecAbono;
+    document.getElementById("card-tot-almuerzo").innerText= "$" + totAlmuerzo;
+    document.getElementById("card-tot-neto").innerText    = "$" + totRecaudoNeto;
+
+    // Vinculación contabilidad
+    document.getElementById("gasto-almuerzos").value       = totAlmuerzo;
+    document.getElementById("gasto-cenas-ganadas").value   = totCena;
+    document.getElementById("gasto-cenas-prestadas").value = totPrestamo;
+    document.getElementById("gasto-abonos-ganados").value  = totAbonoGanado;
+    document.getElementById("ingreso-cant-aff").value      = totAff;
+    document.getElementById("ingreso-recaudo-base").value  = totRecAbono;
+    document.getElementById("ingreso-abonos-adic").value   = totAbonoAdic;
+
+    calcularContabilidad();
+  }
+
+  /* ── MONEDA DUAL: HOTEL ── */
+  function toggleMonedaHotel() {
+    const tasaInput = document.getElementById("hotel-tasa");
+    const esBs = document.getElementById("hotel-moneda").value === "BS";
+    tasaInput.disabled = !esBs;
+    if (!esBs) tasaInput.value = 0;
+    calcularHotel();
+  }
+
+  function calcularHotel() {
+    const moneda = document.getElementById("hotel-moneda").value;
+    const monto  = parseFloat(document.getElementById("hotel-monto-input").value) || 0;
+    const tasa   = parseFloat(document.getElementById("hotel-tasa").value)        || 1;
+    document.getElementById("gasto-hotel").value = (moneda === "BS" ? (tasa > 0 ? monto / tasa : 0) : monto).toFixed(2);
+    calcularContabilidad();
+  }
+
+  /* ── MONEDA DUAL: CONSIGNACIONES ── */
+  function toggleMonedaConsig() {
+    const tasaInput = document.getElementById("consig-tasa");
+    const esBs = document.getElementById("consig-moneda").value === "BS";
+    tasaInput.disabled = !esBs;
+    if (!esBs) tasaInput.value = 0;
+    calcularConsig();
+  }
+
+  function calcularConsig() {
+    const moneda = document.getElementById("consig-moneda").value;
+    const monto  = parseFloat(document.getElementById("consig-monto-input").value) || 0;
+    const tasa   = parseFloat(document.getElementById("consig-tasa").value)        || 1;
+    document.getElementById("gasto-consignaciones").value = (moneda === "BS" ? (tasa > 0 ? monto / tasa : 0) : monto).toFixed(2);
+    calcularContabilidad();
+  }
+
+  /* ── MONEDA DUAL: GIROS ── */
+  function toggleMonedaGiros() {
+    const tasaInput = document.getElementById("giros-tasa");
+    const esBs = document.getElementById("giros-moneda").value === "BS";
+    tasaInput.disabled = !esBs;
+    if (!esBs) tasaInput.value = 0;
+    calcularGiros();
+  }
+
+  function calcularGiros() {
+    const moneda = document.getElementById("giros-moneda").value;
+    const monto  = parseFloat(document.getElementById("giros-monto-input").value) || 0;
+    const tasa   = parseFloat(document.getElementById("giros-tasa").value)        || 1;
+    document.getElementById("ingreso-giros").value = (moneda === "BS" ? (tasa > 0 ? monto / tasa : 0) : monto).toFixed(2);
+    calcularContabilidad();
+  }
+
+  function agregarGastoExtra() {
+    const contenedor = document.getElementById("extra-expenses");
+    const boton = contenedor.querySelector(".add-expense-button");
+    const numero = contenedor.querySelectorAll(".extra-expense-row").length + 1;
+    const fila = document.createElement("div");
+    fila.className = "extra-expense-row";
+    fila.innerHTML = `
+      <span class="extra-expense-icon" aria-hidden="true">📦</span>
+      <span class="extra-expense-label">Gasto ${numero}</span>
+      <input class="expense-amount" type="number" placeholder="Monto ($)" oninput="calcularContabilidad()">
+      <input class="expense-description" type="text" placeholder="Detalle del gasto">
+    `;
+    contenedor.insertBefore(fila, boton);
+  }
+
+  /* ── CONTABILIDAD PRINCIPAL ── */
+  function calcularContabilidad() {
+    const gastoComidaCoor = document.getElementById("gasto-comida-coor");
+    const gastoDesayunos = document.getElementById("gasto-desayunos");
+    const gastoAlmuerzos = document.getElementById("gasto-almuerzos");
+    const gastoCenasGanadas = document.getElementById("gasto-cenas-ganadas");
+    const gastoCenasPrestadas = document.getElementById("gasto-cenas-prestadas");
+    const gastoHotel = document.getElementById("gasto-hotel");
+    const gastoTransUrbano = document.getElementById("gasto-trans-urbano");
+    const gastoTransVereda = document.getElementById("gasto-trans-vereda");
+    const gastoVarios = document.getElementById("gasto-varios");
+
+    const comidaCoor    = parseFloat(gastoComidaCoor ? gastoComidaCoor.value : 0) || 0;
+    const desayunos     = parseFloat(gastoDesayunos ? gastoDesayunos.value : 0) || 0;
+    const almuerzos     = parseFloat(gastoAlmuerzos ? gastoAlmuerzos.value : 0) || 0;
+    const cenasGanadas  = parseFloat(gastoCenasGanadas ? gastoCenasGanadas.value : 0) || 0;
+    const cenasPrestadas= parseFloat(gastoCenasPrestadas ? gastoCenasPrestadas.value : 0) || 0;
+    const hotel         = parseFloat(gastoHotel ? gastoHotel.value : 0) || 0;
+    const transUrbano   = parseFloat(gastoTransUrbano ? gastoTransUrbano.value : 0) || 0;
+    const transVereda   = parseFloat(gastoTransVereda ? gastoTransVereda.value : 0) || 0;
+    const varios        = parseFloat(gastoVarios ? gastoVarios.value : 0) || 0;
+    const gastosExtra   = Array.from(document.querySelectorAll(".expense-amount"))
+      .reduce((total, input) => total + (parseFloat(input.value) || 0), 0);
+
+    const subtotalGastos = comidaCoor + desayunos + almuerzos + cenasGanadas + cenasPrestadas + hotel + transUrbano + transVereda + varios + gastosExtra;
+
+    const totalEgresos = subtotalGastos;
+    const totalEgresosInput = document.getElementById("total-egresos");
+    if (totalEgresosInput) totalEgresosInput.value = totalEgresos.toFixed(2);
+
+    // Deducción
+    const consignaciones = parseFloat(document.getElementById("gasto-consignaciones")?.value || 0) || 0;
+    const abonosGanados  = parseFloat(document.getElementById("gasto-abonos-ganados")?.value || 0) || 0;
+    const totalDeduccion = consignaciones + abonosGanados;
+    const totalDeduccionInput = document.getElementById("total-deduccion");
+    if (totalDeduccionInput) totalDeduccionInput.value = totalDeduccion.toFixed(2);
+
+    // Ingresos
+    const saldoInicial = parseFloat(document.getElementById("coor-saldo-inicial")?.value || 0) || 0;
+    const recaudoBase  = parseFloat(document.getElementById("ingreso-recaudo-base")?.value || 0) || 0;
+    const abonosAdic   = parseFloat(document.getElementById("ingreso-abonos-adic")?.value || 0) || 0;
+    const giros        = parseFloat(document.getElementById("ingreso-giros")?.value || 0) || 0;
+
+    const totalIngresos = recaudoBase + abonosAdic + giros;
+    const totalIngresosInput = document.getElementById("total-ingresos");
+    if (totalIngresosInput) totalIngresosInput.value = totalIngresos.toFixed(2);
+
+    // Balance Final: Saldo Anterior + Ingresos - Deducción - Egresos
+    const saldoFinal = saldoInicial + totalIngresos - totalDeduccion - totalEgresos;
+
+    const hayValores = saldoInicial !== 0 || totalIngresos !== 0 || totalDeduccion !== 0 || totalEgresos !== 0;
+
+    const saldoInitEl = document.getElementById("card-coor-saldo-init");
+    const ingresosEl = document.getElementById("card-coor-ingresos");
+    const gastosEl = document.getElementById("card-coor-gastos");
+    const saldoFinalEl = document.getElementById("card-coor-saldo-final");
+    const saldoFinalBigEl = document.getElementById("coor-saldo-final-big");
+    const balanceDetalleEl = document.getElementById("balance-detalle");
+
+    if (!hayValores) {
+      if (saldoInitEl) saldoInitEl.innerText = '';
+      if (ingresosEl) ingresosEl.innerText = '';
+      if (gastosEl) gastosEl.innerText = '';
+      if (saldoFinalEl) saldoFinalEl.innerText = '';
+      if (saldoFinalBigEl) saldoFinalBigEl.innerText = '';
+      if (balanceDetalleEl) balanceDetalleEl.innerText = '';
+      if (totalEgresosInput) totalEgresosInput.value = '';
+      if (totalDeduccionInput) totalDeduccionInput.value = '';
+      if (totalIngresosInput) totalIngresosInput.value = '';
+      return;
+    }
+
+    if (saldoInitEl) saldoInitEl.innerText = "$" + saldoInicial.toFixed(2);
+    if (ingresosEl) ingresosEl.innerText = "$" + totalIngresos.toFixed(2);
+    if (gastosEl) gastosEl.innerText = "$" + totalEgresos.toFixed(2);
+    if (saldoFinalEl) saldoFinalEl.innerText = "$" + saldoFinal.toFixed(2);
+    if (saldoFinalBigEl) saldoFinalBigEl.innerText = "$" + saldoFinal.toFixed(2);
+    if (balanceDetalleEl) balanceDetalleEl.innerText = `(${saldoInicial.toFixed(2)} + ${totalIngresos.toFixed(2)}) − ${totalDeduccion.toFixed(2)} − ${totalEgresos.toFixed(2)}`;
+  }
+</script>
+
+</body>
+</html>

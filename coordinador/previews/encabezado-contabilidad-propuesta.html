@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Previsualización del encabezado de contabilidad</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: "Segoe UI", Arial, sans-serif;
+      color: #163447;
+      background: #eef3f5;
+      font-synthesis: none;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      min-width: 320px;
+      margin: 0;
+      padding: clamp(14px, 3vw, 40px);
+      background:
+        radial-gradient(ellipse at 14% 0%, rgba(212, 233, 226, .7), transparent 32rem),
+        #eef3f5;
+    }
+
+    .preview {
+      width: min(1440px, 100%);
+      margin: 0 auto;
+    }
+
+    .preview-label {
+      margin: 0 0 8px 4px;
+      color: #71838c;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .header-card {
+      overflow: hidden;
+      border: 1px solid #dce6e9;
+      border-radius: 17px;
+      background: #fff;
+      box-shadow: 0 12px 32px rgba(19, 53, 70, .10);
+    }
+
+    .header-main {
+      display: grid;
+      grid-template-columns: minmax(230px, .95fr) minmax(0, 2.3fr) auto;
+      align-items: center;
+      gap: 14px;
+      padding: 13px 18px 11px;
+    }
+
+    .brand-row {
+      display: flex;
+      min-width: 0;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-mark {
+      display: grid;
+      width: 34px;
+      height: 34px;
+      flex: 0 0 34px;
+      place-items: center;
+      border-radius: 10px;
+      background: #123f56;
+      color: #fff;
+      font-size: 10px;
+      font-weight: 900;
+    }
+
+    .brand-copy { min-width: 0; }
+
+    .brand-copy .eyebrow {
+      display: block;
+      margin-bottom: 2px;
+      color: #5c8878;
+      font-size: 8px;
+      font-weight: 850;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    .brand-copy h1 {
+      margin: 0;
+      color: #15384b;
+      font-size: clamp(16px, 1.35vw, 19px);
+      font-weight: 850;
+      letter-spacing: -.035em;
+      line-height: 1.12;
+    }
+
+    .brand-copy p {
+      margin: 3px 0 0;
+      color: #71838c;
+      font-size: 10px;
+    }
+
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(100px, 1fr));
+      align-items: center;
+      gap: 7px;
+      min-width: 0;
+    }
+
+    .meta-field {
+      display: flex;
+      min-width: 0;
+      flex-direction: column;
+      gap: 3px;
+      padding-left: 9px;
+      border-left: 1px solid #e4ebed;
+    }
+
+    .meta-field label {
+      color: #71838c;
+      font-size: 8px;
+      font-weight: 850;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .meta-value {
+      overflow: hidden;
+      color: #173b4e;
+      font-size: 12px;
+      font-weight: 750;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .action-row {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+      padding: 0;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      flex: 0 0 auto;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 8px;
+      border-radius: 999px;
+      background: #fff4d9;
+      color: #9b6715;
+      font-size: 9px;
+      font-weight: 850;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .status-pill::before {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+      content: "";
+    }
+
+    .actions {
+      display: flex;
+      flex: 0 0 auto;
+      gap: 6px;
+    }
+
+    .action {
+      min-height: 33px;
+      padding: 0 9px;
+      border: 0;
+      border-radius: 11px;
+      color: #fff;
+      font: inherit;
+      font-size: 9px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 5px 13px rgba(19, 53, 70, .12);
+    }
+
+    .action-save { background: #168365; }
+    .action-close { background: #123f56; }
+    .action-pdf { display: none; background: #426579; }
+    .header-card.is-closed .action-save,
+    .header-card.is-closed .action-close { display: none; }
+    .header-card.is-closed .action-pdf { display: inline-flex; align-items: center; justify-content: center; }
+    .section-switcher {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      padding: 10px 20px;
+      border-top: 1px solid #e4ebed;
+      background: #f4f8f7;
+    }
+
+    .section-tab {
+      display: flex;
+      min-width: 0;
+      min-height: 46px;
+      flex: 0 1 330px;
+      align-items: center;
+      gap: 9px;
+      padding: 7px 11px;
+      border: 1px solid #d9e4e7;
+      border-radius: 13px;
+      background: #fff;
+      color: #59717e;
+      text-align: left;
+      cursor: pointer;
+      transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
+    }
+
+    .section-tab.active {
+      border-color: #155469;
+      background: #123f56;
+      color: #fff;
+      box-shadow: 0 7px 15px rgba(18, 63, 86, .18);
+    }
+
+    .tab-number {
+      display: grid;
+      width: 28px;
+      height: 28px;
+      flex: 0 0 28px;
+      place-items: center;
+      border-radius: 10px;
+      background: #eef3f4;
+      color: #37606d;
+      font-size: 10px;
+      font-weight: 900;
+    }
+
+    .section-tab.active .tab-number {
+      background: rgba(255, 255, 255, .14);
+      color: #fff;
+    }
+
+    .tab-copy { min-width: 0; }
+    .tab-copy strong { display: block; font-size: 11px; font-weight: 850; }
+    .tab-copy small { display: block; margin-top: 2px; font-size: 9px; opacity: .74; }
+
+    .summary {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 7px 15px;
+      padding: 8px 20px;
+      border-top: 1px solid #e9eef0;
+      color: #607681;
+      font-size: 10px;
+    }
+
+    .summary span { white-space: nowrap; }
+    .summary strong { margin-left: 4px; color: #183d50; font-size: 11px; }
+    .header-card.is-closed .status-pill { background: #e5f5ec; color: #218054; }
+
+    .preview-note {
+      margin: 9px 4px 0;
+      color: #87969d;
+      font-size: 10px;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 900px) {
+      body { padding: 16px 10px; }
+      .header-card { border-radius: 17px; }
+      .header-main { grid-template-columns: minmax(0, 1fr); gap: 12px; padding: 16px 15px 12px; }
+      .brand-mark { width: 40px; height: 40px; flex-basis: 40px; border-radius: 12px; font-size: 11px; }
+      .brand-copy h1 { font-size: 19px; }
+      .brand-copy p { font-size: 11px; }
+      .brand-copy .eyebrow { font-size: 9px; }
+      .meta-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+      .meta-field { min-height: 55px; gap: 5px; padding: 7px 9px; border: 1px solid #e1e9ec; border-radius: 9px; background: #f8fafb; }
+      .meta-field label { font-size: 8px; }
+      .meta-value { font-size: 12px; }
+      .action-row { align-items: center; }
+      .actions { display: grid; min-width: 0; flex: 1; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .action { min-height: 44px; padding: 0 9px; font-size: 11px; }
+      .header-card.is-closed .actions { grid-template-columns: 1fr; }
+      .section-switcher { gap: 7px; padding: 11px 10px; }
+      .section-tab { min-height: 67px; gap: 8px; padding: 8px; }
+      .tab-number { width: 29px; height: 29px; flex-basis: 29px; border-radius: 8px; font-size: 11px; }
+      .tab-copy strong { font-size: 11px; line-height: 1.25; }
+      .tab-copy small { font-size: 9px; }
+      .summary { gap: 8px 14px; padding: 10px 15px; font-size: 10px; }
+      .summary strong { font-size: 12px; }
+    }
+
+    @media (max-width: 360px) {
+      .section-tab { align-items: flex-start; flex-direction: column; }
+      .section-tab { min-height: 82px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="preview">
+    <p class="preview-label">Previsualización independiente · Solo diseño, no guarda datos</p>
+    <section class="header-card" id="header-card" aria-label="Encabezado propuesto para contabilidad diaria">
+      <div class="header-main">
+        <div class="brand-row">
+          <div class="brand-mark" aria-hidden="true">AV</div>
+          <div class="brand-copy">
+            <span class="eyebrow">Sistema Operativo y Contable de Campo</span>
+            <h1>Óptica Angelus Visión C.A.</h1>
+            <p>Jornada diaria de afiliaciones y contabilidad</p>
+          </div>
+        </div>
+        <div class="meta-grid">
+          <div class="meta-field">
+            <label>Fecha de jornada</label>
+            <span class="meta-value">2026-10-09</span>
+          </div>
+          <div class="meta-field">
+            <label>Municipio</label>
+            <span class="meta-value">BOLÍVAR</span>
+          </div>
+          <div class="meta-field">
+            <label>Coordinador</label>
+            <span class="meta-value">ANDRÉS ANDRADE</span>
+          </div>
+        </div>
+        <div class="action-row">
+          <span class="status-pill" id="state-pill" aria-label="Estado: Borrador">Borrador</span>
+          <div class="actions">
+            <button class="action action-save" type="button">Guardar borrador</button>
+            <button class="action action-close" id="close-preview" type="button">Cerrar contabilidad</button>
+            <button class="action action-pdf" id="pdf-preview" type="button">Imprimir / Guardar PDF</button>
+          </div>
+        </div>
+      </div>
+
+      <nav class="section-switcher" aria-label="Secciones de la jornada">
+        <button class="section-tab active" type="button" aria-current="page">
+          <span class="tab-number">01</span>
+          <span class="tab-copy"><strong>Recepción de afiliaciones</strong><small>Asesores, afiliaciones y recaudos</small></span>
+        </button>
+        <button class="section-tab" type="button">
+          <span class="tab-number">02</span>
+          <span class="tab-copy"><strong>Contabilidad del coordinador</strong><small>Ingresos, gastos y saldo de jornada</small></span>
+        </button>
+      </nav>
+
+      <div class="summary" aria-label="Resumen actual de la jornada">
+        <span>Total afiliaciones:<strong>18</strong></span>
+        <span>Saldo final:<strong>$93</strong></span>
+      </div>
+    </section>
+    <p class="preview-note">La vista muestra la propuesta en estado borrador. Pulsa “Cerrar contabilidad” para previsualizar cómo se sustituyen las acciones por la generación del reporte una vez cerrada la jornada.</p>
+  </main>
+
+  <script>
+    var header = document.getElementById('header-card');
+    var closeButton = document.getElementById('close-preview');
+    var statePill = document.getElementById('state-pill');
+
+    closeButton.addEventListener('click', function () {
+      header.classList.add('is-closed');
+      statePill.textContent = 'Cerrada';
+      statePill.setAttribute('aria-label', 'Estado: Cerrada');
+    });
+
+    document.querySelectorAll('.section-tab').forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        document.querySelectorAll('.section-tab').forEach(function (item) {
+          item.classList.remove('active');
+          item.removeAttribute('aria-current');
+        });
+        tab.classList.add('active');
+        tab.setAttribute('aria-current', 'page');
+      });
+    });
+  </script>
+</body>
+</html>

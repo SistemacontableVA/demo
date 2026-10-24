@@ -1,0 +1,52 @@
+# Windows
+desktop.ini
+Thumbs.db
+ehthumbs.db
+$RECYCLE.BIN/
+
+# Editor
+.vscode/settings.json
+*.suo
+*.user
+
+# Logs
+*.log
+
+# Google Apps Script (no va al repo web)
+*.gs
+Código.gs
+
+# Documentos internos
+PENDIENTE-*.md
+Subida
+documentacion/
+backend/*
+!backend/supabase/
+backend/supabase/*
+!backend/supabase/migrations/
+backend/supabase/migrations/*
+!backend/supabase/migrations/20261006120000_contabilidad_diaria.sql
+!backend/supabase/migrations/20261005160000_gerencia_herramientas.sql
+!backend/supabase/migrations/20261009140000_contabilidad_diaria_bloqueo_reapertura.sql
+!backend/supabase/migrations/20261021165000_contabilidad_diaria_politicas.sql
+
+# Configuración de APIs cargada por los módulos del navegador.
+
+# Variables de entorno y secretos
+.env
+.env.local
+.env.*.local
+secrets.json
+config.local.js
+
+# Node modules (si usa npm en futuro)
+node_modules/
+package-lock.json
+
+# Build y dist
+dist/
+build/
+*.min.js
+
+# Python scripts temporales
+*.py

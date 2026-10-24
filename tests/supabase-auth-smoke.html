@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Prueba local de acceso Supabase</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: Segoe UI, sans-serif;
+      color: #172b3a;
+      background: #f2f5f4;
+    }
+
+    body {
+      margin: 0;
+      padding: 32px 16px;
+    }
+
+    main {
+      width: min(100%, 560px);
+      margin: 0 auto;
+      padding: 24px;
+      background: #fff;
+      border: 1px solid #d8e1df;
+      border-radius: 6px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 22px;
+    }
+
+    p {
+      line-height: 1.5;
+    }
+
+    form {
+      display: grid;
+      gap: 14px;
+      margin-top: 22px;
+    }
+
+    label {
+      display: grid;
+      gap: 6px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    input {
+      box-sizing: border-box;
+      width: 100%;
+      min-height: 42px;
+      padding: 9px 10px;
+      border: 1px solid #9eafad;
+      border-radius: 4px;
+      font: inherit;
+    }
+
+    input:focus {
+      outline: 2px solid #147d70;
+      outline-offset: 1px;
+    }
+
+    button {
+      min-height: 44px;
+      border: 0;
+      border-radius: 4px;
+      background: #12685e;
+      color: #fff;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      cursor: wait;
+      opacity: 0.65;
+    }
+
+    pre {
+      overflow-wrap: anywhere;
+      white-space: pre-wrap;
+      padding: 14px;
+      background: #eef3f2;
+      border-left: 3px solid #147d70;
+      font: 13px/1.5 Consolas, monospace;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Prueba local de acceso Supabase</h1>
+    <p>Comprueba Auth, usuario, empresa, licencia y dominio desde este navegador. No cambia el login de la aplicación.</p>
+    <p>Origen de esta página: <strong id="origin"></strong></p>
+
+    <form id="smoke-form">
+      <label>
+        URL del proyecto Supabase
+        <input id="project-url" type="url" placeholder="https://tu-proyecto.supabase.co" required autocomplete="url">
+      </label>
+      <label>
+        Clave Publishable
+        <input id="publishable-key" type="text" required autocomplete="off" spellcheck="false">
+      </label>
+      <label>
+        Correo del usuario de prueba
+        <input id="email" type="email" required autocomplete="username">
+      </label>
+      <label>
+        Contraseña
+        <input id="password" type="password" required autocomplete="current-password">
+      </label>
+      <button id="submit-button" type="submit">Validar acceso</button>
+    </form>
+
+    <section id="output" aria-live="polite" hidden>
+      <h2 id="result-heading"></h2>
+      <pre id="result-details"></pre>
+    </section>
+  </main>
+
+  <script>
+    var form = document.getElementById('smoke-form');
+    var button = document.getElementById('submit-button');
+    var output = document.getElementById('output');
+    var heading = document.getElementById('result-heading');
+    var details = document.getElementById('result-details');
+
+    document.getElementById('origin').textContent = window.location.origin;
+
+    async function readResponse(response) {
+      var text = await response.text();
+      var data;
+
+      try {
+        data = text ? JSON.parse(text) : {};
+      } catch (error) {
+        data = { message: text || 'Respuesta vacía del servidor.' };
+      }
+
+      if (!response.ok) {
+        var message = data.error || data.msg || data.message || response.statusText;
+        throw new Error('HTTP ' + response.status + ': ' + message);
+      }
+
+      return data;
+    }
+
+    form.addEventListener('submit', async function (event) {
+      event.preventDefault();
+      output.hidden = true;
+      button.disabled = true;
+      button.textContent = 'Validando...';
+
+      var projectUrl = document.getElementById('project-url').value.trim().replace(/\/+$/, '');
+      var publishableKey = document.getElementById('publishable-key').value.trim();
+      var email = document.getElementById('email').value.trim();
+      var passwordInput = document.getElementById('password');
+      var password = passwordInput.value;
+
+      try {
+        var parsedUrl = new URL(projectUrl);
+        if (parsedUrl.protocol !== 'https:' || !parsedUrl.hostname.endsWith('.supabase.co')) {
+          throw new Error('La URL debe ser el dominio HTTPS de tu proyecto Supabase.');
+        }
+
+        var authResponse = await fetch(projectUrl + '/auth/v1/token?grant_type=password', {
+          method: 'POST',
+          headers: {
+            apikey: publishableKey,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ email: email, password: password })
+        });
+        var session = await readResponse(authResponse);
+
+        var validationResponse = await fetch(projectUrl + '/functions/v1/validate-access', {
+          method: 'POST',
+          headers: {
+            apikey: publishableKey,
+            Authorization: 'Bearer ' + session.access_token
+          }
+        });
+        var validation = await readResponse(validationResponse);
+
+        heading.textContent = validation.ok ? 'Acceso validado' : 'Acceso rechazado';
+        details.textContent = JSON.stringify({
+          ok: validation.ok,
+          origin: window.location.origin,
+          user: validation.user,
+          tenant: validation.tenant,
+          license: validation.license,
+          session: validation.session,
+          domain_validated: validation.domain_validated
+        }, null, 2);
+      } catch (error) {
+        heading.textContent = 'La prueba no pasó';
+        details.textContent = error.message;
+      } finally {
+        passwordInput.value = '';
+        button.disabled = false;
+        button.textContent = 'Validar acceso';
+        output.hidden = false;
+      }
+    });
+  </script>
+</body>
+</html>

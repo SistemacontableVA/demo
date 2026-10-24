@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <base href="../../../">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=850, initial-scale=1.0, minimum-scale=0.1">
+  <title>Nómina de Coordinador</title>
+  <style>
+    @page {
+      size: letter portrait;
+      margin: 8mm;
+    }
+
+    :root {
+      --navy-900: #082c4a;
+      --navy-800: #082c4a;
+      --navy-700: #082c4a;
+      --blue-600: #082c4a;
+      --table-header-bg: #24535C;
+      --green-700: #008A69;
+      --green-600: #08795E;
+      --green-light: #e6f5ef;
+      --purple-700: #D9A62E;
+      --purple-600: #F1D27A;
+
+      /* Colores específicos de Deducciones */
+      --ded-icon-bg: #b40018;
+      --ded-total-bg: #b4001811;
+      --ded-total-text: #b40018;
+      --ded-total-border: #b4001823;
+      --teal-500: #00A878;
+      --teal-600: #008A69;
+      --border: #C8D7DA;
+      --text: #17242A;
+      --muted: #24535C;
+      --bg: #dfe7e9;
+      --card: #ffffff;
+      --radius-lg: 13px;
+      --radius-md: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Arial, Roboto, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 15px;
+      font-size: 13px;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .acciones-impresion {
+      max-width: 850px;
+      margin: 0 auto 12px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .accion-impresion {
+      border: 0;
+      border-radius: 7px;
+      padding: 9px 13px;
+      color: #fff;
+      background: var(--navy-800);
+      font: 600 12px 'Segoe UI', Arial, sans-serif;
+      cursor: pointer;
+    }
+
+    .accion-impresion.secundaria {
+      background: var(--teal-600);
+    }
+
+    .accion-impresion:disabled {
+      cursor: wait;
+      opacity: .65;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    .nomina-sin-datos {
+      max-width: 850px;
+      margin: 24px auto;
+      padding: 18px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      background: var(--card);
+      color: var(--muted);
+      text-align: center;
+      font-weight: 600;
+    }
+
+    .hoja {
+      max-width: 850px;
+      min-width: 850px;
+      margin: 0 auto;
+      background: var(--card);
+      padding: 20px;
+      border-radius: var(--radius-lg);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .icon {
+      width: 22px;
+      height: 22px;
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    .icon svg {
+      width: 100%;
+      height: 100%;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* ===================== CABECERA SUPERIOR ===================== */
+    .top-section {
+      margin-bottom: 12px;
+    }
+
+    .header-layout {
+      display: grid;
+      grid-template-columns: auto 1fr 380px;
+      gap: 12px;
+      align-items: stretch;
+    }
+
+    .titles-col {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      justify-content: center;
+    }
+
+    .logo-panel {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+    }
+
+    .logo-panel .logo {
+      width: 1.4in;
+      height: auto;
+      display: block;
+    }
+
+    .titulo-block {
+      background: #082c4a;
+      border: 2px solid var(--navy-800);
+      border-radius: var(--radius-lg);
+      padding: 4px 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .titulo-block h1 {
+      font-size: 16.5px;
+      line-height: 1.1;
+      font-weight: 900;
+      color: var(--green-light);
+      margin: 0 0 2px;
+      letter-spacing: .01em;
+    }
+
+    .titulo-block .subt {
+      font-size: 10px;
+      color: var(--purple-600);
+      font-weight: 700;
+    }
+
+    .asesor-bar {
+      background: #f0f4f8;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 4px 10px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .asesor-bar .avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--navy-800);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .asesor-bar .lbl {
+      font-size: 9.5px;
+      font-weight: 900;
+      letter-spacing: .05em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 2px;
+    }
+
+    .asesor-bar .nombre {
+      font-size: 13px;
+      font-weight: 900;
+      color: var(--navy-900);
+      line-height: 1.1;
+      text-transform: uppercase;
+    }
+
+    /* Observación especial */
+    .nota-observacion {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-left: 4px solid #082c4a;
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-size: 9.5px;
+      color: #1e293b;
+      margin-top: 8px;
+      margin-bottom: 12px;
+      line-height: 1.3;
+    }
+
+    .nota-observacion strong {
+      color: var(--navy-900);
+    }
+
+    /* Rejilla de KPIs */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+      align-content: center;
+    }
+
+    .stat-card {
+      background: #fff;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 6px 4px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-width: 0;
+      text-align: center;
+    }
+
+    .stat-card.blue-bg {
+      background: var(--navy-900);
+      border-color: transparent;
+    }
+
+    .stat-card.blue-bg .lbl,
+    .stat-card.blue-bg .val {
+      color: #fff;
+    }
+
+    .stat-card .lbl {
+      font-size: 8px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      line-height: 1.1;
+      margin-bottom: 3px;
+    }
+
+    .stat-card .val {
+      font-size: 13.5px;
+      font-weight: 800;
+      color: var(--navy-900);
+    }
+
+    /* ===================== RESUMEN ===================== */
+    .fila-resumen {
+      display: grid;
+      grid-template-columns: 1fr 1fr 0.65fr;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .panel {
+      background: #fff;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 12px;
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .panel-header .icon-circle {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    .panel-header .icon-circle .icon {
+      width: 16px;
+      height: 16px;
+    }
+
+    .icon-circle.verde {
+      background: var(--green-600);
+    }
+
+    .icon-circle.morado {
+      background: var(--ded-icon-bg);
+    }
+
+    .panel-header h3 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--navy-900);
+      letter-spacing: .02em;
+    }
+
+    table.linea {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11.5px;
+      margin-bottom: 8px;
+    }
+
+    table.linea td {
+      padding: 4px 0;
+      border-bottom: 1px solid #e2e8f0;
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    table.linea tr:last-child td {
+      border-bottom: none;
+    }
+
+    table.linea td.d {
+      text-align: right;
+      font-weight: 800;
+      color: var(--navy-900);
+    }
+
+    .total-fila {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-radius: 6px;
+      padding: 6px 8px;
+      font-weight: 700;
+      font-size: 13.5px;
+    }
+
+    .total-fila.verde {
+      background: var(--green-light);
+      color: var(--green-700);
+      border: 1px solid #c8e6c9;
+    }
+
+    .total-fila.morado {
+      background: var(--ded-total-bg);
+      color: var(--ded-total-text);
+      border: 1px solid var(--ded-total-border);
+    }
+
+    .panel-resumen {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 16px 12px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .panel-resumen::before {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 75px;
+      background: linear-gradient(135deg, #0f6f5c, #064e3b);
+      z-index: -1;
+      border-radius: 0 0 16px 16px;
+      clip-path: ellipse(110% 100% at 50% 100%);
+    }
+
+    .panel-resumen .icon-circle-big {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: #0f6f5c;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      border: 4px solid #fff;
+      box-shadow: 0 6px 16px rgba(15, 111, 92, 0.3);
+      margin-bottom: 6px;
+    }
+
+    .panel-resumen .icon-circle-big .icon {
+      width: 22px;
+      height: 22px;
+    }
+
+    .panel-resumen h3 {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 900;
+      color: var(--navy-900);
+      line-height: 1.1;
+      text-transform: uppercase;
+    }
+
+    .panel-resumen .subt {
+      font-size: 10px;
+      color: #0f6f5c;
+      margin-top: 3px;
+      font-weight: 800;
+    }
+
+    .panel-resumen .separator {
+      width: 35px;
+      height: 3px;
+      background: #0f6f5c;
+      border-radius: 2px;
+      margin: 6px 0;
+    }
+
+    .panel-resumen .val-grande {
+      background: #fff;
+      font-size: 26px;
+      font-weight: 900;
+      color: #0f6f5c;
+      line-height: 1;
+      padding: 8px 20px;
+      border-radius: 20px;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+      margin-top: 4px;
+    }
+
+    /* ===================== TABLAS ===================== */
+    .tabla-panel {
+      background: #fff;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+
+    .tabla-titulo {
+      background: linear-gradient(90deg, var(--navy-900), var(--navy-700));
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 14px;
+      font-weight: 700;
+      font-size: 12.5px;
+      letter-spacing: .04em;
+      border-bottom: 2px solid var(--purple-700);
+    }
+
+    .tabla-titulo .icon {
+      width: 16px;
+      height: 16px;
+    }
+
+    table.grande {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+      table-layout: fixed;
+    }
+
+    table.grande thead th {
+      background: var(--table-header-bg);
+      color: #ffffff;
+      padding: 6px 4px;
+      text-align: center;
+      font-weight: 600;
+      border-bottom: 2px solid var(--table-header-bg);
+      border-right: 1px solid rgba(255, 255, 255, 0.35);
+      line-height: 1.2;
+    }
+
+    table.grande thead th:last-child {
+      border-right: none;
+    }
+
+    table.grande tbody td {
+      padding: 6px 4px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+      vertical-align: middle;
+      line-height: 1.2;
+      font-weight: 600;
+      overflow-wrap: anywhere;
+    }
+
+    table.grande tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    table.grande td.c {
+      text-align: center;
+    }
+
+    table.grande td.izq {
+      text-align: left;
+    }
+
+    table.grande td.der {
+      text-align: right;
+    }
+
+    table.grande tbody tr:nth-child(even) {
+      background: #f1f5f9;
+    }
+
+    /* Ancho de columnas adaptado a la imagen */
+    table.tabla-jornadas th:nth-child(1) { width: 13%; } /* Municipio */
+    table.tabla-jornadas th:nth-child(2) { width: 11%; } /* Fecha */
+    table.tabla-jornadas th:nth-child(3) { width: 10%; } /* N° Aff Grupo */
+    table.tabla-jornadas th:nth-child(4) { width: 9%; }  /* N° Brigadas */
+    table.tabla-jornadas th:nth-child(5) { width: 8%; }  /* Asistidos */
+    table.tabla-jornadas th:nth-child(6) { width: 8%; }  /* Lentes */
+    table.tabla-jornadas th:nth-child(7) { width: 10%; } /* Prest / Abon */
+    table.tabla-jornadas th:nth-child(8) { width: 10%; } /* Valor por Día */
+    table.tabla-jornadas th:nth-child(9) { width: 11%; } /* Comision por Venta */
+    table.tabla-jornadas th:nth-child(10) { width: 10%; }/* Descuento / Comida */
+    table.tabla-jornadas th:nth-child(11) { width: 10%; }/* Detalle */
+
+    /* ===================== FOOTER ===================== */
+    .footer {
+      background: var(--navy-900);
+      color: #fff;
+      border-radius: var(--radius-lg);
+      padding: 12px 18px;
+      border-top: 3px solid var(--purple-700);
+      display: grid;
+      grid-template-columns: 1fr 1.35fr 1fr;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .footer strong {
+      display: block;
+      color: var(--purple-600);
+      font-size: 10px;
+      margin-bottom: 2px;
+    }
+
+    .footer-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+      font-size: 9px;
+    }
+
+    .footer-icon {
+      width: 27px;
+      height: 27px;
+      min-width: 27px;
+      border: 1px solid rgba(255, 255, 255, .45);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .footer-icon svg {
+      width: 15px;
+      height: 15px;
+      fill: none;
+      stroke: #fff;
+      stroke-width: 1.7;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .footer-center {
+      border-left: 1px solid rgba(255, 255, 255, .25);
+      border-right: 1px solid rgba(255, 255, 255, .25);
+      padding: 0 12px;
+      text-align: left;
+    }
+
+    .footer-right {
+      text-align: left;
+    }
+
+    @media print {
+      .no-print { display: none !important; }
+      body { background: #fff; padding: 0; font-size: 11px; }
+      .hoja { max-width: 100%; width: 100%; padding: 0; box-shadow: none; border-radius: 0; }
+      .top-section, .fila-resumen, .tabla-panel, .footer { page-break-inside: avoid; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="accionesNomina" class="acciones-impresion no-print" aria-label="Acciones de la nómina" hidden>
+    <button type="button" class="accion-impresion" onclick="descargarNominaComoPdf()">
+      Descargar PDF
+    </button>
+    <button type="button" class="accion-impresion secundaria" onclick="descargarNominaComoImagen()">
+      Descargar en Imagen
+    </button>
+  </div>
+
+  <div id="hojaNomina" class="hoja" hidden>
+
+    <!-- ===== TOP ===== -->
+    <div class="top-section">
+      <div class="header-layout">
+
+        <!-- COL 1: Logo -->
+        <div class="logo-panel">
+          <img class="logo" data-empresa-logo="assets/images/logomenu.png" data-empresa-nombre="" alt="" />
+        </div>
+
+        <!-- COL 2: Títulos / Asesor -->
+        <div class="titles-col">
+          <div class="titulo-block">
+            <h1>NÓMINA DE COORDINADOR</h1>
+            <div class="subt">Resumen general de gestión y liquidación</div>
+          </div>
+          <div class="asesor-bar">
+            <div class="avatar">
+              <div class="icon">
+                <svg viewBox="0 0 24 24">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                  <circle cx="12" cy="7" r="4" />
+                </svg>
+              </div>
+            </div>
+            <div>
+              <div class="lbl">Nombre Coordinador</div>
+              <div class="nombre" id="asesorNombre"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- COL 3: Estadísticas (KPIs) -->
+        <div class="stat-grid">
+          <div class="stat-card blue-bg">
+            <div class="lbl">BRIG.<br>CAMPO</div>
+            <div class="val" id="kpiBrigCampo"></div>
+          </div>
+          <div class="stat-card blue-bg">
+            <div class="lbl">BRIG.<br>ATEND.</div>
+            <div class="val" id="kpiBrigAtend"></div>
+          </div>
+          <div class="stat-card blue-bg">
+            <div class="lbl">BRIG.<br>RESTANTES</div>
+            <div class="val" id="kpiBrigRestantes"></div>
+          </div>
+          <div class="stat-card blue-bg">
+            <div class="lbl">V. LENTES<br>INDIVIDUAL</div>
+            <div class="val" id="kpiVLentesInd"></div>
+          </div>
+          <div class="stat-card blue-bg">
+            <div class="lbl">TOTAL<br>ASISTENCIA</div>
+            <div class="val" id="kpiTotalAsist"></div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- NOTA DE OBSERVACIÓN ADAPTADA DE LA IMAGEN -->
+      <div class="nota-observacion">
+        <strong>Importante:</strong> Tu Nómina de Coordinador <u>ya incluye</u> el saldo de tu Nómina de Promotor. No son dos pagos: el Total a Pagar mostrado es el valor total que recibirás.
+      </div>
+    </div>
+
+    <!-- ===== INGRESOS / DEDUCCIONES / RESUMEN ===== -->
+    <div class="fila-resumen">
+
+      <!-- PANEL INGRESOS -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="icon-circle verde">
+            <div class="icon">
+              <svg viewBox="0 0 24 24">
+                <path d="M23 6l-9.5 9.5-5-5L1 18" />
+                <path d="M17 6h6v6" />
+              </svg>
+            </div>
+          </div>
+          <h3>INGRESOS</h3>
+        </div>
+        <table class="linea">
+          <tr>
+            <td>Cantidad Afiliaciones Grupales</td>
+            <td class="d" id="ingCantAffGrup"></td>
+          </tr>
+          <tr>
+            <td>Total Afiliaciones Grupales</td>
+            <td class="d" id="ingTotalAffGrup"></td>
+          </tr>
+          <tr>
+            <td>Lentes Grupales Vendidos</td>
+            <td class="d" id="ingLentGrupVend"></td>
+          </tr>
+          <tr>
+            <td>Comisión por Ventas Grupales</td>
+            <td class="d" id="ingComisionVentasGrup"></td>
+          </tr>
+          <tr>
+            <td>Saldo Nómina Promotor</td>
+            <td class="d" id="ingSaldoNomPromotor"></td>
+          </tr>
+        </table>
+        <div class="total-fila verde">
+          <span>TOTAL INGRESOS</span>
+          <span id="ingTotalIngresos"></span>
+        </div>
+      </div>
+
+      <!-- PANEL DEDUCCIONES -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="icon-circle morado">
+            <div class="icon">
+              <svg viewBox="0 0 24 24">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <path d="M7 10l5 5 5-5" />
+                <path d="M12 15V3" />
+              </svg>
+            </div>
+          </div>
+          <h3>DEDUCCIONES</h3>
+        </div>
+        <table class="linea">
+          <tr>
+            <td>Préstamos / Adelantos</td>
+            <td class="d" id="dedPrestamosAdel"></td>
+          </tr>
+          <tr>
+            <td>Descuento / Comida</td>
+            <td class="d" id="dedDescuentoComida"></td>
+          </tr>
+        </table>
+        <div class="total-fila morado" style="margin-top: 40px;">
+          <span>TOTAL DEDUCCIONES</span>
+          <span id="dedTotalDeducciones"></span>
+        </div>
+      </div>
+
+      <!-- PANEL RESUMEN GENERAL -->
+      <div class="panel-resumen">
+        <div class="icon-circle-big">
+          <div class="icon">
+            <svg viewBox="0 0 24 24">
+              <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4" />
+              <path d="M3 5v14a2 2 0 0 0 2 2h16v-5" />
+              <path d="M18 12a2 2 0 0 0 0 4h4v-4z" />
+            </svg>
+          </div>
+        </div>
+        <h3>TOTAL A PAGAR</h3>
+        <div class="subt">Ingresos − Deducciones</div>
+        <div class="separator"></div>
+        <div class="val-grande" id="resumenGeneral"></div>
+      </div>
+
+    </div>
+
+    <!-- ===== DETALLE DE JORNADAS Y DEDUCCIONES ===== -->
+    <div class="tabla-panel">
+      <div class="tabla-titulo">
+        <div class="icon">
+          <svg viewBox="0 0 24 24">
+            <rect x="3" y="4" width="18" height="18" rx="2" />
+            <path d="M16 2v4M8 2v4M3 10h18" />
+          </svg>
+        </div>
+        DETALLE DE JORNADAS Y DEDUCCIONES
+      </div>
+      <table class="grande tabla-jornadas">
+        <thead>
+          <tr>
+            <th class="izq">Municipio</th>
+            <th class="c">Fecha</th>
+            <th class="c">N° Aff Grupo</th>
+            <th class="c">N° Brigadas</th>
+            <th class="c">Asistidos</th>
+            <th class="c">Lentes</th>
+            <th class="c">Prest / Abon.</th>
+            <th class="c">Valor por Día</th>
+            <th class="c">Comision por Venta</th>
+            <th class="c">Descuento. / Comida</th>
+            <th class="izq">Detalle</th>
+          </tr>
+        </thead>
+        <tbody id="tablaJornadas">
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="footer">
+      <div class="footer-item">
+        <div class="footer-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <rect x="3" y="5" width="18" height="14" rx="2"></rect>
+            <path d="m4 7 8 6 8-6"></path>
+          </svg>
+        </div>
+        <div>
+          <strong>CONTACTO</strong>
+          <span data-empresa-email></span>
+        </div>
+      </div>
+      <div class="footer-item footer-center">
+        <div class="footer-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path d="M12 21s7-6.4 7-12a7 7 0 1 0-14 0c0 5.6 7 12 7 12Z"></path>
+            <circle cx="12" cy="9" r="2.2"></circle>
+          </svg>
+        </div>
+        <div>
+          <strong>DIRECCIÓN</strong>
+          <span data-empresa-direccion></span>
+        </div>
+      </div>
+      <div class="footer-item footer-right">
+        <div class="footer-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path d="M6.5 3.5h3l1.5 4-2 1.7a15 15 0 0 0 5.8 5.8l1.7-2 4 1.5v3c0 1.1-.9 2-2 2C10.5 19.5 4.5 13.5 4.5 5.5c0-1.1.9-2 2-2Z"></path>
+          </svg>
+        </div>
+        <div>
+          <strong>TELÉFONOS DE CONTACTO</strong>
+          <span data-empresa-telefonos></span>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <div id="nominaEstado" class="nomina-sin-datos" role="status">
+    Selecciona una nómina de coordinador para consultar sus datos.
+  </div>
+
+  <script>
+    function fmt(value, showDecimals = true) {
+      const n = Number(value ?? 0) || 0;
+      const signo = n < 0 ? "-$" : "$";
+      const opts = showDecimals ? { minimumFractionDigits: 1, maximumFractionDigits: 2 } : { maximumFractionDigits: 0 };
+      return `${signo} ${Math.abs(n).toLocaleString("es-CO", opts)}`;
+    }
+
+    function nombreArchivoNomina(extension) {
+      const nombre = (document.getElementById("asesorNombre")?.textContent || "coordinador")
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/gi, "-")
+        .replace(/^-+|-+$/g, "");
+      return `nomina-coordinador-${nombre || "coordinador"}.${extension}`;
+    }
+
+    let html2canvasPromise;
+    let jsPdfPromise;
+
+    function cargarBibliotecaExportacion(url, comprobarDisponibilidad) {
+      if (comprobarDisponibilidad()) return Promise.resolve();
+      return new Promise((resolve, reject) => {
+        const script = document.createElement("script");
+        script.src = url;
+        script.async = true;
+        script.onload = () => comprobarDisponibilidad()
+          ? resolve()
+          : reject(new Error("La biblioteca de exportación no se inicializó."));
+        script.onerror = () => reject(new Error("No se pudo cargar una biblioteca de exportación."));
+        document.head.appendChild(script);
+      });
+    }
+
+    function cargarHtml2Canvas() {
+      if (!html2canvasPromise) {
+        html2canvasPromise = cargarBibliotecaExportacion(
+            "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js",
+            () => typeof window.html2canvas === "function"
+          ).catch(error => {
+            html2canvasPromise = null;
+            throw error;
+          });
+      }
+      return html2canvasPromise;
+    }
+
+    function cargarJsPdf() {
+      if (!jsPdfPromise) {
+        jsPdfPromise = cargarBibliotecaExportacion(
+            "https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js",
+            () => !!(window.jspdf && typeof window.jspdf.jsPDF === "function")
+          ).catch(error => {
+            jsPdfPromise = null;
+            throw error;
+          });
+      }
+      return jsPdfPromise;
+    }
+
+    function cargarBibliotecasPdf() {
+      return Promise.all([cargarHtml2Canvas(), cargarJsPdf()]);
+    }
+
+    async function capturarNomina() {
+      const hoja = document.querySelector(".hoja");
+      if (!hoja || typeof window.html2canvas !== "function") {
+        throw new Error("No se pudo preparar la captura de la nómina.");
+      }
+
+      const ancho = hoja.scrollWidth;
+      const alto = hoja.scrollHeight;
+      const escalaMaxima = 3;
+      const dimensionMaxima = 30000;
+      const pixelesMaximos = 50000000;
+      const escala = Math.min(
+        escalaMaxima,
+        dimensionMaxima / ancho,
+        dimensionMaxima / alto,
+        Math.sqrt(pixelesMaximos / (ancho * alto))
+      );
+
+      const celdasAccion = Array.from(hoja.querySelectorAll("[data-nomina-accion-cell]"));
+      const displayOriginal = celdasAccion.map(celda => celda.style.display);
+      celdasAccion.forEach(celda => { celda.style.display = "none"; });
+      try {
+        return await window.html2canvas(hoja, {
+          backgroundColor: "#ffffff",
+          scale: escala,
+          useCORS: true,
+          logging: false
+        });
+      } finally {
+        celdasAccion.forEach((celda, index) => {
+          celda.style.display = displayOriginal[index];
+        });
+      }
+    }
+
+    async function descargarNominaComoPdf() {
+      const boton = document.querySelector(".accion-impresion:not(.secundaria)");
+      if (boton) {
+        boton.disabled = true;
+        boton.textContent = "Preparando PDF...";
+      }
+
+      try {
+        await cargarBibliotecasPdf();
+        const canvas = await capturarNomina();
+        const pdf = new window.jspdf.jsPDF({
+          orientation: canvas.width > canvas.height ? "landscape" : "portrait",
+          unit: "px",
+          format: [canvas.width, canvas.height],
+          hotfixes: ["px_scaling"]
+        });
+        pdf.addImage(canvas.toDataURL("image/png"), "PNG", 0, 0, canvas.width, canvas.height, undefined, "FAST");
+        pdf.save(nombreArchivoNomina("pdf"));
+      } catch (error) {
+        console.error("[Nómina] Error descargando el PDF:", error);
+        alert("No se pudo descargar el PDF de la nómina.");
+      } finally {
+        if (boton) {
+          boton.disabled = false;
+          boton.textContent = "Descargar PDF";
+        }
+      }
+    }
+
+    async function descargarNominaComoImagen() {
+      const boton = document.querySelector(".accion-impresion.secundaria");
+      if (boton) {
+        boton.disabled = true;
+        boton.textContent = "Preparando imagen...";
+      }
+
+      try {
+        await cargarHtml2Canvas();
+        const canvas = await capturarNomina();
+        const enlace = document.createElement("a");
+        enlace.download = nombreArchivoNomina("png");
+        enlace.href = canvas.toDataURL("image/png");
+        enlace.click();
+      } catch (error) {
+        console.error("[Nómina] Error descargando la imagen:", error);
+        alert("No se pudo descargar la imagen de la nómina.");
+      } finally {
+        if (boton) {
+          boton.disabled = false;
+          boton.textContent = "Descargar en Imagen";
+        }
+      }
+    }
+
+    function renderNominaImpresion(d) {
+      if (!d || typeof d.nombreCoordinador !== "string" || !d.nombreCoordinador.trim() ||
+          !d.resumen || typeof d.resumen !== "object" || !Array.isArray(d.jornadas)) {
+        throw new Error("Los datos recibidos no corresponden a una nómina de coordinador.");
+      }
+
+      const payload = d;
+      const resumen = payload.resumen;
+      const jornadas = payload.jornadas;
+      const estado = document.getElementById("nominaEstado");
+      const hoja = document.getElementById("hojaNomina");
+      const acciones = document.getElementById("accionesNomina");
+
+      document.getElementById("asesorNombre").textContent = payload.nombreCoordinador.toUpperCase();
+
+      // KPIs Superior
+      mostrarValor("kpiBrigCampo", resumen.brigadasCampo);
+      mostrarValor("kpiBrigAtend", resumen.brigadasAtendidas);
+      mostrarValor("kpiBrigRestantes", resumen.brigadasRestantes);
+      mostrarValor("kpiVLentesInd", resumen.valorLentesIndividual);
+      mostrarValor("kpiTotalAsist", resumen.totalAsistencia);
+
+      // Ingresos
+      mostrarValor("ingCantAffGrup", resumen.cantidadAfiliacionesGrupales);
+      mostrarMoneda("ingTotalAffGrup", resumen.totalAfiliacionesGrupales);
+      mostrarValor("ingLentGrupVend", resumen.lentesGrupalesVendidos);
+      mostrarMoneda("ingComisionVentasGrup", resumen.comisionVentasGrupales);
+      mostrarMoneda("ingSaldoNomPromotor", resumen.saldoNomPromotor);
+      mostrarMoneda("ingTotalIngresos", resumen.totalIngresos);
+
+      // Deducciones
+      mostrarMoneda("dedPrestamosAdel", resumen.prestamosAdelantos);
+      mostrarMoneda("dedDescuentoComida", resumen.descuentoComida);
+      mostrarMoneda("dedTotalDeducciones", resumen.totalDeducciones);
+
+      // Total a pagar
+      mostrarMoneda("resumenGeneral", resumen.totalAPagar);
+
+      // Tabla Detalle de Jornadas
+      const tbJornadas = document.getElementById("tablaJornadas");
+      tbJornadas.replaceChildren();
+      jornadas.forEach(function (jornada) {
+        const tr = document.createElement("tr");
+        agregarCelda(tr, jornada.municipio, "izq");
+        agregarCelda(tr, jornada.fecha, "c");
+        agregarCelda(tr, jornada.cantidadAfiliacionesGrupales, "c");
+        agregarCelda(tr, jornada.cantidadBrigadas, "c");
+        agregarCelda(tr, jornada.asistidos, "c");
+        agregarCelda(tr, jornada.lentes, "c");
+        agregarCelda(tr, jornada.prestamoAbono, "c", true);
+        agregarCelda(tr, jornada.valorDia, "c", true);
+        agregarCelda(tr, jornada.comisionVenta, "c", true);
+        agregarCelda(tr, jornada.descuentoComida, "c", true);
+        agregarCelda(tr, jornada.detalle, "izq");
+        tbJornadas.appendChild(tr);
+      });
+
+      estado.hidden = true;
+      hoja.hidden = false;
+      acciones.hidden = false;
+    }
+
+    function mostrarValor(id, value) {
+      document.getElementById(id).textContent =
+        value === null || value === undefined || value === "" ? "—" : String(value);
+    }
+
+    function mostrarMoneda(id, value) {
+      document.getElementById(id).textContent =
+        value === null || value === undefined || value === "" ? "—" : fmt(value);
+    }
+
+    function agregarCelda(fila, value, clase, esMoneda) {
+      const celda = document.createElement("td");
+      celda.className = clase;
+      celda.textContent = value === null || value === undefined || value === ""
+        ? ""
+        : (esMoneda ? fmt(value) : String(value));
+      fila.appendChild(celda);
+    }
+
+    function initTemplate() {
+      const payload = window.__nominaData;
+      if (!payload) return;
+      try {
+        renderNominaImpresion(payload);
+      } catch (error) {
+        console.error("[Nómina coordinador] No se pudo renderizar la nómina:", error);
+        document.getElementById("nominaEstado").textContent = error.message;
+      }
+    }
+
+    window.renderNominaImpresion = renderNominaImpresion;
+    window.render = renderNominaImpresion;
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initTemplate);
+    } else {
+      initTemplate();
+    }
+  </script>
+
+  <script>
+    (function () {
+      function setText(selector, value) {
+        document.querySelectorAll(selector).forEach(el => {
+          el.textContent = value || '';
+        });
+      }
+
+      function loadDynamicData() {
+        const logoElements = document.querySelectorAll('[data-empresa-logo]');
+        if (logoElements.length > 0) {
+          logoElements.forEach(el => {
+            const fallback = el.dataset.empresaLogo || 'assets/images/logomenu.png';
+            el.setAttribute('src', fallback);
+            const altText = el.dataset.empresaNombre || 'Empresa no configurada';
+            el.setAttribute('alt', altText);
+          });
+        }
+      }
+
+      async function cargarContactoDesdeConfig() {
+        try {
+          const response = await fetch('empresa-config.json', { cache: 'no-store' });
+          if (!response.ok) throw new Error('No se pudo cargar empresa-config.json');
+
+          const config = await response.json();
+          const contacto = config.contacto || {};
+          const email = contacto.email || '';
+          const direccion = contacto.direccion || '';
+          const telefonos = [contacto.telefonoGeneral, contacto.telefonoSecundario].filter(Boolean).join(' / ');
+
+          setText('[data-empresa-email]', email);
+          setText('[data-empresa-direccion]', direccion);
+          setText('[data-empresa-telefonos]', telefonos);
+        } catch (error) {
+          console.warn('[Plantilla] No se pudo cargar contacto desde empresa-config.json:', error.message);
+        }
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function () {
+          loadDynamicData();
+          cargarContactoDesdeConfig();
+        });
+      } else {
+        loadDynamicData();
+        cargarContactoDesdeConfig();
+      }
+    })();
+  </script>
+</body>
+
+</html>
