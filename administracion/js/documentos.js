@@ -254,7 +254,7 @@ function _renderFormSolicitudInstitucional() {
             '<svg class="w-5 h-5 text-emerald-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">' +
               '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>' +
             '</svg>' +
-            '<span class="font-bold text-emerald-700 text-sm">¡Documento generado! Usa Ctrl+P o el diálogo del navegador para guardar como PDF.</span>' +
+            '<span class="font-bold text-emerald-700 text-sm">¡Documento generado! Usa el botón Descargar en la vista del documento para guardarlo como PDF.</span>' +
           '</div>' +
           '<div class="bg-slate-50 px-4 py-3 border-t border-emerald-100 flex flex-wrap gap-2">' +
             '<button onclick="_enviarSolicitudInstitucional()"' +
@@ -347,6 +347,7 @@ function _enviarSolicitudInstitucional() {
         doc = doc.replace(regex, datos[clave]);
       });
       doc = window.empresaBrand.preparePrintHtml(doc);
+      doc = _agregarBotonDescargaDocumento(doc);
 
       var ventana = window.open('', '_blank', 'width=900,height=700');
       ventana.document.write(doc);
@@ -512,7 +513,7 @@ function _renderFormSolicitudEspacio() {
             '<svg class="w-5 h-5 text-emerald-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">' +
               '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>' +
             '</svg>' +
-            '<span class="font-bold text-emerald-700 text-sm">¡Documento generado! Usa Ctrl+P o el diálogo del navegador para guardar como PDF.</span>' +
+            '<span class="font-bold text-emerald-700 text-sm">¡Documento generado! Usa el botón Descargar en la vista del documento para guardarlo como PDF.</span>' +
           '</div>' +
           '<div class="bg-slate-50 px-4 py-3 border-t border-emerald-100 flex flex-wrap gap-2">' +
             '<button onclick="_enviarSolicitudEspacio()"' +
@@ -601,6 +602,7 @@ function _enviarSolicitudEspacio() {
         doc = doc.replace(regex, datos[clave]);
       });
       doc = window.empresaBrand.preparePrintHtml(doc);
+      doc = _agregarBotonDescargaDocumento(doc);
 
       // Abrir en nueva ventana y disparar impresión
       var ventana = window.open('', '_blank', 'width=900,height=700');
@@ -643,6 +645,25 @@ function _resetFormSE() {
   document.getElementById('se-btn-generar').disabled = false;
   document.getElementById('se-btn-texto').textContent = 'Generar Documento';
   document.getElementById('se-dirigido').focus();
+}
+
+function _agregarBotonDescargaDocumento(html) {
+  var acciones =
+    '<style id="documento-descarga-styles">' +
+      '#documento-descargar{position:fixed;right:16px;bottom:16px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:9999;' +
+        'min-height:56px;padding:0 24px;border:0;border-radius:12px;background:#0B5969;color:#fff;' +
+        'font:600 18px Arial,sans-serif;box-shadow:0 4px 14px rgba(0,0,0,.24);cursor:pointer}' +
+      '#documento-descargar:focus-visible{outline:3px solid #D9A62E;outline-offset:3px}' +
+      '@media print{#documento-descargar,#documento-descarga-styles{display:none!important}}' +
+    '</style>' +
+    '<button id="documento-descargar" type="button" aria-label="Descargar documento como PDF" ' +
+      'onclick="window.print()">Descargar</button>';
+
+  if (!/<\/body>/i.test(html)) {
+    throw new Error('La plantilla del documento no contiene la etiqueta de cierre del cuerpo.');
+  }
+
+  return html.replace(/<\/body>/i, acciones + '</body>');
 }
 
 function _campoInput(id, label, valor, tipo, requerido, placeholder) {
@@ -733,7 +754,7 @@ function _renderSelectorHojaConvenio() {
             '</div>' +
             '<div>' +
               '<div class="font-bold text-amber-800 text-sm mb-0.5">Imprimir / Descargar</div>' +
-              '<div class="text-xs text-amber-700 leading-snug">Abre el formato oficial listo para imprimir o guardar como PDF con Ctrl+P.</div>' +
+              '<div class="text-xs text-amber-700 leading-snug">Abre el formato oficial y usa el botón Descargar para guardarlo como PDF.</div>' +
             '</div>' +
             '<div class="flex items-center gap-1 text-amber-700 text-xs font-semibold mt-1">' +
               'Abrir formato' +
@@ -844,7 +865,7 @@ function _renderFormHojaConvenioPersonalizable() {
             '<svg class="w-5 h-5 text-emerald-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">' +
               '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>' +
             '</svg>' +
-            '<span class="font-bold text-emerald-700 text-sm">¡Documento generado! Usa Ctrl+P para guardar como PDF.</span>' +
+            '<span class="font-bold text-emerald-700 text-sm">¡Documento generado! Usa el botón Descargar en la vista del documento para guardarlo como PDF.</span>' +
           '</div>' +
           '<div class="bg-slate-50 px-4 py-3 border-t border-emerald-100 flex flex-wrap gap-2">' +
             '<button onclick="_enviarHojaConvenioPersonalizable()"' +
@@ -934,6 +955,7 @@ function _enviarHojaConvenioPersonalizable() {
         doc = doc.replace(regex, datos[clave]);
       });
       doc = window.empresaBrand.preparePrintHtml(doc);
+      doc = _agregarBotonDescargaDocumento(doc);
 
       var ventana = window.open('', '_blank', 'width=900,height=700');
       ventana.document.write(doc);
@@ -1090,7 +1112,7 @@ function _renderFormPermisoPolicial() {
             '<svg class="w-5 h-5 text-emerald-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">' +
               '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>' +
             '</svg>' +
-            '<span class="font-bold text-emerald-700 text-sm">¡Documento generado! Usa Ctrl+P para guardar como PDF.</span>' +
+            '<span class="font-bold text-emerald-700 text-sm">¡Documento generado! Usa el botón Descargar en la vista del documento para guardarlo como PDF.</span>' +
           '</div>' +
           '<div class="bg-slate-50 px-4 py-3 border-t border-emerald-100 flex flex-wrap gap-2">' +
             '<button onclick="_enviarPermisoPolicial()" class="flex items-center gap-1.5 btn-primario hover:bg-verde-oscuro text-white text-xs font-semibold px-4 py-2.5 rounded-lg transition-colors">' +
@@ -1405,6 +1427,7 @@ function _enviarPermisoPolicial() {
         doc = doc.replace(/<section class="signatures">[\s\S]*?<\/section>/, firmasPag1);
       }
       doc = window.empresaBrand.preparePrintHtml(doc);
+      doc = _agregarBotonDescargaDocumento(doc);
 
       var ventana = window.open('', '_blank', 'width=900,height=700');
       ventana.document.write(doc);
@@ -1519,38 +1542,45 @@ function _renderFormPublicidad() {
 
         // Preview en vivo — posiciones escaladas: factor 280/1055 = 0.2654
         // Preview con proporciones exactas (escala 0.2654 de 1055x1491)
-        '<div class="hidden lg:block">' +
+        '<div class="block">' +
           '<p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wide mb-2 text-center">Vista previa · 1:3.77</p>' +
           '<div id="pub-preview-wrap"' +
             ' style="position:relative;width:280px;height:396px;' +
-            'background-image:url(\'administracion/documentos/templates/Publicidad.jpg\');' +
+            'background-image:url(\'administracion/documentos/publicidad/Publicidad.jpg\');' +
             'background-size:100% 100%;border-radius:8px;overflow:hidden;' +
             'box-shadow:0 8px 24px rgba(0,0,0,0.18);">' +
             /* Municipio: left:265->70 top:335->89 w:395->105 fs:40->11 colores fijo=#fff din=#d49500 */
-            '<div id="prev-municipio" style="position:absolute;left:70px;top:89px;width:105px;' +
-              'text-align:center;font-family:lato,sans-serif;font-size:11px;font-weight:800;' +
-              'text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.2;">' +
-              '<span style="color:#ffffff;">Municipio: </span>' +
-              '<span id="prev-mun-val" style="color:#d49500;"></span>' +
+            '<div id="prev-municipio" data-publicidad-campo="municipio" style="position:absolute;left:70px;top:89px;width:105px;' +
+              'text-align:center;font-family:Poppins,sans-serif;font-size:11px;font-weight:800;' +
+              'white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.2;">' +
+              '<span data-publicidad-texto="municipio:fijo" style="color:#ffffff;">Municipio: </span>' +
+              '<span id="prev-mun-val" data-publicidad-texto="municipio:variable" style="color:#d49500;"></span>' +
             '</div>' +
             /* Institucion: left:320->85 top:548->145 w:525->139 fs:35->9 color=#00363a */
-            '<div id="prev-institucion" style="position:absolute;left:85px;top:145px;width:139px;' +
-              'text-align:center;font-family:lato,sans-serif;font-size:9px;font-weight:900;color:#00363a;' +
-              'white-space:normal;word-break:break-word;line-height:1.2;"></div>' +
+            '<div id="preview-campo-institucion" data-publicidad-campo="institucion" style="position:absolute;left:85px;top:145px;width:139px;' +
+              'text-align:center;font-family:Poppins,sans-serif;font-size:9px;font-weight:900;color:#00363a;' +
+              'white-space:normal;word-break:break-word;line-height:1.2;">' +
+              '<span data-publicidad-texto="institucion:fijo">Lugar: </span>' +
+              '<span id="prev-institucion" data-publicidad-texto="institucion:variable"></span>' +
+            '</div>' +
             /* Fecha: left:140->37 top:1162->308 w:350->93 fs:29->8 colores fijo=#fff din=#fff */
-            '<div id="prev-fecha" style="position:absolute;left:37px;top:308px;width:93px;' +
-              'text-align:left;font-family:lato,sans-serif;font-size:8px;font-weight:700;' +
+            '<div id="prev-fecha" data-publicidad-campo="fecha" style="position:absolute;left:37px;top:308px;width:93px;' +
+              'text-align:left;font-family:Poppins,sans-serif;font-size:8px;font-weight:700;' +
               'white-space:nowrap;line-height:1.2;">' +
-              '<span style="color:#ffffff;">Fecha: </span>' +
-              '<span id="prev-fecha-val" style="color:#ffffff;"></span>' +
+              '<span data-publicidad-texto="fecha:fijo" style="color:#ffffff;">Fecha: </span>' +
+              '<span id="prev-fecha-val" data-publicidad-texto="fecha:variable" style="color:#ffffff;"></span>' +
             '</div>' +
             /* Horario: left:140->37 top:1200->318 w:355->94 fs:29->8 colores fijo=#fff din=#d49500 */
-            '<div id="prev-horario" style="position:absolute;left:37px;top:318px;width:94px;' +
-              'text-align:left;font-family:lato,sans-serif;font-size:8px;font-weight:700;' +
+            '<div id="prev-horario" data-publicidad-campo="horario" style="position:absolute;left:37px;top:318px;width:94px;' +
+              'text-align:left;font-family:Poppins,sans-serif;font-size:8px;font-weight:700;' +
               'white-space:nowrap;line-height:1.2;">' +
-              '<span style="color:#ffffff;">Horario: </span>' +
-              '<span id="prev-hor-val" style="color:#d49500;"></span>' +
+              '<span data-publicidad-texto="horario:fijo" style="color:#ffffff;">Horario: </span>' +
+              '<span id="prev-hor-val" data-publicidad-texto="horario:variable" style="color:#d49500;"></span>' +
             '</div>' +
+            '<button type="button" onclick="_abrirEditorPublicidad()"' +
+              ' class="mt-3 w-full py-2.5 px-3 bg-white border border-slate-200 rounded-xl text-verde-oscuro hover:border-verde-oscuro transition-all text-sm font-semibold">' +
+              'Editar' +
+            '</button>' +
           '</div>' +
         '</div>' +
 
@@ -1563,6 +1593,530 @@ function _renderFormPublicidad() {
     var input = document.getElementById(id);
     if (input) input.addEventListener('input', _actualizarPreviewPublicidad);
   });
+  _publicidadCargarPlantillaBase();
+}
+
+var _PUBLICIDAD_ANCHO = 1055;
+var _PUBLICIDAD_ALTO = 1491;
+var _PUBLICIDAD_CAMPOS = {
+  municipio: {
+    selector: 'municipio', left: 265, top: 335, width: 395, fontSize: 25, weight: 800,
+    fijo: { fontSize: 25, color: '#023459' },
+    variable: { fontSize: 25, color: '#d49500' }
+  },
+  institucion: {
+    selector: 'institucion', left: 320, top: 548, width: 525, fontSize: 25, weight: 900,
+    fijo: { fontSize: 25, color: '#023459' },
+    variable: { fontSize: 25, color: '#00363a' }
+  },
+  fecha: {
+    selector: 'fecha', left: 140, top: 1162, width: 350, fontSize: 29, weight: 700,
+    fijo: { fontSize: 25, color: '#023459' },
+    variable: { fontSize: 25, color: '#d49500' }
+  },
+  horario: {
+    selector: 'horario', left: 140, top: 1200, width: 355, fontSize: 29, weight: 700,
+    fijo: { fontSize: 25, color: '#023459' },
+    variable: { fontSize: 25, color: '#d49500' }
+  }
+};
+
+function _publicidadLeerConfiguracion(html) {
+  var campos = {};
+  Object.keys(_PUBLICIDAD_CAMPOS).forEach(function(nombre) {
+    var base = _PUBLICIDAD_CAMPOS[nombre];
+    var estilo = _publicidadLeerReglaCss(html, '.' + base.selector);
+    var texto = {};
+    Object.keys(base).forEach(function(tipo) {
+      if (tipo !== 'fijo' && tipo !== 'variable') return;
+      var regla = _publicidadLeerReglaCss(
+        html,
+        '.' + base.selector + (tipo === 'fijo' ? ' .fijo' : ' .dinamico')
+      );
+      texto[tipo] = {
+        fontSize: _publicidadLeerNumeroCss(regla, 'font-size', base[tipo].fontSize),
+        color: _publicidadLeerColorCss(regla, base[tipo].color)
+      };
+    });
+    campos[nombre] = {
+      left: _publicidadLeerNumeroCss(estilo, 'left', base.left),
+      top: _publicidadLeerNumeroCss(estilo, 'top', base.top),
+      width: _publicidadLeerNumeroCss(estilo, 'width', base.width),
+      fontSize: _publicidadLeerNumeroCss(estilo, 'font-size', base.fontSize),
+      align: _publicidadLeerAlineacionCss(estilo),
+      weight: base.weight,
+      texto: texto
+    };
+  });
+  var bloqueFondo = /\.publicidad\s*\{([^}]*)\}/.exec(html);
+  var fondo = bloqueFondo && /background-image\s*:\s*url\(["']?([^"')]+)["']?\)/.exec(bloqueFondo[1]);
+  if (!fondo) throw new Error('No se encontró la imagen de fondo en la plantilla de publicidad.');
+  return {
+    campos: campos,
+    baseCampos: JSON.parse(JSON.stringify(campos)),
+    imagen: fondo[1],
+    plantilla: html,
+    modificado: false
+  };
+}
+
+function _publicidadLeerReglaCss(html, selector) {
+  var seguro = selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  var bloque = new RegExp('(?:^|})\\s*' + seguro + '\\s*\\{([^}]*)\\}', 'm').exec(html);
+  return bloque ? bloque[1] : '';
+}
+
+function _publicidadLeerNumeroCss(estilo, propiedad, predeterminado) {
+  var coincidencia = new RegExp('\\b' + propiedad + '\\s*:\\s*([\\d.]+)px').exec(estilo);
+  return coincidencia ? Number(coincidencia[1]) : predeterminado;
+}
+
+function _publicidadLeerColorCss(estilo, predeterminado) {
+  var coincidencia = /\bcolor\s*:\s*(#[0-9a-f]{3,8})\b/i.exec(estilo);
+  return coincidencia ? coincidencia[1] : predeterminado;
+}
+
+function _publicidadLeerAlineacionCss(estilo) {
+  var coincidencia = /\btext-align\s*:\s*(left|center|right)\b/i.exec(estilo);
+  return coincidencia ? coincidencia[1].toLowerCase() : 'left';
+}
+
+function _publicidadCargarPlantillaBase() {
+  fetch('administracion/documentos/publicidad/publicidad.html?t=' + Date.now())
+    .then(function(res) {
+      if (!res.ok) throw new Error('No se pudo cargar la plantilla de publicidad.');
+      return res.text();
+    })
+    .then(function(html) {
+      if (!window._publicidadEdicion || !window._publicidadEdicion.modificado) {
+        window._publicidadEdicion = _publicidadLeerConfiguracion(html);
+      }
+      _publicidadAplicarVistaPrevia();
+    })
+    .catch(function(err) {
+      _publicidadMostrarError('No se pudo cargar la plantilla para editar: ' + err.message);
+    });
+}
+
+function _publicidadAplicarVistaPrevia() {
+  var estado = window._publicidadEdicion;
+  if (!estado) return;
+  var marco = document.getElementById('pub-preview-wrap');
+  if (marco) marco.style.backgroundImage = 'url("' + estado.imagen + '")';
+  Object.keys(estado.campos).forEach(function(nombre) {
+    var campo = estado.campos[nombre];
+    var vista = document.querySelector('[data-publicidad-campo="' + nombre + '"]');
+    if (!vista) return;
+    vista.style.left = (campo.left / _PUBLICIDAD_ANCHO * 280) + 'px';
+    vista.style.top = (campo.top / _PUBLICIDAD_ALTO * 396) + 'px';
+    vista.style.width = (campo.width / _PUBLICIDAD_ANCHO * 280) + 'px';
+    vista.style.fontSize = (campo.fontSize / _PUBLICIDAD_ANCHO * 280) + 'px';
+    vista.style.textAlign = campo.align;
+    Object.keys(campo.texto).forEach(function(tipo) {
+      _publicidadAplicarEstiloTexto(nombre, tipo, campo.texto[tipo]);
+    });
+  });
+}
+
+function _publicidadMostrarError(mensaje) {
+  var error = document.getElementById('pub-error');
+  if (error) {
+    error.textContent = mensaje;
+    error.classList.remove('hidden');
+  }
+}
+
+function _publicidadEscaparHtml(texto) {
+  return String(texto).replace(/[&<>"']/g, function(caracter) {
+    return {
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[caracter];
+  });
+}
+
+function _abrirEditorPublicidad() {
+  if (!window._publicidadEdicion) {
+    fetch('administracion/documentos/publicidad/publicidad.html?t=' + Date.now())
+      .then(function(res) {
+        if (!res.ok) throw new Error('No se pudo cargar la plantilla de publicidad.');
+        return res.text();
+      })
+      .then(function(html) {
+        window._publicidadEdicion = _publicidadLeerConfiguracion(html);
+        _publicidadAplicarVistaPrevia();
+        _publicidadMostrarEditor();
+      })
+      .catch(function(err) {
+        _publicidadMostrarError('No se pudo abrir el editor: ' + err.message);
+      });
+    return;
+  }
+  _publicidadMostrarEditor();
+}
+
+function _publicidadMostrarEditor() {
+  var anterior = document.getElementById('pub-editor-modal');
+  if (anterior) anterior.remove();
+  var modal = document.createElement('div');
+  modal.id = 'pub-editor-modal';
+  modal.style.cssText = 'position:fixed;inset:0;z-index:10000;background:rgba(15,23,42,.72);overflow:auto;padding:20px;';
+  modal.innerHTML =
+    '<div style="max-width:900px;margin:0 auto;background:#fff;border-radius:16px;padding:20px;">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px;">' +
+        '<div><h2 style="font-size:20px;font-weight:700;color:#064e3b;">Editar afiche de publicidad</h2>' +
+        '<p style="font-size:13px;color:#64748b;">Arrastra cada variable sobre la imagen. Al guardar se descargará la plantilla actualizada.</p></div>' +
+        '<button type="button" data-pub-cerrar style="border:0;background:transparent;font-size:24px;cursor:pointer;">&times;</button>' +
+      '</div>' +
+      '<div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px;">' +
+        '<label style="cursor:pointer;padding:9px 12px;border:1px solid #cbd5e1;border-radius:9px;font-size:13px;font-weight:600;">' +
+          'Cambiar imagen<input id="pub-editor-imagen" type="file" accept="image/*" style="display:none;">' +
+        '</label>' +
+        '<button type="button" data-pub-restablecer style="padding:9px 12px;border:1px solid #cbd5e1;border-radius:9px;background:#fff;cursor:pointer;">Restablecer posiciones</button>' +
+      '</div>' +
+      _publicidadControlesEstiloHtml() +
+      '<div id="pub-editor-error" style="display:none;margin-bottom:12px;padding:10px;background:#fef2f2;color:#b91c1c;border-radius:8px;font-size:13px;"></div>' +
+      '<div style="display:flex;justify-content:center;overflow:auto;padding:8px;">' +
+        '<div id="pub-editor-viewport" style="position:relative;width:min(78vw,520px);aspect-ratio:1055/1491;flex:none;">' +
+          '<div id="pub-editor-stage" style="position:absolute;left:0;top:0;width:1055px;height:1491px;transform-origin:top left;background-size:100% 100%;background-repeat:no-repeat;box-shadow:0 4px 18px rgba(0,0,0,.2);touch-action:none;"></div>' +
+        '</div>' +
+      '</div>' +
+      '<div style="display:flex;justify-content:flex-end;gap:10px;margin-top:16px;">' +
+        '<button type="button" data-pub-cancelar style="padding:10px 16px;border:1px solid #cbd5e1;border-radius:9px;background:#fff;cursor:pointer;">Cancelar</button>' +
+        '<button type="button" data-pub-guardar style="padding:10px 16px;border:0;border-radius:9px;background:#047857;color:#fff;font-weight:700;cursor:pointer;">Descargar plantilla actualizada</button>' +
+      '</div>' +
+    '</div>';
+  document.body.appendChild(modal);
+  modal.querySelector('[data-pub-cerrar]').addEventListener('click', _publicidadCancelarEdicion);
+  modal.querySelector('[data-pub-cancelar]').addEventListener('click', _publicidadCancelarEdicion);
+  modal.querySelector('[data-pub-guardar]').addEventListener('click', _publicidadDescargarPlantilla);
+  modal.querySelector('[data-pub-restablecer]').addEventListener('click', _publicidadRestablecerPosiciones);
+  modal.querySelector('#pub-editor-imagen').addEventListener('change', _publicidadCargarImagenEditor);
+  modal.querySelectorAll('[data-pub-font-size]').forEach(function(control) {
+    control.addEventListener('input', _publicidadCambiarEstiloTexto);
+  });
+  modal.querySelectorAll('[data-pub-color]').forEach(function(control) {
+    control.addEventListener('input', _publicidadCambiarEstiloTexto);
+  });
+  modal.querySelectorAll('[data-pub-align]').forEach(function(control) {
+    control.addEventListener('change', _publicidadCambiarAlineacion);
+  });
+  _publicidadRenderizarEditor();
+}
+
+function _publicidadCambiarAlineacion(evento) {
+  var control = evento.currentTarget;
+  var nombre = control.getAttribute('data-pub-align');
+  var alineacion = control.value;
+  if (['left', 'center', 'right'].indexOf(alineacion) === -1) return;
+  window._publicidadEdicion.campos[nombre].align = alineacion;
+  window._publicidadEdicion.modificado = true;
+  window._pubHtmlGenerado = null;
+  _publicidadAplicarVistaPrevia();
+  var campoEditor = document.querySelector('[data-pub-editor-campo="' + nombre + '"]');
+  if (campoEditor) campoEditor.style.textAlign = alineacion;
+}
+
+function _publicidadCambiarEstiloTexto(evento) {
+  var control = evento.currentTarget;
+  var identificador = control.getAttribute('data-pub-font-size') ||
+    control.getAttribute('data-pub-color');
+  var partes = identificador.split(':');
+  var nombre = partes[0];
+  var tipo = partes[1];
+  var estilo = window._publicidadEdicion.campos[nombre].texto[tipo];
+  if (control.hasAttribute('data-pub-font-size')) {
+    var tamano = Number(control.value);
+    if (!Number.isFinite(tamano) || tamano < 8 || tamano > 160) return;
+    estilo.fontSize = tamano;
+  } else {
+    estilo.color = control.value;
+  }
+  window._publicidadEdicion.modificado = true;
+  window._pubHtmlGenerado = null;
+  _publicidadAplicarEstiloTexto(nombre, tipo, estilo);
+}
+
+function _publicidadAplicarEstiloTexto(nombre, tipo, estilo) {
+  var selector = '[data-publicidad-texto="' + nombre + ':' + tipo + '"]';
+  document.querySelectorAll(selector).forEach(function(elemento) {
+    var enPreview = elemento.closest('#pub-preview-wrap');
+    var escala = enPreview ? 280 / _PUBLICIDAD_ANCHO : 1;
+    elemento.style.fontSize = (estilo.fontSize * escala) + 'px';
+    elemento.style.color = estilo.color;
+  });
+}
+
+function _publicidadControlesEstiloHtml() {
+  var partes = [];
+  Object.keys(_PUBLICIDAD_CAMPOS).forEach(function(nombre) {
+    var config = _PUBLICIDAD_CAMPOS[nombre];
+    var etiquetaCampo = nombre === 'institucion' ? 'Lugar' :
+      nombre.charAt(0).toUpperCase() + nombre.slice(1);
+    partes.push(
+      '<label style="display:flex;align-items:center;gap:8px;padding:8px;border:1px solid #e2e8f0;border-radius:8px;font-size:12px;">' +
+        '<span style="flex:1;min-width:110px;">Alineación · ' + etiquetaCampo + '</span>' +
+        '<select aria-label="Alineación de ' + etiquetaCampo + '" data-pub-align="' + nombre + '"' +
+          ' style="padding:5px;border:1px solid #cbd5e1;border-radius:6px;">' +
+          '<option value="left"' + (config.align === 'left' ? ' selected' : '') + '>Izquierda</option>' +
+          '<option value="center"' + (config.align === 'center' ? ' selected' : '') + '>Centro</option>' +
+          '<option value="right"' + (config.align === 'right' ? ' selected' : '') + '>Derecha</option>' +
+        '</select>' +
+      '</label>'
+    );
+    ['fijo', 'variable'].forEach(function(tipo) {
+      if (!config[tipo]) return;
+      var etiqueta = nombre === 'institucion' ? 'Institución' :
+        nombre.charAt(0).toUpperCase() + nombre.slice(1);
+      etiqueta += tipo === 'fijo' ? ' · texto fijo' : ' · variable';
+      partes.push(
+        '<label style="display:flex;align-items:center;gap:8px;padding:8px;border:1px solid #e2e8f0;border-radius:8px;font-size:12px;">' +
+          '<span style="flex:1;min-width:110px;">' + etiqueta + '</span>' +
+          '<input type="number" min="8" max="160" step="1" aria-label="Tamaño de ' + etiqueta + '"' +
+            ' data-pub-font-size="' + nombre + ':' + tipo + '"' +
+            ' value="' + config[tipo].fontSize + '" style="width:64px;padding:5px;border:1px solid #cbd5e1;border-radius:6px;">' +
+          '<span>px</span>' +
+          '<input type="color" aria-label="Color de ' + etiqueta + '"' +
+            ' data-pub-color="' + nombre + ':' + tipo + '"' +
+            ' value="' + config[tipo].color + '" style="width:34px;height:30px;border:0;padding:0;background:transparent;">' +
+        '</label>'
+      );
+    });
+  });
+  return '<section style="margin-bottom:14px;"><h3 style="font-size:14px;font-weight:700;margin-bottom:8px;">Tamaño y color del texto</h3>' +
+    '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:8px;">' +
+    partes.join('') + '</div></section>';
+}
+
+function _publicidadCerrarEditor() {
+  var modal = document.getElementById('pub-editor-modal');
+  if (modal) modal.remove();
+}
+
+function _publicidadCancelarEdicion() {
+  if (window._publicidadEdicion && window._publicidadEdicionAntesDeEditar) {
+    window._publicidadEdicion = window._publicidadEdicionAntesDeEditar;
+    _publicidadAplicarVistaPrevia();
+  }
+  window._publicidadEdicionAntesDeEditar = null;
+  _publicidadCerrarEditor();
+}
+
+function _publicidadRenderizarEditor() {
+  var estado = window._publicidadEdicion;
+  var etapa = document.getElementById('pub-editor-stage');
+  var marco = document.getElementById('pub-editor-viewport');
+  if (!estado || !etapa || !marco) return;
+  if (!window._publicidadEdicionAntesDeEditar) {
+    window._publicidadEdicionAntesDeEditar = JSON.parse(JSON.stringify(estado));
+  }
+  var escala = marco.clientWidth / _PUBLICIDAD_ANCHO;
+  etapa.style.transform = 'scale(' + escala + ')';
+  etapa.style.backgroundImage = 'url("' + estado.imagen + '")';
+  var valores = {
+    municipio: document.getElementById('pub-municipio').value,
+    institucion: document.getElementById('pub-institucion').value,
+    fecha: document.getElementById('pub-fecha').value,
+    horario: document.getElementById('pub-horario').value
+  };
+  var etiquetas = {
+    municipio: 'Municipio: ',
+    institucion: 'Lugar: ',
+    fecha: 'Fecha: ',
+    horario: 'Horario: '
+  };
+  etapa.innerHTML = Object.keys(estado.campos).map(function(nombre) {
+    var campo = estado.campos[nombre];
+    var base = _PUBLICIDAD_CAMPOS[nombre];
+    var clase = 'display:block;position:absolute;left:' + campo.left + 'px;top:' + campo.top + 'px;' +
+      'width:' + campo.width + 'px;font-family:Poppins,Arial,sans-serif;font-size:' + campo.fontSize + 'px;' +
+      'font-weight:' + base.weight + ';line-height:1.2;text-align:' + campo.align + ';' +
+      'outline:2px dashed #0ea5e9;outline-offset:3px;cursor:move;touch-action:none;user-select:none;' +
+      (nombre === 'municipio' ? 'white-space:nowrap;overflow:hidden;' :
+        nombre === 'institucion' ? 'word-break:break-word;' : 'white-space:nowrap;');
+    var texto = '';
+    if (campo.texto.fijo) {
+      texto += '<span data-pub-editor-texto="' + nombre + ':fijo" style="font-size:' +
+        campo.texto.fijo.fontSize + 'px;color:' + campo.texto.fijo.color + ';font-weight:400;">' +
+        _publicidadEscaparHtml(etiquetas[nombre]) + '</span>';
+    }
+    texto += '<span data-pub-editor-texto="' + nombre + ':variable" style="font-size:' +
+      campo.texto.variable.fontSize + 'px;color:' + campo.texto.variable.color + ';">' +
+      _publicidadEscaparHtml(valores[nombre]) + '</span>';
+    return '<div data-pub-editor-campo="' + nombre + '" style="' + clase + '">' + texto + '</div>';
+  }).join('');
+  etapa.onpointerdown = _publicidadIniciarArrastre;
+  etapa.onpointermove = _publicidadMoverCampo;
+  etapa.onpointerup = _publicidadFinalizarArrastre;
+  etapa.onpointercancel = _publicidadFinalizarArrastre;
+}
+
+function _publicidadIniciarArrastre(evento) {
+  var elemento = evento.target.closest('[data-pub-editor-campo]');
+  if (!elemento) return;
+  evento.preventDefault();
+  var nombre = elemento.getAttribute('data-pub-editor-campo');
+  var campo = window._publicidadEdicion.campos[nombre];
+  var marco = document.getElementById('pub-editor-viewport').getBoundingClientRect();
+  var escala = marco.width / _PUBLICIDAD_ANCHO;
+  window._publicidadArrastre = {
+    nombre: nombre,
+    pointerId: evento.pointerId,
+    offsetX: (evento.clientX - marco.left) / escala - campo.left,
+    offsetY: (evento.clientY - marco.top) / escala - campo.top
+  };
+  evento.currentTarget.setPointerCapture(evento.pointerId);
+}
+
+function _publicidadMoverCampo(evento) {
+  var arrastre = window._publicidadArrastre;
+  if (!arrastre || arrastre.pointerId !== evento.pointerId) return;
+  var marco = document.getElementById('pub-editor-viewport').getBoundingClientRect();
+  var escala = marco.width / _PUBLICIDAD_ANCHO;
+  var campo = window._publicidadEdicion.campos[arrastre.nombre];
+  campo.left = Math.max(0, Math.min(_PUBLICIDAD_ANCHO - campo.width,
+    Math.round((evento.clientX - marco.left) / escala - arrastre.offsetX)));
+  campo.top = Math.max(0, Math.min(_PUBLICIDAD_ALTO - 40,
+    Math.round((evento.clientY - marco.top) / escala - arrastre.offsetY)));
+  window._publicidadEdicion.modificado = true;
+  window._pubHtmlGenerado = null;
+  var elemento = document.querySelector('[data-pub-editor-campo="' + arrastre.nombre + '"]');
+  if (elemento) {
+    elemento.style.left = campo.left + 'px';
+    elemento.style.top = campo.top + 'px';
+  }
+}
+
+function _publicidadFinalizarArrastre(evento) {
+  if (window._publicidadArrastre && window._publicidadArrastre.pointerId === evento.pointerId) {
+    window._publicidadArrastre = null;
+    _publicidadAplicarVistaPrevia();
+  }
+}
+
+function _publicidadRestablecerPosiciones() {
+  Object.keys(_PUBLICIDAD_CAMPOS).forEach(function(nombre) {
+    var base = window._publicidadEdicion.baseCampos[nombre];
+    var campo = window._publicidadEdicion.campos[nombre];
+    campo.left = base.left;
+    campo.top = base.top;
+    campo.width = base.width;
+    campo.fontSize = base.fontSize;
+    campo.texto = JSON.parse(JSON.stringify(base.texto));
+  });
+  window._publicidadEdicion.modificado = true;
+  window._pubHtmlGenerado = null;
+  _publicidadRenderizarEditor();
+  _publicidadAplicarVistaPrevia();
+}
+
+function _publicidadCargarImagenEditor(evento) {
+  var archivo = evento.target.files && evento.target.files[0];
+  if (!archivo) return;
+  if (!archivo.type || archivo.type.indexOf('image/') !== 0) {
+    _publicidadMostrarErrorEditor('Selecciona un archivo de imagen válido.');
+    return;
+  }
+  if (archivo.size > 5 * 1024 * 1024) {
+    _publicidadMostrarErrorEditor('La imagen debe pesar 5 MB o menos.');
+    evento.target.value = '';
+    return;
+  }
+  var lector = new FileReader();
+  lector.onload = function() {
+    window._publicidadEdicion.imagen = lector.result;
+    window._publicidadEdicion.modificado = true;
+    window._pubHtmlGenerado = null;
+    _publicidadRenderizarEditor();
+    _publicidadAplicarVistaPrevia();
+  };
+  lector.onerror = function() {
+    _publicidadMostrarErrorEditor('No se pudo leer la imagen seleccionada.');
+  };
+  lector.readAsDataURL(archivo);
+}
+
+function _publicidadMostrarErrorEditor(mensaje) {
+  var error = document.getElementById('pub-editor-error');
+  if (error) {
+    error.textContent = mensaje;
+    error.style.display = 'block';
+  }
+}
+
+function _publicidadActualizarCssPlantilla(html) {
+  Object.keys(window._publicidadEdicion.campos).forEach(function(nombre) {
+    var campo = window._publicidadEdicion.campos[nombre];
+    var selector = _PUBLICIDAD_CAMPOS[nombre].selector;
+    var propiedadesCampo = {
+      left: campo.left + 'px',
+      top: campo.top + 'px',
+      width: campo.width + 'px',
+      'font-size': campo.texto.variable.fontSize + 'px',
+      'text-align': campo.align
+    };
+    if (nombre === 'institucion') propiedadesCampo.color = campo.texto.variable.color;
+    html = _publicidadActualizarReglaCss(html, '.' + selector, propiedadesCampo);
+    ['fijo', 'variable'].forEach(function(tipo) {
+      var estilo = campo.texto[tipo];
+      html = _publicidadActualizarReglaCss(
+        html,
+        '.' + selector + (tipo === 'fijo' ? ' .fijo' : ' .dinamico'),
+        { 'font-size': estilo.fontSize + 'px', color: estilo.color }
+      );
+    });
+  });
+  var fondo = /(\.publicidad\s*\{[^}]*?background-image\s*:\s*url\()(["'][^"']+["'])(\))/;
+  if (!fondo.test(html)) throw new Error('No se pudo actualizar la imagen de fondo de la plantilla.');
+  return html.replace(fondo, '$1"' + window._publicidadEdicion.imagen + '"$3');
+}
+
+function _publicidadActualizarReglaCss(html, selector, propiedades) {
+  var seguro = selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  var regla = new RegExp('(^|})(\\s*)(' + seguro + ')(\\s*\\{)([^}]*)(\\})', 'm');
+  if (!regla.test(html)) throw new Error('No se encontró el estilo ' + selector + ' en la plantilla.');
+  return html.replace(regla, function(coincidencia, cierre, espacio, nombreRegla, apertura, cuerpo, fin) {
+    Object.keys(propiedades).forEach(function(propiedad) {
+      var seguroPropiedad = propiedad.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      var declaracion = new RegExp(
+        '(^\\s*|;\\s*)(' + seguroPropiedad + '\\s*:\\s*)[^;\\r\\n]*(?:;+)',
+        'm'
+      );
+      if (declaracion.test(cuerpo)) {
+        cuerpo = cuerpo.replace(declaracion, function(_, separador, prefijo) {
+          return separador + prefijo + propiedades[propiedad] + ';';
+        });
+      } else {
+        cuerpo += '\n      ' + propiedad + ': ' + propiedades[propiedad] + ';';
+      }
+    });
+    return cierre + espacio + nombreRegla + apertura + cuerpo + fin;
+  });
+}
+
+function _publicidadDescargarPlantilla() {
+  fetch('administracion/documentos/publicidad/publicidad.html?t=' + Date.now())
+    .then(function(res) {
+      if (!res.ok) throw new Error('No se pudo leer la plantilla original.');
+      return res.text();
+    })
+    .then(function(html) {
+      var actualizado = _publicidadActualizarCssPlantilla(html);
+      var enlace = document.createElement('a');
+      var url = URL.createObjectURL(new Blob([actualizado], { type: 'text/html;charset=utf-8' }));
+      enlace.href = url;
+      enlace.download = 'publicidad.html';
+      enlace.click();
+      setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
+      _publicidadEdicion.plantilla = actualizado;
+      _publicidadEdicion.baseCampos = JSON.parse(JSON.stringify(_publicidadEdicion.campos));
+      window._pubHtmlGenerado = null;
+      _publicidadAplicarVistaPrevia();
+      window._publicidadEdicionAntesDeEditar = null;
+      _publicidadCerrarEditor();
+    })
+    .catch(function(err) {
+      _publicidadMostrarErrorEditor('No se pudo guardar la plantilla: ' + err.message);
+    });
 }
 
 /** Actualiza la vista previa mientras el usuario escribe */
@@ -1580,6 +2134,7 @@ function _actualizarPreviewPublicidad() {
       prev.textContent = input.value;
     }
   });
+  if (document.getElementById('pub-editor-modal')) _publicidadRenderizarEditor();
 }
 
 /** Genera la publicidad en una ventana nueva lista para imprimir */
@@ -1611,19 +2166,25 @@ function _generarPublicidad() {
   btn.disabled = true;
   texto.textContent = 'Cargando...';
 
-  fetch('administracion/documentos/templates/publicidad.html?t=' + Date.now())
+  fetch('administracion/documentos/publicidad/publicidad.html?t=' + Date.now())
     .then(function(res) {
       if (!res.ok) throw new Error('No se pudo cargar la plantilla.');
       return res.text();
     })
     .then(function(html) {
       // Reemplazar marcadores {{Clave}} con los valores
-      var doc = html;
+      if (!window._publicidadEdicion || !window._publicidadEdicion.modificado) {
+        window._publicidadEdicion = _publicidadLeerConfiguracion(html);
+      }
+      var doc = window._publicidadEdicion.modificado
+        ? _publicidadActualizarCssPlantilla(html)
+        : html;
       Object.keys(datos).forEach(function(clave) {
         var regex = new RegExp('\\{\\{' + clave + '\\}\\}', 'g');
-        doc = doc.replace(regex, datos[clave]);
+        doc = doc.replace(regex, _publicidadEscaparHtml(datos[clave]));
       });
       doc = window.empresaBrand.preparePrintHtml(doc);
+      doc = _agregarBotonDescargaDocumento(doc);
 
       // Guardar el HTML generado para el botón de imprimir
       window._pubHtmlGenerado = doc;
@@ -1741,18 +2302,12 @@ function _descargarPublicidad() {
     '</head>',
     '<style>' +
     'body{margin:0!important;padding:0!important;display:block!important;min-height:0!important;}' +
-    ':root{--offset-top: -11px;}' +
-    '.municipio{top: calc(332px + var(--offset-top))!important;}' +
-    '.institucion{top: calc(548px + var(--offset-top))!important;}' +
-    '.fecha{top: calc(1162px + var(--offset-top))!important;}' +
-    '.horario{top: calc(1200px + var(--offset-top))!important;}' +
-    '.municipio .fijo{color:#ffffff!important;}' +
-    '.municipio .dinamico{color:#d49500!important;}' +
-    '.fecha .fijo{color:#ffffff!important;}' +
-    '.fecha .dinamico{color:#d49500!important;}' +
-    '.horario .fijo{color:#ffffff!important;}' +
-    '.horario .dinamico{color:#d49500!important;}' +
-    '.institucion{color:#00363a!important;}' +
+    Object.keys(window._publicidadEdicion.campos).map(function(nombre) {
+      var campo = window._publicidadEdicion.campos[nombre];
+      var ajusteCanvas = nombre === 'municipio' ? 14 : 11;
+      return '.' + _PUBLICIDAD_CAMPOS[nombre].selector + '{top:' +
+        Math.max(0, campo.top - ajusteCanvas) + 'px!important;}';
+    }).join('') +
     '</style></head>'
   );
 }

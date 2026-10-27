@@ -1,6 +1,6 @@
 @echo off
 setlocal EnableDelayedExpansion
-title Generar PDF - Optica Vision de Aguila
+title Generar PDF
 
 rem ================================================================
 rem  Genera el PDF directamente (sin abrir la ventana de impresion)

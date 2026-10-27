@@ -101,6 +101,33 @@ test('el manual del asesor resuelve branding desde la raíz de la aplicación y 
   assert.doesNotMatch(manual, /github\.com\/Soportekgservices\/Visiondeaguila/);
 });
 
+test('el branding reemplaza el nombre dinámico en el título de la página', () => {
+  const brandScript = fs.readFileSync(path.join(root, 'assets', 'js', 'empresa-brand.js'), 'utf8');
+  const document = {
+    baseURI: 'https://sistemacontableva.github.io/demo/coordinador/views/contabilidadDiaria.html',
+    readyState: 'loading',
+    addEventListener: function () {},
+    querySelectorAll: function () { return []; },
+    title: 'Sistema Contable de Campo - {{empresa}}'
+  };
+  const window = {
+    location: {
+      href: document.baseURI,
+      pathname: '/demo/coordinador/views/contabilidadDiaria.html'
+    },
+    EMPRESA_BRAND: {
+      empresa: {
+        nombreLegal: 'Nombre Legal Configurado'
+      }
+    }
+  };
+
+  vm.runInNewContext(brandScript, { window, document, URL, console });
+  window.empresaBrand.applyBrand();
+
+  assert.equal(document.title, 'Sistema Contable de Campo - Nombre Legal Configurado');
+});
+
 test('las plantillas de impresión usan la raíz de la aplicación para el logo y recursos locales', () => {
   const files = listarTemplates();
   assert.ok(files.length > 0, 'Debe haber plantillas HTML para verificar');
@@ -134,6 +161,7 @@ test('las plantillas de impresión usan la raíz de la aplicación para el logo 
 test('la landing, login y contabilidad diaria deben usar el nombre dinámico de empresa y no texto estático', () => {
   const landing = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
   const contabilidad = fs.readFileSync(path.join(root, 'coordinador', 'views', 'contabilidadDiaria.html'), 'utf8');
+  const solicitud = fs.readFileSync(path.join(templatesDir, 'solicitud-institucional.html'), 'utf8');
   const login = fs.readFileSync(path.join(root, 'administracion', 'views', 'login.tpl'), 'utf8');
   const shell = fs.readFileSync(path.join(root, 'administracion', 'views', 'shell.tpl'), 'utf8');
   const app = fs.readFileSync(path.join(root, 'assets', 'js', 'app.js'), 'utf8');
@@ -142,6 +170,7 @@ test('la landing, login y contabilidad diaria deben usar el nombre dinámico de 
   assert.doesNotMatch(landing, /<span[^>]*data-empresa-nombre[^>]*>\s*Óptica Visión de Águila\s*<\/span>/i, 'La landing no debe mantener una marca hardcodeada como texto visible');
 
   assert.match(contabilidad, /data-empresa-nombre/i, 'Contabilidad Diaria debe usar el atributo data-empresa-nombre');
+  assert.match(contabilidad, /<title>[^<]*\{\{empresa\}\}<\/title>/i, 'El título de Contabilidad Diaria debe usar el nombre configurado');
   assert.doesNotMatch(contabilidad, /<h1[^>]*data-empresa-nombre[^>]*>\s*Óptica Visión de Águila\s*<\/h1>/i, 'Contabilidad Diaria no debe mantener el nombre hardcodeado');
   assert.doesNotMatch(contabilidad, /const datosIniciales\s*=\s*\[/i, 'Contabilidad Diaria no debe venir con promotores precargados en la fila inicial');
   assert.match(contabilidad, /PromotoresService\.getAll|obtenerPromotoresContabilidad\s*\(/i, 'Contabilidad Diaria debe reutilizar la lista centralizada de promotores');
@@ -151,6 +180,9 @@ test('la landing, login y contabilidad diaria deben usar el nombre dinámico de 
 
   assert.match(shell, /data-empresa-nombre/i, 'El shell administrativo debe usar el atributo data-empresa-nombre');
   assert.doesNotMatch(shell, /<span[^>]*data-empresa-nombre[^>]*>\s*Óptica Visión de Águila\s*<\/span>/i, 'El shell administrativo no debe mantener la marca hardcodeada');
+
+  assert.match(solicitud, /Firma del representante de <span data-empresa-nombre><\/span>/i, 'La firma de la solicitud debe usar el nombre configurado');
+  assert.doesNotMatch(solicitud, /Visión de Águila/i, 'La solicitud institucional no debe mantener la marca anterior');
 
   assert.match(app, /assets\/js\/empresa-brand\.js/i, 'La app debe cargar el branding central cuando inyecta los módulos administrativos');
   assert.match(app, /if \(!window\.empresaBrand \|\| typeof window\.empresaBrand\.applyBrand !== 'function'\)/i, 'La app debe forzar la carga del branding antes de aplicar el nombre del cliente');

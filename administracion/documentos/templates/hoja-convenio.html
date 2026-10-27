@@ -21,6 +21,11 @@
 .footer-center{border-left:1px solid rgba(255,255,255,.25);border-right:1px solid rgba(255,255,255,.25);padding:0 12px;text-align:left}
 .footer-right{text-align:left}
 @media screen{.page{margin-top:20px;box-shadow:0 15px 45px #0002}}@media print{html,body{background:#fff}.page{margin:0;box-shadow:none}}
+</style>
+<style>
+#documento-descargar{position:fixed;right:16px;bottom:16px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:9999;min-height:56px;padding:0 24px;border:0;border-radius:12px;background:#0B5969;color:#fff;font:600 18px Arial,sans-serif;box-shadow:0 4px 14px rgba(0,0,0,.24);cursor:pointer}
+#documento-descargar:focus-visible{outline:3px solid #D9A62E;outline-offset:3px}
+@media print{#documento-descargar{display:none!important}}
 </style></head><body><main class="page"><div class="top"></div>
 <header class="header"><div class="brand"><img class="logo" data-empresa-logo="assets/images/logomenu.png" data-empresa-nombre="" alt="" /></div>
 <div class="meta">
@@ -148,4 +153,5 @@
   }
 })();
 </script>
+<button id="documento-descargar" type="button" aria-label="Descargar documento como PDF" onclick="window.print()">Descargar</button>
 </body></html>

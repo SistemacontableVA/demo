@@ -8,7 +8,7 @@
     <div class="admin-sidebar-logo">
       <div class="flex flex-col items-center justify-center text-center gap-0">
         <img data-empresa-logo="assets/images/logomenu.png"
-             class="admin-logo-img object-contain" alt="Logo Vision de Aguila">
+             class="admin-logo-img object-contain" alt="Logo de la empresa">
         <div class="flex items-center gap-2 text-white text-[13px] font-bold tracking-wide">
           <svg class="w-5 h-5 text-verde-medio" fill="currentColor" viewBox="0 0 24 24">
             <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
@@ -19,7 +19,7 @@
     </div>
 
     <!-- Navegacion -->
-    <div class="flex-1 py-2">
+    <div class="admin-sidebar-nav flex-1 py-2">
 
       <div class="admin-menu-section admin-menu-section-highlight">Centro de Información</div>
 
