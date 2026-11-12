@@ -1,0 +1,1121 @@
+<!--  --><!DOCTYPE html>
+<html lang="es">
+<head>
+<base href="../../../">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Relación de Afiliaciones por Promotor - Óptica Angelus Visión S.A.S.</title>
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+/* =====================================================================
+   ESTILOS DE PANTALLA / IMPRESIÓN DEL NAVEGADOR (responsive)
+   El PDF NO depende de estos estilos: se genera con las hojas .pdf-*
+   (más abajo), que tienen medidas fijas de carta y sin media queries.
+   ===================================================================== */
+@page{size:Letter portrait;margin:0}
+*{box-sizing:border-box}
+html,body{margin:0;background:#EEF1F5;font-family:Inter,"Segoe UI",Arial,sans-serif;color:#17242A;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+@media(min-width:900px){body{padding:16px 0}}
+
+.page{
+  --px:.46in;
+  width:100%;max-width:8.5in;min-height:11in;margin:0 auto;position:relative;overflow:hidden;
+  background:#fff;padding:0 var(--px) 0;
+  display:flex;flex-direction:column;
+}
+.page:before{
+  content:"";position:absolute;width:4.9in;height:2.4in;right:-2.35in;top:-1.18in;
+  border:10px solid rgba(12,45,72,.07);border-radius:50%;transform:rotate(-12deg);pointer-events:none;
+}
+.page:after{
+  content:"";position:absolute;width:3.2in;height:1.5in;left:-2.1in;bottom:-.9in;
+  border:8px solid rgba(212,161,56,.10);border-radius:50%;transform:rotate(15deg);pointer-events:none;
+}
+
+
+.header{
+  position:relative;z-index:2;display:grid;grid-template-columns:30% 70%;
+  gap:18px;align-items:center;min-height:1.0in;
+  background:linear-gradient(105deg,#0C2D48 55%,#143C5E 100%);
+  margin:0 calc(var(--px) * -1);
+  padding:0.14in var(--px) 0.14in;
+  border-bottom:none;
+  overflow:hidden;
+}
+/* Elemento decorativo (gafas / óptica) en el fondo del header */
+.header-deco{
+  position:absolute;right:0;top:0;width:45%;height:100%;
+  background:radial-gradient(ellipse at right,rgba(212,161,56,.18) 0%,transparent 70%);
+  pointer-events:none;
+}
+.brand{padding-right:14px;border-right:1px solid rgba(255,255,255,.2);min-width:0}
+.logo{width:2.0in;max-width:100%;display:block;height:auto}
+.heading{text-align:center;padding-right:8px;min-width:0}
+.heading h1{
+  margin:0;color:#fff;font-size:22pt;line-height:.98;letter-spacing:-0.8px;
+  font-weight:800;text-transform:uppercase;
+  text-shadow:0 2px 8px rgba(0,0,0,.2);
+}
+.heading h1 span{color:#D4A138}
+.subtitle{
+  margin:6px 0 0;color:rgba(255,255,255,.75);font-size:8.5pt;font-weight:700;
+  letter-spacing:2.5px;text-transform:uppercase
+}
+.subtitle:before,.subtitle:after{content:"";display:inline-block;width:35px;height:1px;
+  vertical-align:middle;margin:0 7px;background:#D4A138}
+
+/* Metadatos de la Brigada — dos filas compactas */
+.meta-row{
+  display:grid;gap:8px;
+  margin:.08in 0 0;
+}
+/* Fila 1: Municipio · Fecha · Lugar — Municipio más ancho, Fecha compacta */
+.meta-row-1{
+  grid-template-columns:1.26fr 0.8fr 1.44fr;
+}
+/* Fila 2: Promotor · Pacientes Afiliados+contador */
+.meta-row-2{
+  grid-template-columns:1.26fr 1.14fr;
+  align-items:center;
+  margin-bottom:.1in;
+}
+.meta-pacientes{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 4px;
+}
+
+/* Versión móvil: apilar en una columna */
+@media(max-width:639px){
+  .meta-row-1{ grid-template-columns:1fr 1fr }
+  .meta-row-2{ grid-template-columns:1fr }
+  .meta-pacientes{ display:none !important }        /* oculto en móvil */
+  .meta-pacientes-movil{
+    display:flex !important;align-items:center;
+    justify-content:space-between;
+    margin:.06in 0 .04in;
+  }
+}
+@media(min-width:640px){
+  .meta-pacientes-movil{ display:none !important }  /* oculto en escritorio */
+}
+@media(max-width:480px){
+  .meta-row-1{ grid-template-columns:1fr }
+}
+
+.field{
+  border:1px solid #C5CDD6;border-radius:8px;overflow:visible;background:#fff;
+  min-height:36px;min-width:0;display:grid;grid-template-columns:auto minmax(0,1fr);align-items:stretch;
+}
+.field .label{
+  display:flex;align-items:center;padding:0 7px;background:#0C2D48;
+  color:#fff;font-size:6.5pt;font-weight:800;text-transform:uppercase;white-space:nowrap;
+  border-radius:7px 0 0 7px;gap:3px;
+}
+.field .label svg{flex-shrink:0}
+.field select, .field input{
+  width:100%;min-width:0;height:auto;min-height:34px;border:none;outline:none;padding:3px 7px;
+  font-size:8pt;font-weight:600;color:#17242A;background:transparent;
+}
+.field select:focus, .field input:focus{
+  outline:2px solid #143C5E;outline-offset:-2px;border-radius:0 7px 7px 0;
+}
+
+/* Tabla de Registros */
+.ledger{
+  position:relative;z-index:2;border:1px solid #143C5E;border-radius:10px;
+  overflow:hidden;background:#fff;box-shadow:0 4px 12px rgba(12,45,72,.07);margin-top:10px;
+}
+.registro-card{
+  border-bottom:1px solid #DDE2E8;padding:10px;position:relative;background:#fff;
+}
+.registro-card:nth-child(even){background:#F8F9FB}
+.registro-card:last-child{border-bottom:none}
+.registro-card input{min-width:0}
+
+/* Separación entre el contenido y el pie de página */
+.page>section:last-of-type{margin-bottom:.3in}
+.page>.mt-6{margin-bottom:.3in}
+
+/* Footer Corporativo (en flujo, pegado al fondo de la hoja, de borde a borde) */
+.footer{
+  position:relative;z-index:3;margin:auto calc(var(--px) * -1) 0;width:auto;min-height:.62in;
+  padding:9px var(--px);background:#0C2D48;color:#fff;border-top:3px solid #D4A138;
+  display:grid;grid-template-columns:1fr 1.35fr 1fr;gap:12px;align-items:center;font-size:6.6pt
+}
+.footer strong,.pdf-footer strong{display:block;color:#E8C065;font-size:6.8pt;margin-bottom:2px}
+.footer-item{display:flex;align-items:center;gap:8px;min-width:0}
+.footer-item span{overflow-wrap:anywhere}
+.footer-icon{width:25px;height:25px;min-width:25px;border:1px solid rgba(255,255,255,.45);border-radius:50%;display:flex;align-items:center;justify-content:center}
+.footer-icon svg{width:13px;height:13px;fill:none;stroke:#fff;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.footer-center{border-left:1px solid rgba(255,255,255,.25);border-right:1px solid rgba(255,255,255,.25);padding:0 10px}
+
+/* ---------- Adaptación a tabletas ---------- */
+@media(max-width:820px){
+  .page{--px:.4in}
+}
+
+/* ---------- Adaptación a teléfonos ---------- */
+@media(max-width:560px){
+  .page{--px:14px;min-height:100vh}
+  .header{grid-template-columns:1fr;gap:8px;text-align:center;padding-bottom:10px}
+  .brand{border-right:none;border-bottom:none;padding:0;display:flex;justify-content:center}
+  .logo{width:min(1.3in,50%)}
+  .heading{padding-right:0}
+  .heading h1{font-size:17pt}
+  .subtitle{font-size:7.5pt;letter-spacing:1.5px}
+  .subtitle:before,.subtitle:after{width:18px;margin:0 5px}
+  .footer{grid-template-columns:1fr;gap:10px;padding-top:12px;padding-bottom:12px}
+  .footer .footer-center{border:none;padding:0}
+}
+@media(max-width:480px){
+  .employee{grid-template-columns:1fr}
+  .registro-card input{font-size:16px !important} /* evita el zoom automático en iOS */
+}
+
+/* ---------- Acordeón (solo móvil, ≤ 639px) ---------- */
+@media(max-width:639px){
+  /* Botón de acordeón: visible solo en móvil */
+  .acord-btn{
+    display:flex;width:100%;align-items:center;justify-content:space-between;
+    background:none;border:none;padding:0;cursor:pointer;text-align:left;
+    color:inherit;font:inherit;
+  }
+  /* Icono chevron */
+  .acord-icon{
+    flex-shrink:0;width:16px;height:16px;margin-left:8px;transition:transform .22s ease;
+    color:#0C2D48;
+  }
+  .acord-btn[aria-expanded="true"] .acord-icon{transform:rotate(180deg)}
+  /* Nombre del paciente en el encabezado cerrado */
+  .acord-nombre{
+    font-size:11px;font-weight:600;color:#143C5E;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    max-width:55%;margin-left:8px;
+  }
+  /* Cuerpo del acordeón */
+  .acord-body{
+    overflow:hidden;transition:max-height .25s ease;
+    max-height:0;
+  }
+  .acord-body.acord-abierto{max-height:600px}
+  /* Separador visual bajo el botón cuando está cerrado */
+  .acord-btn[aria-expanded="false"]{padding-bottom:2px}
+}
+/* En escritorio el botón de acordeón se comporta como contenedor normal */
+@media(min-width:640px){
+  /* ── Escritorio: fila plana, una sola línea por registro ── */
+  .registro-card{ padding:6px 10px }
+
+  /* Ocultar todo el acordeón móvil */
+  .rc-mobile{ display:none !important }
+
+  /* Mostrar la fila de escritorio */
+  .rc-desktop{
+    display:flex;flex-direction:row;align-items:flex-end;gap:6px;
+  }
+  /* Badge numérico */
+  .rc-num{
+    flex-shrink:0;width:22px;height:22px;border-radius:50%;
+    background:#0C2D48;color:#fff;
+    font-size:9px;font-weight:800;line-height:1;
+    display:flex;align-items:center;justify-content:center;
+    margin-bottom:2px;
+  }
+  /* Campos: proporciones fijas */
+  .rc-f{ display:flex;flex-direction:column;min-width:0 }
+  .rc-f label{ font-size:8px;font-weight:700;color:#64748B;text-transform:uppercase;
+    white-space:nowrap;margin-bottom:2px;line-height:1.2 }
+  .rc-f input{ border:1px solid #CBD5E1;border-radius:4px;padding:3px 6px;
+    font-size:8.5pt;width:100%;min-width:0;background:#fff;color:#17242A }
+  .rc-f input:focus{ outline:2px solid #143C5E;outline-offset:1px }
+  .rc-volante  { width:58px;  flex-shrink:0 }
+  .rc-iden     { width:88px;  flex-shrink:0 }
+  .rc-nombre   { flex:1;min-width:80px }
+  .rc-tel      { width:96px;  flex-shrink:0 }
+  .rc-abono    { width:78px;  flex-shrink:0 }
+  /* Botón eliminar */
+  .rc-del{ flex-shrink:0;align-self:flex-end }
+}
+
+/* ── Móvil: ocultar fila de escritorio ── */
+@media(max-width:639px){
+  .rc-desktop{ display:none !important }
+  .rc-mobile { display:block }
+}
+/* Al imprimir desde el navegador: se usa la fila de escritorio, sin acordeón */
+@media print{
+  .rc-mobile{ display:none !important }
+  .rc-desktop{
+    display:flex !important;flex-direction:row !important;
+    align-items:flex-end !important;gap:6px !important;
+  }
+  .no-print{ display:none !important }
+  html,body{ background:#fff;padding:0 }
+  .page{ box-shadow:none;margin:0;width:8.5in;max-width:none;min-height:11in;--px:.46in }
+  .header{ grid-template-columns:30% 70%;text-align:left;
+    background:linear-gradient(105deg,#0C2D48 55%,#143C5E 100%) !important;
+    margin:0 calc(var(--px) * -1) !important;padding:0.12in var(--px) !important;border-bottom:none !important; }
+  .brand{ border-right:1px solid rgba(255,255,255,.2);padding-right:14px;display:block }
+  .meta-row-1{ grid-template-columns:1.26fr 0.8fr 1.44fr }
+  .meta-row-2{ grid-template-columns:1.26fr 1.14fr;margin-bottom:.1in }
+  .registro-card{ padding:6px 10px;break-inside:avoid;page-break-inside:avoid }
+  .rc-del{ display:none !important }
+  .footer{ grid-template-columns:1fr 1.35fr 1fr;padding-top:9px;padding-bottom:9px }
+  .footer .footer-center{ border-left:1px solid rgba(255,255,255,.25);border-right:1px solid rgba(255,255,255,.25);padding:0 10px }
+}
+/* =====================================================================
+   HOJAS DE EXPORTACIÓN PDF  (.pdf-*)
+   Medidas fijas: 8.5in x 11in. Sin media queries, independientes del
+   tamaño de pantalla. Se construyen sólo al descargar y se eliminan después.
+   ===================================================================== */
+.pdf-stage{position:absolute;left:-99999px;top:0;width:8.5in;pointer-events:none}
+.pdf-sheet{
+  position:relative;width:8.5in;height:11in;overflow:hidden;background:#fff;
+  padding:0 .46in 0;box-sizing:border-box;
+  font-family:Inter,"Segoe UI",Arial,sans-serif;color:#17242A;
+}
+.pdf-sheet *{box-sizing:border-box}
+.pdf-sheet:before{
+  content:"";position:absolute;width:4.9in;height:2.4in;right:-2.35in;top:-1.18in;
+  border:10px solid rgba(12,45,72,.07);border-radius:50%;transform:rotate(-12deg);pointer-events:none;
+}
+.pdf-sheet:after{
+  content:"";position:absolute;width:3.2in;height:1.5in;left:-2.1in;bottom:-.9in;
+  border:8px solid rgba(212,161,56,.10);border-radius:50%;transform:rotate(15deg);pointer-events:none;
+}
+
+
+.pdf-header{
+  position:relative;z-index:2;display:grid;grid-template-columns:30% 70%;
+  gap:18px;align-items:center;min-height:1.0in;padding:.1in 0 .08in;
+  background:linear-gradient(105deg,#0C2D48 55%,#143C5E 100%);
+  margin:0 -.46in;padding-left:.46in;padding-right:.46in;
+  border-bottom:3px solid #D4A138;
+}
+.pdf-brand{padding-right:14px;border-right:1px solid rgba(255,255,255,.2)}
+.pdf-logo{width:2.0in;display:block;height:auto}
+.pdf-heading{text-align:center;padding-right:8px}
+.pdf-heading h1{
+  margin:0;color:#fff;font-size:22pt;line-height:.98;letter-spacing:-0.8px;
+  font-weight:800;text-transform:uppercase
+}
+.pdf-heading h1 span{color:#D4A138}
+.pdf-subtitle{
+  margin:6px 0 0;color:rgba(255,255,255,.75);font-size:8.5pt;font-weight:700;
+  letter-spacing:2.5px;text-transform:uppercase
+}
+.pdf-subtitle:before,.pdf-subtitle:after{content:"";display:inline-block;width:35px;height:1px;
+  vertical-align:middle;margin:0 7px;background:#D4A138}
+
+.pdf-employee{display:none} /* reemplazado por pdf-meta-r1 / pdf-meta-r2 */
+
+/* Fila 1 del PDF: Municipio · Fecha · Lugar */
+.pdf-meta-r1{
+  position:relative;z-index:2;margin:.08in 0 0;
+  display:grid;grid-template-columns:1.26fr 0.8fr 1.44fr;gap:8px;
+}
+/* Fila 2 del PDF: Promotor + título Pacientes Afiliados */
+.pdf-meta-r2{
+  position:relative;z-index:2;margin:.06in 0 .1in;
+  display:grid;grid-template-columns:1.26fr 1.14fr;gap:8px;align-items:center;
+}
+.pdf-meta-titulo{
+  display:flex;align-items:center;justify-content:space-between;gap:6px;
+  font-size:10pt;font-weight:800;color:#0C2D48;text-transform:uppercase;letter-spacing:.06em;
+}
+.pdf-meta-contador{
+  display:flex;align-items:center;gap:4px;
+  font-size:8pt;font-weight:700;color:#0C2D48;
+  background:rgba(12,45,72,.07);border:1px solid rgba(12,45,72,.15);
+  border-radius:999px;padding:2px 8px;white-space:nowrap;
+}
+.pdf-field{
+  border:1px solid #C5CDD6;border-radius:8px;overflow:hidden;background:#fff;
+  min-height:36px;display:grid;grid-template-columns:auto minmax(0,1fr);align-items:stretch
+}
+.pdf-label{
+  display:flex;align-items:center;padding:0 8px;background:#0C2D48;
+  color:#fff;font-size:7pt;font-weight:800;text-transform:uppercase;white-space:nowrap
+}
+.pdf-value{
+  display:flex;align-items:center;padding:4px 8px;font-size:8.5pt;font-weight:600;color:#17242A;
+  overflow-wrap:anywhere;word-break:break-word;line-height:1.2
+}
+
+/* Registros PDF — igual layout que rc-desktop en pantalla */
+.pdf-ledger{
+  position:relative;z-index:2;border:1px solid #143C5E;border-radius:10px;
+  overflow:hidden;background:#fff;margin-top:8px;min-height:40px
+}
+/* Cada registro: fila flex con badge + 6 campos */
+.pdf-reg{
+  border-bottom:1px solid #DDE2E8;padding:6px 10px;background:#fff;
+  display:flex;flex-direction:row;align-items:flex-end;gap:6px;
+}
+.pdf-reg:nth-child(even){background:#F8F9FB}
+.pdf-reg:last-child{border-bottom:none}
+/* Badge numérico */
+.pdf-reg-num{
+  flex-shrink:0;width:22px;height:22px;border-radius:50%;
+  background:#0C2D48;color:#fff;
+  font-size:9px;font-weight:800;line-height:1;
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:2px;-webkit-print-color-adjust:exact;print-color-adjust:exact;
+}
+/* Columna de campo */
+.pdf-rc{display:flex;flex-direction:column;min-width:0}
+.pdf-rc-l{
+  font-size:7.5px;font-weight:700;color:#64748B;text-transform:uppercase;
+  line-height:1.2;margin-bottom:2px;white-space:nowrap;
+  display:flex;align-items:center;gap:2px;
+}
+.pdf-rc-v{
+  border:1px solid #CBD5E1;border-radius:4px;padding:3px 5px;
+  font-size:8.5pt;line-height:1.2;overflow-wrap:anywhere;word-break:break-word;
+  background:#fff;color:#17242A;
+}
+.pdf-mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+/* Anchos: mismas proporciones que rc-desktop */
+.pdf-rc-volante { width:58px;  flex-shrink:0 }
+.pdf-rc-iden    { width:88px;  flex-shrink:0 }
+.pdf-rc-nombre  { flex:1;min-width:80px }
+.pdf-rc-tel     { width:96px;  flex-shrink:0 }
+.pdf-rc-abono   { width:78px;  flex-shrink:0 }
+
+.pdf-pagenum{
+  position:absolute;z-index:4;right:.46in;bottom:calc(.65in + 5px);
+  font-size:7pt;font-weight:700;color:#143C5E;line-height:1
+}
+.pdf-footer{
+  position:absolute;z-index:3;left:0;bottom:0;width:100%;height:.65in;margin:0;
+  padding:0 .46in;background:#0C2D48;color:#fff;border-top:3px solid #D4A138;
+  display:grid;grid-template-columns:1fr 1.35fr 1fr;gap:12px;align-items:center;font-size:6.6pt
+}
+.pdf-footer .footer-item{display:flex;align-items:center;gap:8px;min-width:0}
+.pdf-footer .footer-item span{overflow-wrap:anywhere}
+.pdf-footer .footer-icon{width:25px;height:25px;min-width:25px;border:1px solid rgba(255,255,255,.45);border-radius:50%;display:flex;align-items:center;justify-content:center}
+.pdf-footer .footer-icon svg{width:13px;height:13px;fill:none;stroke:#fff;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.pdf-footer .footer-center{border-left:1px solid rgba(255,255,255,.25);border-right:1px solid rgba(255,255,255,.25);padding:0 10px}
+
+@media print {
+  body.pdf-print-mode > :not(.pdf-stage) { display: none !important; }
+  body.pdf-print-mode .pdf-stage {
+    display: block !important;
+    position: static !important;
+    left: auto !important;
+    top: auto !important;
+    width: 8.5in !important;
+  }
+  body.pdf-print-mode .pdf-sheet {
+    break-after: page;
+    page-break-after: always;
+  }
+  body.pdf-print-mode .pdf-sheet:last-child {
+    break-after: auto;
+    page-break-after: auto;
+  }
+}
+</style>
+</head>
+<body>
+
+<main class="page" id="areaImpresion">
+
+  <header class="header">
+    <div class="header-deco" aria-hidden="true"></div>
+    <div class="brand">
+      <img class="logo" src="assets/images/logomenu.png" data-empresa-logo="assets/images/logomenu.png" alt="Óptica Angelus Visión S.A.S." />
+    </div>
+    <div class="heading">
+      <h1>RELACIÓN <span>DE AFILIACIONES</span></h1>
+      <div class="subtitle">PLANILLA DE PROMOTOR</div>
+    </div>
+  </header>
+
+  <!-- Metadatos de la Brigada — fila 1: Municipio · Fecha · Lugar -->
+  <div class="meta-row meta-row-1">
+    <div class="field">
+      <div class="label">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="margin-right:4px;flex-shrink:0"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+        MUNICIPIO
+      </div>
+      <input type="text" id="inputMunicipio" placeholder="Municipio" required>
+    </div>
+    <div class="field">
+      <div class="label">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="margin-right:4px;flex-shrink:0"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        FECHA
+      </div>
+      <input type="date" id="inputFecha" required>
+    </div>
+    <div class="field">
+      <div class="label">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="margin-right:4px;flex-shrink:0"><path d="M12 21s7-6.4 7-12a7 7 0 1 0-14 0c0 5.6 7 12 7 12Z"/><circle cx="12" cy="9" r="2.2"/></svg>
+        LUGAR
+      </div>
+      <input type="text" id="inputLugar" placeholder="Lugar brigada" required>
+    </div>
+  </div>
+
+  <!-- Metadatos de la Brigada — fila 2: Promotor · Pacientes Afiliados + contador (escritorio) -->
+  <!-- En móvil: solo muestra el Promotor; "Pacientes Afiliados" aparece debajo -->
+  <div class="meta-row meta-row-2">
+    <div class="field">
+      <div class="label">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="margin-right:4px;flex-shrink:0"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        PROMOTOR
+      </div>
+      <select id="selectPromotor" required>
+        <option value="">Cargando...</option>
+      </select>
+    </div>
+    <!-- Solo visible en escritorio (≥640px) -->
+    <div class="meta-pacientes">
+      <span class="flex items-center gap-1.5 font-bold text-[#0C2D48] uppercase tracking-wider" style="font-size:13px">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0C2D48" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="7" r="4"/><path d="M3 21c0-4 2.7-7 6-7"/><circle cx="17" cy="9" r="3"/><path d="M14 21c0-3 1.8-5 4-5s4 2 4 5"/></svg>
+        Pacientes Afiliados
+      </span>
+      <span class="flex items-center gap-1 font-semibold px-2.5 py-1 rounded-full border" id="lblContador"
+        style="font-size:11px;background:rgba(12,45,72,.07);color:#0C2D48;border-color:rgba(12,45,72,.15)">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        2 Registros
+      </span>
+    </div>
+  </div>
+
+  <!-- "Pacientes Afiliados" solo en móvil — aparece entre Promotor y los registros -->
+  <div class="meta-pacientes-movil no-print">
+    <span class="flex items-center gap-1.5 font-bold text-[#0C2D48] uppercase tracking-wider" style="font-size:13px">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0C2D48" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="7" r="4"/><path d="M3 21c0-4 2.7-7 6-7"/><circle cx="17" cy="9" r="3"/><path d="M14 21c0-3 1.8-5 4-5s4 2 4 5"/></svg>
+      Pacientes Afiliados
+    </span>
+    <span class="flex items-center gap-1 font-semibold px-2.5 py-1 rounded-full border" id="lblContadorMovil"
+      style="font-size:11px;background:rgba(12,45,72,.07);color:#0C2D48;border-color:rgba(12,45,72,.15)">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      2 Registros
+    </span>
+  </div>
+
+  <!-- Contenedor Dinámico de Registros -->
+  <section>
+    <div class="ledger" id="contenedorRegistros">
+      <!-- Los registros se generan dinámicamente aquí -->
+    </div>
+    <!-- Título "Pacientes Afiliados" solo en móvil (en escritorio está en meta-row-2) -->
+    <!-- Botón Agregar Registro (Se oculta al exportar PDF) -->
+    <div class="mt-3 no-print">
+      <button type="button" id="btnAgregarRegistro" class="w-full py-2.5 bg-white hover:bg-slate-50 border border-dashed border-[#0C2D48]/30 text-[#0C2D48] text-xs font-bold rounded-lg transition flex items-center justify-center gap-2">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        AGREGAR NUEVO REGISTRO DE PACIENTE
+      </button>
+    </div>
+  </section>
+
+  <!-- Acciones / Botones Inferiores (Ocultos estrictamente en la impresión/PDF) -->
+  <div class="mt-6 pt-4 border-t border-slate-200 flex flex-col sm:flex-row gap-3 justify-end no-print">
+    <button type="button" id="btnBorrarBorrador" class="px-4 py-2.5 bg-slate-100 text-slate-600 text-xs font-bold rounded-lg hover:bg-slate-200 transition flex items-center justify-center gap-2 border border-slate-200">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+      Limpiar Planilla
+    </button>
+    <button type="button" id="btnDescargarPDF" class="px-5 py-2.5 bg-white text-[#0C2D48] text-xs font-bold rounded-lg hover:bg-slate-50 transition shadow-sm flex items-center justify-center gap-2 border border-[#0C2D48]/20">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Generar Reporte
+    </button>
+   <p id="pdfPrintStatus" class="hidden basis-full text-right text-xs" role="status" aria-live="polite"></p>
+  </div>
+
+  <!-- Pie de Página Corporativo -->
+  <footer class="footer">
+    <div class="footer-item">
+      <div class="footer-icon">
+        <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="m4 7 8 6 8-6"></path></svg>
+      </div>
+      <div>
+        <strong>CONTACTO</strong>
+        <span data-empresa-email>contacto@angelusvision.com</span>
+      </div>
+    </div>
+    <div class="footer-item footer-center">
+      <div class="footer-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 21s7-6.4 7-12a7 7 0 1 0-14 0c0 5.6 7 12 7 12Z"></path><circle cx="12" cy="9" r="2.2"></circle></svg>
+      </div>
+      <div>
+        <strong>DIRECCIÓN</strong>
+        <span data-empresa-direccion> Sede Principal Óptica Angelus</span>
+      </div>
+    </div>
+    <div class="footer-item">
+      <div class="footer-icon">
+        <svg viewBox="0 0 24 24"><path d="M6.5 3.5h3l1.5 4-2 1.7a15 15 0 0 0 5.8 5.8l1.7-2 4 1.5v3c0 1.1-.9 2-2 2C10.5 19.5 4.5 13.5 4.5 5.5c0-1.1.9-2 2-2Z"></path></svg>
+      </div>
+      <div>
+        <strong>TELÉFONOS DE CONTACTO</strong>
+        <span data-empresa-telefonos>+57 300 000 0000</span>
+      </div>
+    </div>
+  </footer>
+</main>
+
+<script>
+  const PROMOTORES_DEFAULT = ["Juan Carlos Pérez", "María Rodríguez", "Pedro Gómez", "Ana Martínez"];
+  let contadorRegistros = 0;
+
+  document.addEventListener("DOMContentLoaded", () => {
+    inicializarPromotores();
+    document.getElementById('inputFecha').valueAsDate = new Date();
+
+    // Intentar cargar borrador; si no existe, renderizar 2 por defecto
+    if (!cargarBorrador()) {
+      crearRegistro();
+      crearRegistro();
+    }
+  });
+
+  function inicializarPromotores() {
+    const select = document.getElementById("selectPromotor");
+    const lista = window.PROMOTORES_LISTA || PROMOTORES_DEFAULT;
+    select.innerHTML = '<option value="">-- Selecciona --</option>';
+    lista.forEach(p => {
+      const opt = document.createElement("option");
+      opt.value = p;
+      opt.textContent = p;
+      select.appendChild(opt);
+    });
+  }
+
+  function crearRegistro(datos = {}) {
+    contadorRegistros++;
+    const id = contadorRegistros;
+    const contenedor = document.getElementById("contenedorRegistros");
+
+    const div = document.createElement("div");
+    div.className = "registro-card";
+    div.id = `registro-${id}`;
+
+    // ── Encabezado (acordeón en móvil, texto en escritorio) ──
+    // El <span> con el texto "REGISTRO #N" es el que lee pdfLeerDatos() para el título del PDF.
+    // Usamos aria-controls / aria-expanded para accesibilidad.
+    const bodyId = `acord-body-${id}`;
+    const nombrePaciente = datos.nombre_paciente || '';
+
+    div.innerHTML = `
+      <!-- ── MÓVIL: acordeón ── -->
+      <div class="rc-mobile">
+        <div class="acord-header-row flex items-center gap-2 mb-1.5">
+          <button type="button"
+            class="acord-btn flex-1 flex items-center justify-between min-w-0"
+            aria-expanded="false"
+            aria-controls="${bodyId}">
+            <span class="flex items-center gap-1.5 min-w-0">
+              <span class="text-[10px] font-bold text-slate-700 tracking-wider acord-titulo">#${id}</span>
+              <span class="acord-nombre">${nombrePaciente ? escHtml(nombrePaciente) : 'Registro ' + id}</span>
+            </span>
+            <svg class="acord-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="4 6 8 10 12 6"></polyline>
+            </svg>
+          </button>
+          ${id > 2 ? `
+          <button type="button" data-eliminar="${id}"
+            class="no-print flex-shrink-0 flex items-center gap-1 px-2 py-1 rounded-md border border-red-200 bg-red-50 hover:bg-red-100 text-red-600 text-[10px] font-bold transition"
+            aria-label="Eliminar registro ${id}">
+            <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 4 13 4"></polyline><path d="M5 4V3h6v1M6 7v5M10 7v5M4 4l1 9h6l1-9"></path></svg>
+            Eliminar
+          </button>` : ''}
+        </div>
+        <div class="acord-body" id="${bodyId}" role="region" aria-label="Campos del registro ${id}">
+          <div class="reg-campos grid grid-cols-2 gap-2">
+            <div>
+              <label class="flex items-center gap-1 text-[8px] font-bold text-slate-500 uppercase mb-0.5" for="m-nv-${id}">
+                <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>
+                Nº Volante
+              </label>
+              <input id="m-nv-${id}" type="text" data-campo="no_volante" value="${escHtml(datos.no_volante || '')}" class="w-full border border-slate-300 rounded px-1.5 py-1 text-xs font-mono">
+            </div>
+            <div>
+              <label class="flex items-center gap-1 text-[8px] font-bold text-slate-500 uppercase mb-0.5" for="m-iden-${id}">
+                <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><circle cx="9" cy="12" r="2.5"/><path d="M14 10h4M14 14h3"/></svg>
+                Identificación
+              </label>
+              <input id="m-iden-${id}" type="text" data-campo="identificacion" value="${escHtml(datos.identificacion || '')}" class="w-full border border-slate-300 rounded px-1.5 py-1 text-xs font-mono">
+            </div>
+            <div class="col-span-2">
+              <label class="flex items-center gap-1 text-[8px] font-bold text-slate-500 uppercase mb-0.5" for="m-pac-${id}">
+                <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+                Nombre Paciente
+              </label>
+              <input id="m-pac-${id}" type="text" data-campo="nombre_paciente" value="${escHtml(datos.nombre_paciente || '')}" class="w-full border border-slate-300 rounded px-1.5 py-1 text-xs">
+            </div>
+            <div>
+              <label class="flex items-center gap-1 text-[8px] font-bold text-slate-500 uppercase mb-0.5" for="m-tel1-${id}">
+                <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M6.5 3.5h3l1.5 4-2 1.7a15 15 0 0 0 5.8 5.8l1.7-2 4 1.5v3c0 1.1-.9 2-2 2C10.5 19.5 4.5 13.5 4.5 5.5c0-1.1.9-2 2-2Z"/></svg>
+                Teléfono 1
+              </label>
+              <input id="m-tel1-${id}" type="tel" data-campo="telefono_1" value="${escHtml(datos.telefono_1 || '')}" class="w-full border border-slate-300 rounded px-1.5 py-1 text-xs font-mono">
+            </div>
+            <div>
+              <label class="flex items-center gap-1 text-[8px] font-bold text-slate-500 uppercase mb-0.5" for="m-tel2-${id}">
+                <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M6.5 3.5h3l1.5 4-2 1.7a15 15 0 0 0 5.8 5.8l1.7-2 4 1.5v3c0 1.1-.9 2-2 2C10.5 19.5 4.5 13.5 4.5 5.5c0-1.1.9-2 2-2Z"/><path d="M19 3v4"/><path d="M17 5h4"/></svg>
+                Teléfono 2
+              </label>
+              <input id="m-tel2-${id}" type="tel" data-campo="telefono_2" value="${escHtml(datos.telefono_2 || '')}" class="w-full border border-slate-300 rounded px-1.5 py-1 text-xs font-mono">
+            </div>
+            <div class="col-span-2">
+              <label class="flex items-center gap-1 text-[8px] font-bold text-slate-500 uppercase mb-0.5" for="m-abo-${id}">
+                <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="12" y2="17"/></svg>
+                Abono / Nota
+              </label>
+              <input id="m-abo-${id}" type="text" data-campo="abono_observacion" value="${escHtml(datos.abono_observacion || '')}" class="w-full border border-slate-300 rounded px-1.5 py-1 text-xs">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── ESCRITORIO: fila plana ── -->
+      <div class="rc-desktop">
+        <div class="rc-num acord-titulo">${id}</div>
+        <div class="rc-f rc-volante">
+          <label for="d-nv-${id}"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true" style="display:inline;vertical-align:middle;margin-right:3px"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>Nº Volante</label>
+          <input id="d-nv-${id}" type="text" data-campo="no_volante" value="${escHtml(datos.no_volante || '')}" class="font-mono">
+        </div>
+        <div class="rc-f rc-iden">
+          <label for="d-iden-${id}"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true" style="display:inline;vertical-align:middle;margin-right:3px"><rect x="2" y="5" width="20" height="14" rx="2"/><circle cx="9" cy="12" r="2.5"/><path d="M14 10h4M14 14h3"/></svg>Identificación</label>
+          <input id="d-iden-${id}" type="text" data-campo="identificacion" value="${escHtml(datos.identificacion || '')}" class="font-mono">
+        </div>
+        <div class="rc-f rc-nombre">
+          <label for="d-pac-${id}"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true" style="display:inline;vertical-align:middle;margin-right:3px"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>Nombre Paciente</label>
+          <input id="d-pac-${id}" type="text" data-campo="nombre_paciente" value="${escHtml(datos.nombre_paciente || '')}">
+        </div>
+        <div class="rc-f rc-tel">
+          <label for="d-tel1-${id}"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true" style="display:inline;vertical-align:middle;margin-right:3px"><path d="M6.5 3.5h3l1.5 4-2 1.7a15 15 0 0 0 5.8 5.8l1.7-2 4 1.5v3c0 1.1-.9 2-2 2C10.5 19.5 4.5 13.5 4.5 5.5c0-1.1.9-2 2-2Z"/></svg>Teléfono 1</label>
+          <input id="d-tel1-${id}" type="tel" data-campo="telefono_1" value="${escHtml(datos.telefono_1 || '')}" class="font-mono">
+        </div>
+        <div class="rc-f rc-tel">
+          <label for="d-tel2-${id}"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true" style="display:inline;vertical-align:middle;margin-right:3px"><path d="M6.5 3.5h3l1.5 4-2 1.7a15 15 0 0 0 5.8 5.8l1.7-2 4 1.5v3c0 1.1-.9 2-2 2C10.5 19.5 4.5 13.5 4.5 5.5c0-1.1.9-2 2-2Z"/><path d="M19 3v4"/><path d="M17 5h4"/></svg>Teléfono 2</label>
+          <input id="d-tel2-${id}" type="tel" data-campo="telefono_2" value="${escHtml(datos.telefono_2 || '')}" class="font-mono">
+        </div>
+        <div class="rc-f rc-abono">
+          <label for="d-abo-${id}"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true" style="display:inline;vertical-align:middle;margin-right:3px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="12" y2="17"/></svg>Abono / Nota</label>
+          <input id="d-abo-${id}" type="text" data-campo="abono_observacion" value="${escHtml(datos.abono_observacion || '')}">
+        </div>
+        ${id > 2 ? `
+        <div class="rc-del no-print">
+          <button type="button" data-eliminar="${id}"
+            class="flex items-center gap-1 px-2 py-1 rounded-md border border-red-200 bg-red-50 hover:bg-red-100 text-red-600 text-[10px] font-bold transition"
+            aria-label="Eliminar registro ${id}">
+            <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 4 13 4"></polyline><path d="M5 4V3h6v1M6 7v5M10 7v5M4 4l1 9h6l1-9"></path></svg>
+            Eliminar
+          </button>
+        </div>` : ''}
+      </div>
+    `;
+
+    contenedor.appendChild(div);
+    actualizarContador();
+
+    // ── Acordeón: toggle ──
+    const btn = div.querySelector('.acord-btn');
+    const body = div.querySelector('.acord-body');
+    btn.addEventListener('click', () => {
+      const abierto = btn.getAttribute('aria-expanded') === 'true';
+      btn.setAttribute('aria-expanded', String(!abierto));
+      body.classList.toggle('acord-abierto', !abierto);
+    });
+
+    // ── Botones Eliminar: uno en móvil, uno en escritorio (ambos con confirmación) ──
+    div.querySelectorAll('[data-eliminar]').forEach(btnElim => {
+      btnElim.addEventListener('click', () => {
+        const nombre = div.querySelector('[data-campo="nombre_paciente"]')?.value?.trim();
+        const numStr = div.querySelector('.acord-titulo')?.textContent?.trim() || '';
+        const etiqueta = nombre ? `"${nombre}"` : (numStr ? `el registro #${numStr}` : 'este registro');
+        if (confirm(`¿Eliminar ${etiqueta}?\nEsta acción no se puede deshacer.`)) {
+          eliminarRegistro(id);
+        }
+      });
+    });
+
+    // ── Sincronizar inputs móvil ↔ escritorio ──
+    // Cuando el usuario escribe en un input, el gemelo del otro vista se actualiza
+    div.querySelectorAll('[data-campo]').forEach(input => {
+      input.addEventListener('input', () => {
+        const campo = input.dataset.campo;
+        div.querySelectorAll(`[data-campo="${campo}"]`).forEach(twin => {
+          if (twin !== input) twin.value = input.value;
+        });
+        // Actualizar nombre en el acordeón
+        if (campo === 'nombre_paciente') {
+          const val = input.value.trim();
+          const pos = posicionEnDOM(div);
+          const spanNombre = div.querySelector('.acord-nombre');
+          if (spanNombre) spanNombre.textContent = val || ('Registro ' + pos);
+        }
+        guardarBorrador();
+      });
+    });
+  }
+
+  // Devuelve la posición (1-based) del card en el DOM, para mostrar en el acordeón
+  function posicionEnDOM(cardEl) {
+    const todos = Array.from(document.querySelectorAll('.registro-card'));
+    return todos.indexOf(cardEl) + 1;
+  }
+
+  // Escapa HTML básico para uso en innerHTML (evita XSS con datos del usuario)
+  function escHtml(str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/"/g, '&quot;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+  }
+
+  function eliminarRegistro(id) {
+    const el = document.getElementById(`registro-${id}`);
+    if (el) {
+      el.remove();
+      actualizarContador();
+      guardarBorrador();
+    }
+  }
+
+  document.getElementById('btnAgregarRegistro').addEventListener('click', () => {
+    crearRegistro();
+    guardarBorrador();
+  });
+
+  function actualizarContador() {
+    const total = document.querySelectorAll('.registro-card').length;
+    const texto = `${total} Registros`;
+    document.getElementById('lblContador').firstChild.nextSibling
+      ? (document.getElementById('lblContador').lastChild.textContent = ' ' + texto)
+      : null;
+    // Actualizar ambos contadores (escritorio y móvil)
+    ['lblContador','lblContadorMovil'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        // Preservar el SVG y actualizar solo el texto
+        const svg = el.querySelector('svg');
+        el.textContent = ' ' + texto;
+        if (svg) el.prepend(svg);
+      }
+    });
+  }
+
+  function guardarBorrador() {
+    const registros = [];
+    document.querySelectorAll('.registro-card').forEach(card => {
+      const id = card.id.replace('registro-', '');
+      registros.push({
+        no_volante: card.querySelector(`[data-campo="no_volante"]`)?.value || '',
+        identificacion: card.querySelector(`[data-campo="identificacion"]`)?.value || '',
+        nombre_paciente: card.querySelector(`[data-campo="nombre_paciente"]`)?.value || '',
+        telefono_1: card.querySelector(`[data-campo="telefono_1"]`)?.value || '',
+        telefono_2: card.querySelector(`[data-campo="telefono_2"]`)?.value || '',
+        abono_observacion: card.querySelector(`[data-campo="abono_observacion"]`)?.value || ''
+      });
+    });
+
+    const payload = {
+      encabezado: {
+        promotor: document.getElementById('selectPromotor').value,
+        lugar_brigada: document.getElementById('inputLugar').value,
+        fecha: document.getElementById('inputFecha').value,
+        municipio: document.getElementById('inputMunicipio').value
+      },
+      registros
+    };
+
+    localStorage.setItem('borrador_planilla_angelus', JSON.stringify(payload));
+  }
+
+  function cargarBorrador() {
+    const saved = localStorage.getItem('borrador_planilla_angelus');
+    if (!saved) return false;
+    try {
+      const data = JSON.parse(saved);
+      if (data.encabezado) {
+        document.getElementById('selectPromotor').value = data.encabezado.promotor || '';
+        document.getElementById('inputLugar').value = data.encabezado.lugar_brigada || '';
+        document.getElementById('inputFecha').value = data.encabezado.fecha || '';
+        document.getElementById('inputMunicipio').value = data.encabezado.municipio || '';
+      }
+      if (Array.isArray(data.registros) && data.registros.length > 0) {
+        document.getElementById('contenedorRegistros').innerHTML = '';
+        contadorRegistros = 0;
+        data.registros.forEach(reg => crearRegistro(reg));
+        return true;
+      }
+    } catch (e) {}
+    return false;
+  }
+
+  /* =====================================================================
+     EXPORTACIÓN A PDF — TAMAÑO CARTA REAL (8.5 x 11 in), VERTICAL
+     ---------------------------------------------------------------------
+     Se construyen hojas de tamaño carta independientes del ancho de pantalla.
+     La impresión nativa mantiene el texto seleccionable para la digitalización.
+     Cada registro se mantiene entero: si no cabe, pasa a la hoja siguiente.
+     ===================================================================== */
+  const PDF_ALTO_PX  = 1056;   // 11in * 96
+  const PDF_PIE_PX   = Math.round(0.65 * 96);          // alto del pie corporativo
+  const PDF_LIMITE_PX = PDF_ALTO_PX - PDF_PIE_PX - 24; // zona útil para registros
+
+  function pdfEl(tag, cls, texto) {
+    const e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (texto !== undefined) e.textContent = texto;
+    return e;
+  }
+
+  function pdfPrecargarLogo(src) {
+    return new Promise(resolve => {
+      if (!src) return resolve(null);
+      const im = new Image();
+      im.onload = () => resolve(im);
+      im.onerror = () => resolve(null);
+      im.src = src;
+    });
+  }
+
+  function pdfFormatearFecha(v) {
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(v || '');
+    return m ? `${m[3]}/${m[2]}/${m[1]}` : (v || '');
+  }
+
+  function pdfLeerDatos() {
+    const selPromotor = document.getElementById('selectPromotor');
+    const opcion = selPromotor.options[selPromotor.selectedIndex];
+    // Fila 1: Municipio · Fecha · Lugar
+    const metaFila1 = [
+      ['MUNICIPIO', document.getElementById('inputMunicipio').value],
+      ['FECHA',     pdfFormatearFecha(document.getElementById('inputFecha').value)],
+      ['LUGAR',     document.getElementById('inputLugar').value]
+    ];
+    // Fila 2: solo Promotor (el título "Pacientes Afiliados" se construye aparte)
+    const metaFila2 = [
+      ['PROMOTOR', selPromotor.value ? (opcion ? opcion.textContent : selPromotor.value) : '']
+    ];
+    const registros = [];
+    document.querySelectorAll('.registro-card').forEach(card => {
+      const v = campo => card.querySelector(`[data-campo="${campo}"]`)?.value || '';
+      const numTxt = card.querySelector('.acord-titulo')?.textContent?.trim() || '';
+      const titulo = numTxt ? 'REGISTRO ' + numTxt : 'REGISTRO';
+      registros.push({
+        titulo,
+        no_volante: v('no_volante'),
+        identificacion: v('identificacion'),
+        nombre_paciente: v('nombre_paciente'),
+        telefono_1: v('telefono_1'),
+        telefono_2: v('telefono_2'),
+        abono_observacion: v('abono_observacion')
+      });
+    });
+    return { metaFila1, metaFila2, registros };
+  }
+
+  function pdfCrearRegistro(r) {
+    const d = pdfEl('div', 'pdf-reg');
+
+    // Badge numérico (extrae el número del título "REGISTRO #3" → "3")
+    const numMatch = r.titulo.match(/#?(\d+)/);
+    const num = numMatch ? numMatch[1] : '?';
+    const badge = pdfEl('div', 'pdf-reg-num');
+    badge.textContent = num;
+    d.appendChild(badge);
+
+    // Íconos SVG reutilizables (inline, sin dependencias externas)
+    const svgVolante   = `<svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>`;
+    const svgIden      = `<svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><rect x="2" y="5" width="20" height="14" rx="2"/><circle cx="9" cy="12" r="2.5"/><path d="M14 10h4M14 14h3"/></svg>`;
+    const svgPaciente  = `<svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>`;
+    const svgTel       = `<svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6.5 3.5h3l1.5 4-2 1.7a15 15 0 0 0 5.8 5.8l1.7-2 4 1.5v3c0 1.1-.9 2-2 2C10.5 19.5 4.5 13.5 4.5 5.5c0-1.1.9-2 2-2Z"/></svg>`;
+    const svgNota      = `<svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="12" y2="17"/></svg>`;
+
+    const campos = [
+      { cls:'pdf-rc pdf-rc-volante',  icon:svgVolante,  label:'Nº Volante',      val:r.no_volante,        mono:true },
+      { cls:'pdf-rc pdf-rc-iden',     icon:svgIden,     label:'Identificación',  val:r.identificacion,    mono:true },
+      { cls:'pdf-rc pdf-rc-nombre',   icon:svgPaciente, label:'Nombre Paciente', val:r.nombre_paciente,   mono:false },
+      { cls:'pdf-rc pdf-rc-tel',      icon:svgTel,      label:'Teléfono 1',      val:r.telefono_1,        mono:true },
+      { cls:'pdf-rc pdf-rc-tel',      icon:svgTel,      label:'Teléfono 2',      val:r.telefono_2,        mono:true },
+      { cls:'pdf-rc pdf-rc-abono',    icon:svgNota,     label:'Abono / Nota',    val:r.abono_observacion, mono:false }
+    ];
+
+    campos.forEach(({ cls, icon, label, val, mono }) => {
+      const col = pdfEl('div', cls);
+      const lbl = pdfEl('div', 'pdf-rc-l');
+      lbl.innerHTML = icon + label;
+      col.appendChild(lbl);
+      col.appendChild(pdfEl('div', 'pdf-rc-v' + (mono ? ' pdf-mono' : ''), val));
+      d.appendChild(col);
+    });
+
+    return d;
+  }
+
+  function pdfCrearHoja(ctx) {
+    const sheet = pdfEl('div', 'pdf-sheet');
+
+    const header = pdfEl('div', 'pdf-header');
+    const brand = pdfEl('div', 'pdf-brand');
+    if (ctx.logoSrc) {
+      const img = document.createElement('img');
+      img.className = 'pdf-logo';
+      img.alt = 'Óptica Angelus Visión S.A.S.';
+      img.src = ctx.logoSrc;
+      if (ctx.logoAltoPx) img.style.height = ctx.logoAltoPx + 'px';
+      brand.appendChild(img);
+    }
+    const heading = pdfEl('div', 'pdf-heading');
+    heading.innerHTML = '<h1>RELACIÓN <span>DE AFILIACIONES</span></h1><div class="pdf-subtitle">PLANILLA DE PROMOTOR</div>';
+    header.appendChild(brand);
+    header.appendChild(heading);
+    sheet.appendChild(header);
+
+    // Fila 1: Municipio · Fecha · Lugar
+    const r1 = pdfEl('div', 'pdf-meta-r1');
+    ctx.metaFila1.forEach(([etiqueta, valor]) => {
+      const f = pdfEl('div', 'pdf-field');
+      f.appendChild(pdfEl('div', 'pdf-label', etiqueta));
+      f.appendChild(pdfEl('div', 'pdf-value', valor));
+      r1.appendChild(f);
+    });
+    sheet.appendChild(r1);
+
+    // Fila 2: Promotor + título "Pacientes Afiliados"
+    const r2 = pdfEl('div', 'pdf-meta-r2');
+    ctx.metaFila2.forEach(([etiqueta, valor]) => {
+      const f = pdfEl('div', 'pdf-field');
+      f.appendChild(pdfEl('div', 'pdf-label', etiqueta));
+      f.appendChild(pdfEl('div', 'pdf-value', valor));
+      r2.appendChild(f);
+    });
+    const titPac = pdfEl('div', 'pdf-meta-titulo');
+    const totalReg = ctx.totalRegistros || 0;
+    const svgGrupo = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0C2D48" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="4"/><path d="M3 21c0-4 2.7-7 6-7"/><circle cx="17" cy="9" r="3"/><path d="M14 21c0-3 1.8-5 4-5s4 2 4 5"/></svg>`;
+    const svgPers  = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#0C2D48" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>`;
+    titPac.innerHTML = `<span style="display:flex;align-items:center;gap:6px">${svgGrupo}Pacientes Afiliados</span><span class="pdf-meta-contador">${svgPers} ${totalReg} Registros</span>`;
+    r2.appendChild(titPac);
+    sheet.appendChild(r2);
+
+    const ledger = pdfEl('div', 'pdf-ledger');
+    sheet.appendChild(ledger);
+
+    sheet.appendChild(ctx.pie.cloneNode(true));
+    ctx.stage.appendChild(sheet);
+    return { sheet, ledger };
+  }
+
+  async function pdfConstruirHojas(stage) {
+    const logoVivo = document.querySelector('.logo');
+    const logoSrc = logoVivo ? (logoVivo.currentSrc || logoVivo.src) : '';
+    const im = await pdfPrecargarLogo(logoSrc);
+    const logoAltoPx = (im && im.naturalWidth) ? Math.round(2.2 * 96 * im.naturalHeight / im.naturalWidth) : 0;
+
+    // Pie corporativo: se copia del pie vivo para conservar los datos de empresa
+    const pie = document.querySelector('.footer').cloneNode(true);
+    pie.className = 'pdf-footer';
+    pie.removeAttribute('style');
+
+    const { metaFila1, metaFila2, registros } = pdfLeerDatos();
+    const ctx = { stage, logoSrc: im ? logoSrc : '', logoAltoPx, metaFila1, metaFila2, totalRegistros: registros.length, pie };
+
+    const hojas = [];
+    let actual = pdfCrearHoja(ctx);
+    hojas.push(actual);
+
+    registros.forEach(reg => {
+      const el = pdfCrearRegistro(reg);
+      actual.ledger.appendChild(el);
+      const fondo = actual.ledger.getBoundingClientRect().bottom - actual.sheet.getBoundingClientRect().top;
+      if (fondo > PDF_LIMITE_PX && actual.ledger.children.length > 1) {
+        // No cabe: el registro completo pasa a una nueva hoja carta
+        actual.ledger.removeChild(el);
+        actual = pdfCrearHoja(ctx);
+        actual.ledger.appendChild(el);
+        hojas.push(actual);
+      }
+    });
+
+    if (hojas.length > 1) {
+      hojas.forEach((h, i) => {
+        h.sheet.appendChild(pdfEl('div', 'pdf-pagenum', `Página ${i + 1} de ${hojas.length}`));
+      });
+    }
+    return hojas.map(h => h.sheet);
+  }
+
+  function pdfNombreArchivo() {
+    const promotor = document.getElementById('selectPromotor').value || 'Promotor';
+    const fecha = document.getElementById('inputFecha').value || 'Fecha';
+    const nombreSeguro = promotor.replace(/[\\/:*?"<>|]+/g, '_').replace(/\s+/g, '_');
+    return 'Planilla_' + nombreSeguro + '_' + fecha + '.pdf';
+  }
+
+  const botonDescargarPDF = document.getElementById('btnDescargarPDF');
+  const textoBotonDescargarOriginal = botonDescargarPDF.innerHTML;
+  const estadoPDF = document.getElementById('pdfPrintStatus');
+
+  function pdfLimpiarEstado() {
+    estadoPDF.textContent = '';
+    estadoPDF.classList.add('hidden');
+  }
+
+  function pdfMostrarError(error) {
+    estadoPDF.textContent = error.message || 'No se pudo preparar el PDF.';
+    estadoPDF.className = 'basis-full text-right text-xs text-red-700';
+    estadoPDF.classList.remove('hidden');
+  }
+
+  botonDescargarPDF.addEventListener('click', async () => {
+    if (botonDescargarPDF.disabled) return;
+    botonDescargarPDF.disabled = true;
+    botonDescargarPDF.textContent = 'Preparando PDF...';
+    pdfLimpiarEstado();
+
+    const stage = pdfEl('div', 'pdf-stage');
+    document.body.appendChild(stage);
+    let limpiarImpresion = null;
+
+    try {
+      const hojas = await pdfConstruirHojas(stage);
+      if (!hojas.length) throw new Error('No se generaron hojas para el PDF.');
+      await document.fonts.ready;
+      await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+
+      const tituloOriginal = document.title;
+      let finalizado = false;
+      limpiarImpresion = () => {
+        if (finalizado) return;
+        finalizado = true;
+        document.body.classList.remove('pdf-print-mode');
+        document.title = tituloOriginal;
+        stage.remove();
+        botonDescargarPDF.disabled = false;
+        botonDescargarPDF.innerHTML = textoBotonDescargarOriginal;
+        window.removeEventListener('afterprint', limpiarImpresion);
+      };
+
+      document.title = pdfNombreArchivo().replace(/\.pdf$/i, '');
+      window.addEventListener('afterprint', limpiarImpresion);
+      document.body.classList.add('pdf-print-mode');
+      window.print();
+    } catch (error) {
+      if (limpiarImpresion) limpiarImpresion();
+      else {
+        stage.remove();
+        botonDescargarPDF.disabled = false;
+        botonDescargarPDF.innerHTML = textoBotonDescargarOriginal;
+      }
+      console.error('Error preparando el PDF:', error);
+      pdfMostrarError(error);
+    }
+  });
+
+  document.getElementById('btnBorrarBorrador').addEventListener('click', () => {
+    if (confirm("¿Deseas reiniciar la planilla?")) {
+      localStorage.removeItem('borrador_planilla_angelus');
+      location.reload();
+    }
+  });
+</script>
+</body>
+</html>

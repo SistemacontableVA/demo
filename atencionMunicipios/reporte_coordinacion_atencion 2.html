@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<base href="../../">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="reporte-spreadsheet-id" content="<?= reporteSpreadsheetId ?>">
+<meta name="reporte-municipio-id" content="<?= reporteMunicipioId ?>">
+<title><?= reporteTitulo ?></title>
+<style id="printPageSize">@page { size: letter portrait; margin: 0; }</style>
+
+<style>
+:root {
+  --font: Inter, "Segoe UI", Arial, sans-serif;
+  --navy: #0C2D48;
+  --navy-2: #143C5E;
+  --gold: #D4A138;
+  --gold-soft: #E8C065;
+  --ink: #17242A;
+  --muted: #5B6B78;
+  --line: #CBD5E1;
+  --line-soft: #E3E8EE;
+  --tint: #E8EEF4;
+  --zebra: #F7F9FB;
+  --px: .40in;
+  --gap: .12in;
+
+  /* Degradados corporativos por bloque */
+  --in-end: #137963;
+  --out-end: #9E1932;
+  --grad-in: linear-gradient(95deg, var(--navy) 45%, var(--in-end) 100%);
+  --grad-out: linear-gradient(95deg, var(--navy) 45%, var(--out-end) 100%);
+}
+
+* { box-sizing: border-box; }
+html, body {
+  margin: 0;
+  background: #E9EDF2;
+  font-family: var(--font);
+  color: var(--ink);
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+@media screen { body { padding: 16px 0; overflow-x: auto; } }
+
+.screen-bar {
+  width: 8.5in; margin: 0 auto; padding: 12px 0 10px;
+  display: flex; justify-content: flex-end;
+}
+.btn-print {
+  display: inline-flex; align-items: center; gap: 7px; cursor: pointer;
+  border: 0; border-radius: 8px; padding: 9px 16px;
+  background: var(--gold); color: var(--navy);
+  font: 700 13px/1 var(--font);
+  box-shadow: 0 1px 3px rgba(12,45,72,.25);
+}
+.btn-print:hover { background: #BF8C2C; }
+.btn-print:disabled { cursor: wait; opacity: .6; }
+
+.page {
+  width: 8.5in; margin: 0 auto 24px;
+  background: #fff; box-shadow: 0 6px 24px rgba(12,45,72,.16);
+  display: flex; flex-direction: column; overflow: visible; flex-shrink: 0;
+}
+
+.header {
+  position: relative; display: grid; grid-template-columns: 1.55in 1fr;
+  align-items: center; column-gap: .16in; padding: .13in var(--px);
+  background: linear-gradient(105deg, var(--navy) 55%, var(--navy-2) 100%);
+  border-bottom: 3px solid var(--gold); overflow: hidden;
+}
+.header-deco {
+  position: absolute; right: 0; top: 0; width: 45%; height: 100%;
+  background: radial-gradient(ellipse at right, rgba(212,161,56,.20) 0%, transparent 70%);
+  pointer-events: none;
+}
+.brand { padding-right: .16in; border-right: 1px solid rgba(255,255,255,.22); }
+.logo { display: block; width: 1.2in; max-width: 100%; height: auto; }
+.heading h1 {
+  margin: 0; color: #fff; font-size: 18pt; line-height: 1.05; letter-spacing: -.2px;
+  font-weight: 800; text-transform: uppercase; white-space: nowrap;
+}
+.heading h1 span { color: var(--gold); }
+.subtitle {
+  margin: 6px 0 0; color: rgba(255,255,255,.78); font-size: 8.5pt; font-weight: 700;
+  letter-spacing: 2px; text-transform: uppercase;
+}
+.subtitle:before {
+  content: ""; display: inline-block; width: 26px; height: 1px;
+  vertical-align: middle; margin-right: 8px; background: var(--gold);
+}
+
+.body {
+  flex: 0 0 auto; display: flex; flex-direction: column;
+  gap: var(--gap); padding: .12in var(--px) .12in; overflow: visible;
+}
+
+.meta-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px .12in; }
+.field {
+  display: grid; grid-template-columns: .88in minmax(0, 1fr);
+  min-height: .3in; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; background: #fff;
+}
+.field .label {
+  display: flex; align-items: center; padding: 0 8px; background: var(--navy); color: #fff;
+  font-size: 6.7pt; font-weight: 800; text-transform: uppercase; white-space: nowrap;
+}
+.field input {
+  width: 100%; border: 0; outline: 0; background: transparent;
+  padding: 0 8px; font-family: inherit; font-size: 9pt; font-weight: 600; color: var(--ink);
+}
+
+.cols { display: grid; grid-template-columns: minmax(0, .92fr) minmax(0, 1.08fr); column-gap: .18in; }
+.summary { display: grid; grid-template-columns: minmax(0, 1fr); gap: .08in; }
+.summary-card {
+  gap: 3px; padding: 4px; overflow: hidden; border: 1px solid #d5dfed;
+  border-radius: 10px; background: #fff; box-shadow: 0 2px 6px rgba(12,45,72,.11);
+}
+.summary-heading {
+  position: relative; display: flex; align-items: center; gap: 7px;
+  min-height: .30in; margin: -4px -4px 0; padding: 0 8px;
+  overflow: hidden; border-bottom: 2px solid var(--gold);
+  border-radius: 10px 10px 0 0; background: var(--gold);
+  color: #fff; font-size: 7.8pt; font-weight: 800; text-transform: uppercase;
+}
+.summary-heading:before {
+  position: absolute; inset: 0 15% 0 0; content: "";
+  border-radius: 12px 0 0 0; background: linear-gradient(100deg, var(--navy), var(--navy-2));
+  clip-path: polygon(0 0, 100% 0, 94% 100%, 0 100%);
+}
+.summary-heading-title, .summary-heading-icon { position: relative; z-index: 1; }
+.summary-heading-icon { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; }
+.summary-heading-icon svg { width: 18px; height: 18px; fill: none; stroke: var(--gold-soft); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.summary-table { border: 0; border-radius: 0; font-size: 8.2pt; }
+.summary-table td { height: .28in; padding: 2px 5px; border-bottom: 1px solid #d9e2ef; }
+.summary-table tbody tr:last-child td { border-bottom: 0; }
+.summary-table tbody tr.summary-row td { background: #fff !important; color: var(--navy); font-weight: 700; }
+.summary-table tbody tr.summary-out td {
+  background: #fff !important; color: var(--navy); font-weight: 800;
+}
+.summary-table tbody tr.summary-effective td { background: #fff !important; color: var(--navy); font-weight: 800; }
+.summary-label { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.summary-icon {
+  display: inline-flex; flex: 0 0 22px; align-items: center; justify-content: center;
+  width: 22px; height: 22px; border-radius: 50%; background: #e6edf7;
+}
+.summary-icon svg { width: 14px; height: 14px; fill: none; stroke: var(--navy); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.summary-text { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.summary-amount {
+  display: block; padding: 2px 7px; border-radius: 18px; background: #e4ebf5;
+  color: var(--navy); font-size: 8.5pt; font-weight: 800; text-align: right; white-space: nowrap;
+}
+.summary-journey .summary-amount { font-size: 9.5pt; }
+.summary-balance .summary-amount { background: #ffd86a; color: #101f35; }
+.summary-out .summary-amount { background: var(--out-end); color: #fff; }
+.summary-effective .summary-amount { background: #cce8d3; color: #14532d; }
+.summary-providers .summary-heading { justify-content: space-between; }
+.summary-providers .summary-heading:before { right: 36%; }
+.summary-provider-title { position: relative; z-index: 1; display: flex; align-items: center; gap: 7px; min-width: 0; }
+.provider-heading-total { position: relative; z-index: 1; display: flex; align-items: center; gap: 4px; color: var(--navy); font-size: 7.5pt; font-weight: 800; white-space: nowrap; }
+.provider-heading-total .summary-amount { padding: 2px 5px; background: var(--navy); color: #fff; font-size: 8pt; }
+.provider-pair-table col.provider-label { width: 31%; }
+.provider-pair-table col.provider-value { width: 19%; }
+.provider-pair-table td { padding-left: 4px; padding-right: 4px; }
+.col { display: flex; flex-direction: column; gap: var(--gap); min-width: 0; }
+.blk { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.blk.grow { flex: 0 0 auto; }
+
+.grp {
+  display: flex; align-items: center; gap: 8px; height: .31in; padding: 0 10px;
+  background: var(--navy); color: #fff; border-radius: 6px;
+  font-size: 8.7pt; font-weight: 800; text-transform: uppercase;
+}
+.grp:before { content: ""; width: 4px; height: 12px; border-radius: 2px; background: var(--gold); }
+.sec {
+  display: flex; align-items: center; gap: 6px; padding-bottom: 2px;
+  border-bottom: 1.5px solid var(--navy); font-size: 8.3pt; font-weight: 800;
+  color: var(--navy); text-transform: uppercase;
+}
+.sec:before { content: ""; width: 3px; height: 10px; background: var(--gold); border-radius: 1px; }
+.inventory-lens-icon { width: 15px; height: 15px; fill: none; stroke: var(--navy); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+.tbl {
+  width: 100%; table-layout: fixed; border-collapse: separate; border-spacing: 0;
+  border: 1px solid var(--line); border-radius: 6px; overflow: hidden; background: #fff; font-size: 8.8pt;
+}
+.tbl th {
+  background: var(--navy); color: #fff; padding: 4px 6px; text-align: left;
+  font-size: 7pt; font-weight: 700; text-transform: uppercase; white-space: nowrap;
+}
+.tbl td {
+  padding: 2px 6px; height: .27in; border-bottom: 1px solid var(--line-soft);
+  vertical-align: middle; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.tbl tbody tr:nth-child(even) td { background: var(--zebra); }
+.tbl tbody tr:last-child td { border-bottom: 0; }
+.tbl td.i { padding: 2px 3px; }
+.tbl .c { text-align: center; }
+.tbl .r { text-align: right; }
+.tbl .b { font-weight: 700; }
+.tbl .sep { border-left: 1px solid var(--line-soft); }
+.salary-total-label { padding-left: 4px !important; padding-right: 4px !important; font-size: 8pt; white-space: normal !important; }
+.salary-total-value { padding-left: 3px !important; padding-right: 3px !important; font-size: 9pt; }
+.coordinator-note { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 8px; align-items: start; padding: 6px 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--zebra); font-size: 7.5pt; line-height: 1.25; }
+.coordinator-note-label { color: var(--navy); font-weight: 800; text-transform: uppercase; }
+.coordinator-note-text { min-width: 0; overflow-wrap: anywhere; white-space: pre-wrap; }
+
+.tbl input {
+  display: block; width: 100%; height: 19px; padding: 0 5px;
+  border: 1px solid var(--line); border-radius: 3px; outline: 0; background: #fff;
+  font-family: inherit; font-size: 9pt; font-weight: 600; color: var(--ink); text-align: right;
+}
+.tbl input.txt { text-align: left; }
+
+.tbl tr.tot td { background: var(--tint) !important; color: var(--navy); font-weight: 800; border-top: 1.5px solid var(--navy); }
+.tbl tr.ok td { background: #E4F3EA !important; color: #14532D; font-weight: 800; border-top: 1.5px solid #15803D; }
+.tbl tr.ok td.v { font-size: 9.5pt; }
+.tbl tr.summary-out td { background: var(--grad-out) !important; color: #fff; font-weight: 800; border-top: 1.5px solid var(--out-end); }
+
+.tbl tr.band td { background: var(--tint) !important; color: var(--navy); font-size: 7pt; font-weight: 800; text-transform: uppercase; }
+.tbl tr.band td.bk { background: var(--navy) !important; color: #fff; text-align: center; }
+.tbl tr.band td.bv { text-align: center; font-size: 9pt; }
+.tbl tr.band.entrada td { border-top: 1.5px solid var(--navy); }
+.tbl.inv td { height: .20in; }
+.qty { display: block; width: .36in; margin: 0 auto; padding: 2px 0; text-align: center; font-weight: 700; border: 1px solid var(--line); border-radius: 3px; background: #fff; color: var(--navy); }
+
+/* APLICACIÓN DE DEGRADADOS EN COLUMNA IZQUIERDA (EXCEPTO INVENTARIO) */
+.col-in .grp,
+.col-in .tbl thead tr {
+  background: var(--grad-in);
+}
+.col-in .tbl thead th {
+  background: transparent;
+}
+
+/* APLICACIÓN DE DEGRADADOS EN COLUMNA DERECHA (EXCEPTO RESUMEN/PROVEEDORES) */
+.col-out .grp,
+.col-out > .blk > .tbl thead tr {
+  background: var(--grad-out);
+}
+.col-out > .blk > .tbl thead th {
+  background: transparent;
+}
+
+/* BANNERS DE CIERRE */
+.banner {
+  display: flex; align-items: center; justify-content: space-between;
+  min-height: .36in; padding: 0 12px; border-radius: 6px;
+  font-size: 8pt; font-weight: 800; text-transform: uppercase;
+  color: #fff;
+}
+.banner .amt { font-size: 12pt; color: #fff; }
+.banner.in { background: var(--grad-in); }
+.banner.out { background: var(--grad-out); }
+
+.footer {
+  display: grid; grid-template-columns: 1fr 1.35fr 1fr; gap: 12px; align-items: center;
+  padding: .1in var(--px); min-height: .6in; background: var(--navy); color: #fff; border-top: 3px solid var(--gold); font-size: 6.8pt;
+}
+.footer strong { display: block; margin-bottom: 1px; color: var(--gold-soft); font-size: 6.6pt; }
+.footer-item { display: flex; align-items: center; gap: 8px; }
+.footer-icon { width: 25px; height: 25px; border: 1px solid rgba(255,255,255,.45); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+.footer-icon svg { width: 13px; height: 13px; fill: none; stroke: #fff; stroke-width: 1.7; stroke-linecap: round; }
+.footer-center { border-left: 1px solid rgba(255,255,255,.25); border-right: 1px solid rgba(255,255,255,.25); padding: 0 12px; }
+
+@media print {
+  html, body { width: 8.5in; margin: 0; padding: 0; background: #fff; overflow: visible; }
+  .no-print, .screen-bar { display: none !important; }
+  .page {
+    width: 8.5in; height: var(--altura-pagina-impresion); margin: 0;
+    box-shadow: none; overflow: visible; break-after: avoid-page;
+  }
+}
+</style>
+</head>
+<body>
+
+<textarea id="reportDataPayload" hidden><?= reporteDatosJson ?></textarea>
+
+<div class="screen-bar no-print">
+  <button type="button" class="btn-print" onclick="imprimirReporte()" disabled>
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+    Imprimir reporte
+  </button>
+  <span id="reportStatus" role="status" aria-live="polite" hidden></span>
+</div>
+
+<script>
+const PX_POR_PULGADA = 96;
+const TITULO_REPORTE_ORIGINAL = document.title === '<?= reporteTitulo ?>'
+  ? 'Reporte Contable de Jornada de Atención'
+  : document.title;
+
+function mostrarEstadoReporte(mensaje) {
+  const estado = document.getElementById('reportStatus');
+  estado.textContent = mensaje;
+  estado.hidden = !mensaje;
+}
+
+function ajustarFormatoImpresion() {
+  const pagina = document.getElementById('areaImpresion');
+  const alturaContenido = pagina.getBoundingClientRect().height;
+  const alturaMinima = Math.ceil(alturaContenido + 4);
+  const alturaPulgadas =
+    Math.ceil((alturaMinima / PX_POR_PULGADA) * 100) / 100;
+  pagina.style.setProperty('--altura-pagina-impresion', `${alturaPulgadas}in`);
+  document.getElementById('printPageSize').textContent =
+    `@page { size: 8.5in ${alturaPulgadas}in; margin: 0; }`;
+}
+
+function segmentoNombreArchivo(id, valorPredeterminado) {
+  const campo = document.getElementById(id);
+  const valor = campo ? campo.value : '';
+  const limpio = String(valor)
+    .trim()
+    .replace(/\s+/g, ' ')
+    .replace(/[<>:"/\\|?*\u0000-\u001F]/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/\s*-\s*/g, '-')
+    .replace(/[ .-]+$/g, '')
+    .slice(0, 80)
+    .replace(/[ .-]+$/g, '');
+  return limpio || valorPredeterminado;
+}
+
+function obtenerNombreArchivoReporte() {
+  return [
+    'Reporte de Atención',
+    segmentoNombreArchivo('inputMunicipio', 'Sin municipio'),
+    segmentoNombreArchivo('inputFecha', 'Sin fecha'),
+    segmentoNombreArchivo('inputCoordinador', 'Sin coordinador')
+  ].join(' - ');
+}
+
+function imprimirReporte() {
+  if (document.querySelector('.btn-print').disabled) return;
+  ajustarFormatoImpresion();
+  document.title = obtenerNombreArchivoReporte();
+  window.print();
+}
+
+window.addEventListener('beforeprint', ajustarFormatoImpresion);
+window.addEventListener('afterprint', function() {
+  document.title = TITULO_REPORTE_ORIGINAL;
+});
+
+function valorMetaReporte(nombre, marcador) {
+  const valor = document.querySelector(`meta[name="${nombre}"]`).content.trim();
+  return valor === marcador ? '' : valor;
+}
+
+function esperarDatosReporteDesdePlataforma() {
+  if (!window.opener) {
+    mostrarEstadoReporte('Abre este reporte desde Atención Municipios para cargar los datos.');
+    return;
+  }
+
+  const plataformaOrigin = window.location.origin;
+  const recibirDatos = function(event) {
+    if (event.source !== window.opener ||
+        event.origin !== plataformaOrigin ||
+        !event.data) return;
+
+    if (event.data.tipo === 'atencionMunicipios:errorReporte') {
+      window.removeEventListener('message', recibirDatos);
+      mostrarEstadoReporte(event.data.mensaje || 'No se pudieron cargar los datos del reporte.');
+      return;
+    }
+
+    if (event.data.tipo !== 'atencionMunicipios:datosReporte' ||
+        !event.data.reporte ||
+        typeof event.data.reporte !== 'object' ||
+        Array.isArray(event.data.reporte)) return;
+
+    window.removeEventListener('message', recibirDatos);
+    poblarPlantillaHTML(event.data.reporte);
+    window.opener.postMessage({
+      tipo: 'atencionMunicipios:datosReporteRecibidos'
+    }, plataformaOrigin);
+  };
+
+  window.addEventListener('message', recibirDatos);
+  mostrarEstadoReporte('Esperando datos de Atención Municipios…');
+  window.opener.postMessage({
+    tipo: 'atencionMunicipios:plantillaReporteLista'
+  }, plataformaOrigin);
+}
+
+function cargarDatosReporte() {
+  const spreadsheetId = valorMetaReporte(
+    'reporte-spreadsheet-id',
+    '<?= reporteSpreadsheetId ?>'
+  );
+  const municipioId = valorMetaReporte(
+    'reporte-municipio-id',
+    '<?= reporteMunicipioId ?>'
+  );
+  if (!spreadsheetId && !municipioId) {
+    const datos = document.getElementById('reportDataPayload').value.trim();
+    if (!datos || datos === '<?= reporteDatosJson ?>') {
+      esperarDatosReporteDesdePlataforma();
+      return;
+    }
+    let reporteDatos;
+    try {
+      reporteDatos = JSON.parse(datos);
+    } catch (error) {
+      mostrarEstadoReporte('No se pudieron interpretar los datos del reporte.');
+      return;
+    }
+    poblarPlantillaHTML(reporteDatos);
+    return;
+  }
+
+  if (!/^[A-Za-z0-9_-]+$/.test(spreadsheetId) ||
+      !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(municipioId) ||
+      !window.opener) {
+    mostrarEstadoReporte('Abre este reporte desde Atención Municipios para validar el acceso.');
+    return;
+  }
+
+  let plataformaOrigin = '';
+  try {
+    plataformaOrigin = new URL(document.referrer).origin;
+  } catch (error) {
+    mostrarEstadoReporte('No se pudo identificar la plataforma para validar el acceso.');
+    return;
+  }
+
+  let intentos = 0;
+  let intervalo;
+  const recibirCredenciales = function(event) {
+    const datos = event.data;
+    if (event.source !== window.opener || event.origin !== plataformaOrigin || !datos) return;
+    if (datos.tipo === 'atencionMunicipios:errorReporte') {
+      clearInterval(intervalo);
+      window.removeEventListener('message', recibirCredenciales);
+      mostrarEstadoReporte(datos.mensaje || 'No se pudo validar la sesión para el reporte.');
+      return;
+    }
+    if (
+        datos.tipo !== 'atencionMunicipios:credencialesReporte' ||
+        datos.spreadsheetId !== spreadsheetId ||
+        datos.municipioId !== municipioId ||
+        typeof datos.token !== 'string' || typeof datos.tenantId !== 'string') return;
+
+    clearInterval(intervalo);
+    window.removeEventListener('message', recibirCredenciales);
+    mostrarEstadoReporte('Verificando acceso y cargando reporte…');
+    if (typeof google === 'undefined' || !google.script) {
+      mostrarEstadoReporte('No se pudo conectar con el servicio del reporte. Inténtalo nuevamente.');
+      return;
+    }
+    google.script.run
+      .withSuccessHandler(poblarPlantillaHTML)
+      .withFailureHandler(function(err) {
+        mostrarEstadoReporte(err.message || 'No se pudieron cargar los datos del reporte.');
+      })
+      .obtenerDatosReporteCoordinacion(
+        spreadsheetId,
+        municipioId,
+        { token: datos.token, tenantId: datos.tenantId }
+      );
+  };
+  const solicitarCredenciales = function() {
+    if (intentos >= 120) {
+      clearInterval(intervalo);
+      window.removeEventListener('message', recibirCredenciales);
+      mostrarEstadoReporte('No se pudo validar la sesión. Cierra el reporte e inténtalo nuevamente desde la plataforma.');
+      return;
+    }
+    intentos += 1;
+    window.opener.postMessage({
+      tipo: 'atencionMunicipios:solicitarCredencialesReporte',
+      spreadsheetId: spreadsheetId,
+      municipioId: municipioId
+    }, '*');
+  };
+
+  window.addEventListener('message', recibirCredenciales);
+  mostrarEstadoReporte('Esperando validación de la sesión…');
+  intervalo = setInterval(solicitarCredenciales, 500);
+  solicitarCredenciales();
+}
+
+document.addEventListener('DOMContentLoaded', cargarDatosReporte);
+</script>
+
+<main class="page" id="areaImpresion">
+
+  <header class="header">
+    <div class="header-deco" aria-hidden="true"></div>
+    <div class="brand">
+      <img class="logo" src="https://sistemacontableva.github.io/demo/assets/images/logomenu.png" alt="Óptica Angelus Visión S.A.S." />
+    </div>
+    <div class="heading">
+      <h1>Reporte contable <span>de jornada</span></h1>
+      <div class="subtitle">Información de atención</div>
+    </div>
+  </header>
+
+  <div class="body">
+
+    <!-- DATOS DE LA JORNADA (PRIMERO HOTEL, DESPUÉS TELÉFONO) -->
+    <section class="meta-grid">
+      <div class="field"><div class="label">Municipio</div><input type="text" id="inputMunicipio"></div>
+      <div class="field"><div class="label">Fecha</div><input type="text" id="inputFecha"></div>
+      <div class="field"><div class="label">Coordinador</div><input type="text" id="inputCoordinador"></div>
+      <div class="field"><div class="label">Hotel</div><input type="text" id="inputHotel"></div>
+      <div class="field"><div class="label">Teléfono</div><input type="text" id="inputTelefono"></div>
+      <div class="field"><div class="label">Dirección</div><input type="text" id="inputDireccion"></div>
+    </section>
+
+    <div class="cols">
+
+      <!-- COLUMNA IZQUIERDA (DEGRADADO AZUL -> VERDE EXCEPTO INVENTARIO) -->
+      <div class="col col-in">
+        <div class="grp">Ingresos en jornada</div>
+
+        <div class="blk">
+          <table class="tbl">
+            <colgroup><col style="width:36%"><col style="width:20%"><col style="width:24%"><col style="width:20%"></colgroup>
+            <thead>
+              <tr><th>Detalle consulta</th><th class="c">Asistencia</th><th class="r">Recaudo</th><th class="r">Descuento</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="b">Consulta General</td>
+                <td class="i"><input type="text" id="asistenciaConsulta"></td>
+                <td class="i"><input type="text" id="recaudoConsulta"></td>
+                <td class="i"><input type="text" id="descuentoConsulta"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="blk">
+          <div class="sec">Lentes vendidos</div>
+          <table class="tbl">
+            <colgroup><col style="width:46%"><col style="width:16%"><col style="width:38%"></colgroup>
+            <thead>
+              <tr><th>Descripción</th><th class="c">Cant.</th><th class="r">Recaudo</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Normales</td>
+                <td class="i"><input type="text" id="lentesNormCant"></td>
+                <td class="i"><input type="text" id="lentesNormRecaudo"></td>
+              </tr>
+              <tr>
+                <td>Especiales</td>
+                <td class="i"><input type="text" id="lentesEspCant"></td>
+                <td class="i"><input type="text" id="lentesEspRecaudo"></td>
+              </tr>
+              <tr>
+                <td>Consignación</td>
+                <td class="i"><input type="text" id="lentesConsigCant"></td>
+                <td class="i"><input type="text" id="lentesConsigRecaudo"></td>
+              </tr>
+              <tr>
+                <td>Montura</td>
+                <td class="i"><input type="text" id="lentesMontCant"></td>
+                <td class="i"><input type="text" id="lentesMontRecaudo"></td>
+              </tr>
+              <tr class="tot">
+                <td>TOTAL RECAUDO LENTES</td>
+                <td class="c" id="lentesTotalCant">-</td>
+                <td class="r" id="lentesTotalRecaudo">$ 0</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="blk">
+          <div class="sec">Venta de gotas</div>
+          <table class="tbl">
+            <colgroup><col style="width:36%"><col style="width:14%"><col style="width:25%"><col style="width:25%"></colgroup>
+            <thead>
+              <tr><th>Descripción</th><th class="c">Cant.</th><th class="r">Desc.</th><th class="r">Valor</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td id="expoFreshDescripcion"></td>
+                <td class="i"><input type="text" id="expoFreshCant"></td>
+                <td class="i"><input type="text" id="expoFreshDesc"></td>
+                <td class="i"><input type="text" id="expoFreshValor"></td>
+              </tr>
+              <tr>
+                <td id="totalConfordDescripcion"></td>
+                <td class="i"><input type="text" id="totalConfordCant"></td>
+                <td class="i"><input type="text" id="totalConfordDesc"></td>
+                <td class="i"><input type="text" id="totalConfordValor"></td>
+              </tr>
+              <tr>
+                <td id="eucaliptoDescripcion"></td>
+                <td class="i"><input type="text" id="eucaliptoCant"></td>
+                <td class="i"><input type="text" id="eucaliptoDesc"></td>
+                <td class="i"><input type="text" id="eucaliptoValor"></td>
+              </tr>
+              <tr class="tot">
+                <td>TOTAL GOTAS</td>
+                <td class="c" id="totalGotasCant">-</td>
+                <td class="r">-</td>
+                <td class="r" id="totalGotasValor">$ 0</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- OTROS INGRESOS DINÁMICOS -->
+        <div class="blk">
+          <div class="sec">Otros ingresos</div>
+          <table class="tbl">
+            <colgroup><col style="width:64%"><col style="width:36%"></colgroup>
+            <thead>
+              <tr><th>Descripción</th><th class="r">Valor</th></tr>
+            </thead>
+            <tbody id="bodyOtrosIngresos">
+              <tr>
+                <td class="i"><input type="text" class="txt" placeholder="Sin otros ingresos"></td>
+                <td class="i"><input type="text" value="$ 0"></td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr class="tot">
+                <td>TOTAL OTROS INGRESOS</td>
+                <td class="r" id="totalOtrosIngresos">$ 0</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <div class="banner in">
+          <span>Total ingresos general</span>
+          <span class="amt" id="totalIngresosGeneral">$ 0</span>
+        </div>
+
+        <!-- INVENTARIO MONTURAS (AZUL CORPORATIVO SIN DEGRADADO) -->
+        <div class="blk grow">
+          <div class="sec">
+            <svg class="inventory-lens-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 11.5a3 3 0 0 1 3-3h3a3 3 0 0 1 3 3v1a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3z"></path><path d="M13 11.5a3 3 0 0 1 3-3h3a3 3 0 0 1 3 3v1a3 3 0 0 1-3 3h-3a3 3 0 0 1-3-3z"></path><path d="M11 11h2M2 10 1 8M22 10l1-2"></path></svg>
+            <span>Inventario monturas</span>
+          </div>
+          <table class="tbl grow inv">
+            <colgroup><col style="width:38%"><col style="width:12%"><col style="width:38%"><col style="width:12%"></colgroup>
+            <tbody>
+              <tr class="band">
+                <td colspan="2">Salida</td>
+                <td class="bk">Total</td>
+                <td class="bv" id="invTotalSalida">0</td>
+              </tr>
+              <tr>
+                <td>Réplica</td>
+                <td class="i"><span class="qty" id="invReplica">0</span></td>
+                <td class="sep">Montura Fashion</td>
+                <td class="i"><span class="qty" id="invFashion">0</span></td>
+              </tr>
+              <tr>
+                <td>Gama Alta</td>
+                <td class="i"><span class="qty" id="invGamaAlta">0</span></td>
+                <td class="sep">Polarizada</td>
+                <td class="i"><span class="qty" id="invPolarizada">0</span></td>
+              </tr>
+              <tr>
+                <td>Gama Media Dama</td>
+                <td class="i"><span class="qty" id="invGamaMediaDama">0</span></td>
+                <td class="sep">Seguridad</td>
+                <td class="i"><span class="qty" id="invSeguridad">0</span></td>
+              </tr>
+              <tr>
+                <td>Gama Media Caballero</td>
+                <td class="i"><span class="qty" id="invGamaMediaCab">0</span></td>
+                <td class="sep">Niños Gama Media</td>
+                <td class="i"><span class="qty" id="invNinosGamaMedia">0</span></td>
+              </tr>
+              <tr>
+                <td>Convencional</td>
+                <td class="i"><span class="qty" id="invConvencional">0</span></td>
+                <td class="sep">Montura Niños</td>
+                <td class="i"><span class="qty" id="invMonturaNinos">0</span></td>
+              </tr>
+              <tr class="band entrada">
+                <td colspan="2">Entrada</td>
+                <td class="bk">Total</td>
+                <td class="bv" id="invTotalEntrada">0</td>
+              </tr>
+              <tr>
+                <td>Garantía</td>
+                <td class="i"><span class="qty" id="invGarantia">0</span></td>
+                <td class="sep">Propia</td>
+                <td class="i"><span class="qty" id="invPropia">0</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="coordinator-note">
+          <span class="coordinator-note-label">Nota:</span>
+          <span class="coordinator-note-text" id="notaJornada"></span>
+        </div>
+      </div>
+
+      <!-- COLUMNA DERECHA (DEGRADADO AZUL -> ROJO EN EGRESOS) -->
+      <div class="col col-out">
+        <div class="grp">Egresos y gastos</div>
+
+        <div class="blk">
+          <table class="tbl">
+            <colgroup><col style="width:62%"><col style="width:38%"></colgroup>
+            <thead>
+              <tr><th>Concepto transferencia</th><th class="r">Valor</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Transf. Lentes</td>
+                <td class="i"><input type="text" id="transfLentes"></td>
+              </tr>
+              <tr>
+                <td>Transf. Consulta</td>
+                <td class="i"><input type="text" id="transfConsulta"></td>
+              </tr>
+              <tr class="tot">
+                <td>TOTAL TRANSFERENCIAS</td>
+                <td class="r" id="totalTransf">$ 0</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="blk">
+          <div class="sec">Gastos operativos</div>
+          <table class="tbl">
+            <colgroup><col style="width:20%"><col style="width:26%"><col style="width:32%"><col style="width:22%"></colgroup>
+            <tbody>
+              <tr>
+                <td>Convenio</td>
+                <td class="i"><input type="text" id="gastoConvenio"></td>
+                <td class="sep">Gasolina</td>
+                <td class="i"><input type="text" id="gastoGasolina"></td>
+              </tr>
+              <tr>
+                <td>Hotel</td>
+                <td class="i"><input type="text" id="gastoHotel"></td>
+                <td class="sep">Comida + Refrig.</td>
+                <td class="i"><input type="text" id="gastoComida"></td>
+              </tr>
+              <tr>
+                <td>Peajes</td>
+                <td class="i"><input type="text" id="gastoPeajes"></td>
+                <td class="sep"></td>
+                <td></td>
+              </tr>
+              <tr class="tot">
+                <td colspan="3">TOTAL GASTOS OPERATIVOS</td>
+                <td class="r" id="totalGastosOperativos">$ 0</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- TABLA DE OTROS GASTOS DINÁMICOS -->
+        <div class="blk">
+          <div class="sec">Otros gastos</div>
+          <table class="tbl" id="tablaOtrosGastos">
+            <colgroup><col style="width:64%"><col style="width:36%"></colgroup>
+            <thead>
+              <tr><th>Descripción</th><th class="r">Valor</th></tr>
+            </thead>
+            <tbody id="bodyOtrosGastos">
+              <tr>
+                <td class="i"><input type="text" class="txt" placeholder="Sin registros"></td>
+                <td class="i"><input type="text" value="$ 0"></td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr class="tot">
+                <td>TOTAL OTROS GASTOS</td>
+                <td class="r" id="totalOtrosGastos">$ 0</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <div class="blk">
+          <div class="sec">Salarios personal atención</div>
+          <table class="tbl dense">
+            <colgroup><col style="width:22%"><col style="width:16%"><col style="width:16%"><col style="width:22%"><col style="width:24%"></colgroup>
+            <thead>
+              <tr><th>Cargo / Persona</th><th class="r">V. Día</th><th class="r">Adic.</th><th class="r">Gotas</th><th class="r">Total</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>RICARDO ROD.</td>
+                <td class="r" id="salarioRicardoVDia">$ 0</td>
+                <td class="r" id="salarioRicardoAdic">$ 0</td>
+                <td class="r" id="salarioRicardoGotas">$ 0</td>
+                <td class="r b" id="salarioRicardoTotal">$ 0</td>
+              </tr>
+              <tr>
+                <td>COORDINADOR 1</td>
+                <td class="r" id="salarioCoordVDia">$ 0</td>
+                <td class="r" id="salarioCoordAdic">$ 0</td>
+                <td class="r" id="salarioCoordGotas">$ 0</td>
+                <td class="r b" id="salarioCoordTotal">$ 0</td>
+              </tr>
+              <tr>
+                <td>COORDINADOR 2</td>
+                <td class="r" id="salarioCoord2VDia">$ 0</td>
+                <td class="r" id="salarioCoord2Adic">$ 0</td>
+                <td class="r" id="salarioCoord2Gotas">$ 0</td>
+                <td class="r b" id="salarioCoord2Total">$ 0</td>
+              </tr>
+              <tr>
+                <td>ASESOR (1) 10%</td>
+                <td class="r" id="salarioAsesorVDia">$ 0</td>
+                <td class="r">$ 0</td>
+                <td class="r" id="salarioAsesorGotas">$ 0</td>
+                <td class="r b" id="salarioAsesorTotal">$ 0</td>
+              </tr>
+              <tr>
+                <td>ASESOR (2) 10%</td>
+                <td class="r" id="salarioAsesor2VDia">$ 0</td>
+                <td class="r">$ 0</td>
+                <td class="r" id="salarioAsesor2Gotas">$ 0</td>
+                <td class="r b" id="salarioAsesor2Total">$ 0</td>
+              </tr>
+              <tr class="tot salary-total-row">
+                <td colspan="3" class="r salary-total-label">Retenciones (<span id="retV">$0</span> / <span id="retDoc">$0</span>)</td>
+                <td class="r salary-total-label">Total Salario</td>
+                <td class="r salary-total-value" id="totalSalarios">$ 0</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="banner out">
+          <span>Egresos + gastos + salarios</span>
+          <span class="amt" id="egresosMasSalarios">$ 0</span>
+        </div>
+
+        <div class="summary">
+          <div class="blk summary-card summary-journey">
+            <div class="summary-heading">
+              <span class="summary-heading-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M4 20h16"></path><path d="M7 16h2v4H7zM11 10h2v10h-2zM15 4h2v16h-2z"></path></svg>
+              </span>
+              <span class="summary-heading-title">Resumen de jornada</span>
+            </div>
+            <table class="tbl summary-table">
+              <colgroup><col style="width:62%"><col style="width:38%"></colgroup>
+              <tbody>
+                <tr class="summary-row">
+                  <td><div class="summary-label">
+                    <span class="summary-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="5"></circle><path d="M10 7h4M10 9h4M12 5.5v5"></path><path d="M3 17h4l2-2h6l3 2h3v3H8l-5-2z"></path></svg></span>
+                    <span class="summary-text">Ingresos - Abono Proveedor</span>
+                  </div></td>
+                  <td><span class="summary-amount" id="ingresosAbonoProv">$ 0</span></td>
+                </tr>
+                <tr class="summary-row summary-balance">
+                  <td><div class="summary-label">
+                    <span class="summary-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M13 4h6v16h-6"></path><path d="M3 12h12M10 7l5 5-5 5"></path></svg></span>
+                    <span class="summary-text">Saldo Anterior</span>
+                  </div></td>
+                  <td><span class="summary-amount" id="saldoAnterior">$ 0</span></td>
+                </tr>
+                <tr class="summary-out">
+                  <td><div class="summary-label">
+                    <span class="summary-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"></rect><path d="M8 7h8M8 11h2M14 11h2M8 15h2M14 15h2M8 18h2M14 18h2"></path></svg></span>
+                    <span class="summary-text">Egresos y Salarios</span>
+                  </div></td>
+                  <td><span class="summary-amount" id="resumenEgresosSalarios">$ 0</span></td>
+                </tr>
+                <tr class="summary-effective">
+                  <td><div class="summary-label">
+                    <span class="summary-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 20h18M5 17l5-5 3 2 6-7"></path><path d="M15 7h4v4"></path><path d="M6 17v3M11 12v8M17 7v13"></path></svg></span>
+                    <span class="summary-text">Efectivo Acumulado</span>
+                  </div></td>
+                  <td><span class="summary-amount" id="efectivoAcumulado">$ 0</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="blk summary-card summary-providers">
+            <div class="summary-heading">
+              <span class="summary-provider-title">
+                <span class="summary-heading-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"></circle><circle cx="17" cy="9" r="2.5"></circle><path d="M3 19a6 6 0 0 1 12 0M14 14a5 5 0 0 1 7 5"></path></svg>
+                </span>
+                <span class="summary-heading-title">Proveedores</span>
+              </span>
+              <span class="provider-heading-total">
+                <span>Total</span>
+                <span class="summary-amount" id="totalProveedores">$ 0</span>
+              </span>
+            </div>
+            <table class="tbl summary-table provider-pair-table">
+              <colgroup>
+                <col class="provider-label"><col class="provider-value">
+                <col class="provider-label"><col class="provider-value">
+              </colgroup>
+              <tbody>
+                <tr class="summary-row">
+                  <td><div class="summary-label">
+                    <span class="summary-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 2 3h10a2 2 0 0 0 2-3l-5-9V3"></path><path d="M8 15h8M10 12h4"></path></svg></span>
+                    <span class="summary-text">Laboratorio</span>
+                  </div></td>
+                  <td><span class="summary-amount" id="provLaboratorio">$ 0</span></td>
+                  <td><div class="summary-label">
+                    <span class="summary-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M2 11.5a3 3 0 0 1 3-3h3a3 3 0 0 1 3 3v1a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3z"></path><path d="M13 11.5a3 3 0 0 1 3-3h3a3 3 0 0 1 3 3v1a3 3 0 0 1-3 3h-3a3 3 0 0 1-3-3z"></path><path d="M11 11h2M2 10 1 8M22 10l1-2"></path></svg></span>
+                    <span class="summary-text">Monturas</span>
+                  </div></td>
+                  <td><span class="summary-amount" id="provMonturas">$ 0</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <footer class="footer">
+    <div class="footer-item">
+      <div class="footer-icon">
+        <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="m4 7 8 6 8-6"></path></svg>
+      </div>
+      <div>
+        <strong>CONTACTO</strong>
+        <span>contacto@angelusvision.com</span>
+      </div>
+    </div>
+    <div class="footer-item footer-center">
+      <div class="footer-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 21s7-6.4 7-12a7 7 0 1 0-14 0c0 5.6 7 12 7 12Z"></path><circle cx="12" cy="9" r="2.2"></circle></svg>
+      </div>
+      <div>
+        <strong>DIRECCIÓN</strong>
+        <span>Sede Principal Óptica Angelus</span>
+      </div>
+    </div>
+    <div class="footer-item">
+      <div class="footer-icon">
+        <svg viewBox="0 0 24 24"><path d="M6.5 3.5h3l1.5 4-2 1.7a15 15 0 0 0 5.8 5.8l1.7-2 4 1.5v3c0 1.1-.9 2-2 2C10.5 19.5 4.5 13.5 4.5 5.5c0-1.1.9-2 2-2Z"></path></svg>
+      </div>
+      <div>
+        <strong>TELÉFONOS DE CONTACTO</strong>
+        <span>+57 300 000 0000</span>
+      </div>
+    </div>
+  </footer>
+</main>
+
+<script>
+function poblarPlantillaHTML(d) {
+  if (!d) return;
+
+  const setVal = (id, val) => {
+    const el = document.getElementById(id);
+    if (el && val !== undefined) el.value = val;
+  };
+
+  const setTxt = (id, val) => {
+    const el = document.getElementById(id);
+    if (el && val !== undefined) el.textContent = val;
+  };
+
+  // Cabecera
+  setVal('inputMunicipio', d.municipio);
+  setVal('inputFecha', d.fecha);
+  setVal('inputCoordinador', d.coordinador);
+  setVal('inputHotel', d.hotel);
+  setVal('inputTelefono', d.telefono);
+  setVal('inputDireccion', d.direccion);
+
+  // Consulta
+  setVal('asistenciaConsulta', d.asistenciaConsulta);
+  setVal('recaudoConsulta', d.recaudoConsulta);
+  setVal('descuentoConsulta', d.descuentoConsulta);
+
+  // Gotas
+  setTxt('expoFreshDescripcion', d.expoFreshDescripcion);
+  setVal('expoFreshCant', d.expoFreshCant);
+  setVal('expoFreshDesc', d.expoFreshDesc);
+  setVal('expoFreshValor', d.expoFreshValor);
+  setTxt('totalConfordDescripcion', d.totalConfordDescripcion);
+  setVal('totalConfordCant', d.totalConfordCant);
+  setVal('totalConfordDesc', d.totalConfordDesc);
+  setVal('totalConfordValor', d.totalConfordValor);
+  setTxt('eucaliptoDescripcion', d.eucaliptoDescripcion);
+  setVal('eucaliptoCant', d.eucaliptoCant);
+  setVal('eucaliptoDesc', d.eucaliptoDesc);
+  setVal('eucaliptoValor', d.eucaliptoValor);
+  setTxt('totalGotasCant', d.totalGotasCant);
+  setTxt('totalGotasValor', d.totalGotasValor);
+
+  // Lentes
+  setVal('lentesNormCant', d.lentesNormCant);
+  setVal('lentesNormRecaudo', d.lentesNormRecaudo);
+  setVal('lentesEspCant', d.lentesEspCant);
+  setVal('lentesEspRecaudo', d.lentesEspRecaudo);
+  setVal('lentesConsigCant', d.lentesConsigCant);
+  setVal('lentesConsigRecaudo', d.lentesConsigRecaudo);
+  setVal('lentesMontCant', d.lentesMontCant);
+  setVal('lentesMontRecaudo', d.lentesMontRecaudo);
+  setTxt('lentesTotalCant', d.lentesTotalCant);
+  setTxt('lentesTotalRecaudo', d.lentesTotalRecaudo);
+
+  // Otros Ingresos Dinámicos (Rango B25:F28)
+  if (d.otrosIngresosLista && d.otrosIngresosLista.length > 0) {
+    const tbodyIng = document.getElementById('bodyOtrosIngresos');
+    tbodyIng.innerHTML = '';
+    d.otrosIngresosLista.forEach(ing => {
+      const tr = document.createElement('tr');
+      const descripcion = document.createElement('td');
+      descripcion.className = 'i';
+      const descripcionInput = document.createElement('input');
+      descripcionInput.type = 'text';
+      descripcionInput.className = 'txt';
+      descripcionInput.value = String(ing.descripcion || '');
+      descripcion.appendChild(descripcionInput);
+
+      const valor = document.createElement('td');
+      valor.className = 'i';
+      const valorInput = document.createElement('input');
+      valorInput.type = 'text';
+      valorInput.value = String(ing.valor || '');
+      valor.appendChild(valorInput);
+
+      tr.append(descripcion, valor);
+      tbodyIng.appendChild(tr);
+    });
+  }
+  setTxt('totalOtrosIngresos', d.totalOtrosIngresos);
+  setTxt('totalIngresosGeneral', d.totalIngresosGeneral);
+
+  // Egresos & Transferencias
+  setVal('transfLentes', d.transfLentes);
+  setVal('transfConsulta', d.transfConsulta);
+  setTxt('totalTransf', d.totalTransf);
+
+  // Salarios
+  setTxt('salarioRicardoVDia', d.salarioRicardoVDia);
+  setTxt('salarioRicardoAdic', d.salarioRicardoAdic);
+  setTxt('salarioRicardoGotas', d.salarioRicardoGotas);
+  setTxt('salarioRicardoTotal', d.salarioRicardoTotal);
+
+  setTxt('salarioCoordVDia', d.salarioCoordVDia);
+  setTxt('salarioCoordAdic', d.salarioCoordAdic);
+  setTxt('salarioCoordGotas', d.salarioCoordGotas);
+  setTxt('salarioCoordTotal', d.salarioCoordTotal);
+
+  setTxt('salarioCoord2VDia', d.salarioCoord2VDia);
+  setTxt('salarioCoord2Adic', d.salarioCoord2Adic);
+  setTxt('salarioCoord2Gotas', d.salarioCoord2Gotas);
+  setTxt('salarioCoord2Total', d.salarioCoord2Total);
+
+  setTxt('salarioAsesorVDia', d.salarioAsesorVDia);
+  setTxt('salarioAsesorGotas', d.salarioAsesorGotas);
+  setTxt('salarioAsesorTotal', d.salarioAsesorTotal);
+
+  setTxt('salarioAsesor2VDia', d.salarioAsesor2VDia);
+  setTxt('salarioAsesor2Gotas', d.salarioAsesor2Gotas);
+  setTxt('salarioAsesor2Total', d.salarioAsesor2Total);
+
+  setTxt('retV', d.retV);
+  setTxt('retDoc', d.retDoc);
+  setTxt('totalSalarios', d.totalSalarios);
+  setTxt('notaJornada', d.notaJornada);
+
+  // Gastos Operativos
+  setVal('gastoConvenio', d.gastoConvenio);
+  setVal('gastoGasolina', d.gastoGasolina);
+  setVal('gastoHotel', d.gastoHotel);
+  setVal('gastoComida', d.gastoComida);
+  setVal('gastoPeajes', d.gastoPeajes);
+  setTxt('totalGastosOperativos', d.totalGastosOperativos);
+
+  // Otros Gastos Dinámicos (Rango H17:L21)
+  if (d.otrosGastosLista && d.otrosGastosLista.length > 0) {
+    const tbodyGastos = document.getElementById('bodyOtrosGastos');
+    tbodyGastos.innerHTML = '';
+    d.otrosGastosLista.forEach(g => {
+      const tr = document.createElement('tr');
+      const descripcion = document.createElement('td');
+      descripcion.className = 'i';
+      const descripcionInput = document.createElement('input');
+      descripcionInput.type = 'text';
+      descripcionInput.className = 'txt';
+      descripcionInput.value = String(g.descripcion || '');
+      descripcion.appendChild(descripcionInput);
+
+      const valor = document.createElement('td');
+      valor.className = 'i';
+      const valorInput = document.createElement('input');
+      valorInput.type = 'text';
+      valorInput.value = String(g.valor || '');
+      valor.appendChild(valorInput);
+
+      tr.append(descripcion, valor);
+      tbodyGastos.appendChild(tr);
+    });
+  }
+  setTxt('totalOtrosGastos', d.totalEgresosGastos);
+  setTxt('egresosMasSalarios', d.egresosMasSalarios);
+
+  // Resumen & Proveedores
+  setTxt('ingresosAbonoProv', d.ingresosAbonoProv);
+  setTxt('saldoAnterior', d.saldoAnterior);
+  setTxt('resumenEgresosSalariosLabel', d.resumenEgresosSalariosLabel);
+  setTxt('resumenEgresosSalarios', d.resumenEgresosSalarios);
+  setTxt('resumenEfectivoLabel', d.resumenEfectivoLabel);
+  setTxt('efectivoAcumulado', d.efectivoAcumulado);
+
+  setTxt('provLaboratorio', d.provLaboratorio);
+  setTxt('provMonturas', d.provMonturas);
+
+  // Total Proveedores
+  const parsearValorCOP = (valor) => {
+    const texto = String(valor || '').trim();
+    const digitos = texto.replace(/\D/g, '');
+    return digitos ? Number(digitos) : 0;
+  };
+  const totalProveedores = parsearValorCOP(d.provLaboratorio) + parsearValorCOP(d.provMonturas);
+  setTxt('totalProveedores', '$ ' + totalProveedores.toLocaleString('es-CO'));
+
+  // Inventarios
+  setTxt('invTotalSalida', d.invTotalSalida);
+  setTxt('invReplica', d.invReplica);
+  setTxt('invFashion', d.invFashion);
+  setTxt('invGamaAlta', d.invGamaAlta);
+  setTxt('invPolarizada', d.invPolarizada);
+  setTxt('invGamaMediaDama', d.invGamaMediaDama);
+  setTxt('invSeguridad', d.invSeguridad);
+  setTxt('invGamaMediaCab', d.invGamaMediaCab);
+  setTxt('invNinosGamaMedia', d.invNinosGamaMedia);
+  setTxt('invConvencional', d.invConvencional);
+  setTxt('invMonturaNinos', d.invMonturaNinos);
+  setTxt('invTotalEntrada', d.invTotalEntrada);
+  setTxt('invGarantia', d.invGarantia);
+  setTxt('invPropia', d.invPropia);
+  document.title = obtenerNombreArchivoReporte();
+  mostrarEstadoReporte('');
+  ajustarFormatoImpresion();
+  document.querySelector('.btn-print').disabled = false;
+}
+</script>
+</body>
+</html>

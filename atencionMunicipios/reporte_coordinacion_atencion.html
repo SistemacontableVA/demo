@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<base href="../../">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Reporte Contable de Jornada de Atención - Óptica Angelus Visión S.A.S.</title>
+
+<style>
+/* ============================================================
+   Reporte Contable de Jornada — Hoja Carta (8.5 × 11 in)
+   Sistema de espaciado:
+     margen lateral ........ .40in
+     separación de bloques . .09in
+     separación de columnas  .18in
+     alto de fila .......... .24in (todas las tablas)
+   ============================================================ */
+@page { size: Letter portrait; margin: 0; }
+
+:root {
+  --font: Inter, "Segoe UI", Arial, sans-serif;   /* ← cambia aquí la fuente global */
+  --navy: #0C2D48;
+  --navy-2: #143C5E;
+  --gold: #D4A138;
+  --gold-soft: #E8C065;
+  --ink: #17242A;
+  --muted: #5B6B78;
+  --line: #CBD5E1;
+  --line-soft: #E3E8EE;
+  --tint: #E8EEF4;
+  --zebra: #F7F9FB;
+  --px: .40in;
+  --gap: .12in;
+}
+
+* { box-sizing: border-box; }
+html, body {
+  margin: 0;
+  background: #E9EDF2;
+  font-family: var(--font);
+  color: var(--ink);
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+@media screen { body { padding: 16px 0; overflow-x: auto; } }
+
+/* ---------- Barra de acciones (solo pantalla) ---------- */
+.screen-bar {
+  width: 8.5in; margin: 0 auto; padding: 12px 0 10px;
+  display: flex; justify-content: flex-end;
+}
+.btn-print {
+  display: inline-flex; align-items: center; gap: 7px; cursor: pointer;
+  border: 0; border-radius: 8px; padding: 9px 16px;
+  background: var(--gold); color: var(--navy);
+  font: 700 13px/1 var(--font);
+  box-shadow: 0 1px 3px rgba(12,45,72,.25);
+}
+.btn-print:hover { background: #BF8C2C; }
+.btn-print:focus-visible { outline: 3px solid var(--navy); outline-offset: 2px; }
+
+/* ---------- Hoja ---------- */
+.page {
+  width: 8.5in;
+  height: 11in;
+  margin: 0 auto 24px;
+  background: #fff;
+  box-shadow: 0 6px 24px rgba(12,45,72,.16);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  /* En pantalla forzamos el mismo tamaño exacto que en impresión */
+  flex-shrink: 0;
+}
+
+/* ---------- Encabezado ---------- */
+.header {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1.55in 1fr;
+  align-items: center;
+  column-gap: .16in;
+  padding: .13in var(--px);
+  background: linear-gradient(105deg, var(--navy) 55%, var(--navy-2) 100%);
+  border-bottom: 3px solid var(--gold);
+  overflow: hidden;
+}
+.header-deco {
+  position: absolute; right: 0; top: 0; width: 45%; height: 100%;
+  background: radial-gradient(ellipse at right, rgba(212,161,56,.20) 0%, transparent 70%);
+  pointer-events: none;
+}
+.brand {
+  position: relative;
+  padding-right: .16in;
+  border-right: 1px solid rgba(255,255,255,.22);
+  min-width: 0;
+}
+.logo { display: block; width: 1.2in; max-width: 100%; height: auto; }
+.heading { position: relative; min-width: 0; }
+.heading h1 {
+  margin: 0; color: #fff; font-size: 18pt; line-height: 1.05; letter-spacing: -.2px;
+  font-weight: 800; text-transform: uppercase; white-space: nowrap;
+}
+.heading h1 span { color: var(--gold); }
+.subtitle {
+  margin: 6px 0 0; color: rgba(255,255,255,.78); font-size: 8.5pt; font-weight: 700;
+  letter-spacing: 2px; text-transform: uppercase;
+}
+.subtitle:before {
+  content: ""; display: inline-block; width: 26px; height: 1px;
+  vertical-align: middle; margin-right: 8px; background: var(--gold);
+}
+
+/* ---------- Cuerpo ---------- */
+.body {
+  flex: 1;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: var(--gap);
+  padding: .12in var(--px) .12in;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* Datos de la jornada */
+.meta-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px .12in;
+}
+.field {
+  display: grid; grid-template-columns: .88in minmax(0, 1fr);
+  min-height: .3in;
+  border: 1px solid var(--line); border-radius: 6px; overflow: hidden; background: #fff;
+}
+.field .label {
+  display: flex; align-items: center; padding: 0 8px;
+  background: var(--navy); color: #fff;
+  font-size: 6.7pt; font-weight: 800; letter-spacing: .2px; text-transform: uppercase; white-space: nowrap;
+}
+.field input {
+  width: 100%; min-width: 0; border: 0; outline: 0; background: transparent;
+  padding: 0 8px; font-family: inherit; font-size: 9pt; font-weight: 600; color: var(--ink);
+}
+.field:focus-within { border-color: var(--navy); }
+
+/* Dos columnas + resumen inferior */
+.cols, .summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  column-gap: .18in;
+}
+.cols { align-items: stretch; min-height: 0; }
+.col { display: flex; flex-direction: column; gap: var(--gap); min-width: 0; }
+
+.blk { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.blk.grow { flex: 1; }
+
+/* Títulos */
+.grp {
+  display: flex; align-items: center; gap: 8px;
+  height: .31in; padding: 0 10px;
+  background: var(--navy); color: #fff; border-radius: 6px;
+  font-size: 8.7pt; font-weight: 800; letter-spacing: .35px; text-transform: uppercase;
+}
+.grp:before {
+  content: ""; width: 4px; height: 12px; border-radius: 2px; background: var(--gold);
+}
+.sec {
+  display: flex; align-items: center; gap: 6px;
+  padding-bottom: 2px; border-bottom: 1.5px solid var(--navy);
+  font-size: 8.3pt; font-weight: 800; color: var(--navy);
+  letter-spacing: .25px; text-transform: uppercase;
+}
+.sec:before { content: ""; width: 3px; height: 10px; background: var(--gold); border-radius: 1px; }
+
+/* Tablas */
+.tbl {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: separate; border-spacing: 0;
+  border: 1px solid var(--line); border-radius: 6px; overflow: hidden;
+  background: #fff; font-size: 8.8pt;
+}
+.tbl.grow { flex: 1; }
+.tbl th {
+  background: var(--navy); color: #fff;
+  padding: 4px 6px; text-align: left;
+  font-size: 7pt; font-weight: 700; letter-spacing: .2px; text-transform: uppercase;
+  white-space: nowrap;
+}
+.tbl td {
+  padding: 2px 6px; height: .27in; border-bottom: 1px solid var(--line-soft);
+  vertical-align: middle; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.tbl tbody tr:nth-child(even) td { background: var(--zebra); }
+.tbl tbody tr:last-child td { border-bottom: 0; }
+.tbl td.i { padding: 2px 3px; }
+.tbl .c { text-align: center; }
+.tbl .r { text-align: right; }
+.tbl .b { font-weight: 700; }
+.tbl td.wr { height: .27in; }
+.tbl .sep { border-left: 1px solid var(--line-soft); }
+.tbl.dense td, .tbl.dense th { padding-left: 4px; padding-right: 4px; }
+.tbl.dense td { font-size: 8.2pt; }
+
+.tbl input {
+  display: block; width: 100%; height: 19px; padding: 0 5px;
+  border: 1px solid var(--line); border-radius: 3px; outline: 0; background: #fff;
+  font-family: inherit; font-size: 9pt; font-weight: 600; color: var(--ink); text-align: right;
+}
+.tbl input[type=number] { text-align: center; -moz-appearance: textfield; appearance: textfield; }
+.tbl input[type=number]::-webkit-outer-spin-button,
+.tbl input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.tbl input.txt { text-align: left; }
+.tbl input:focus { border-color: var(--navy); }
+
+/* Filas de total */
+.tbl tr.tot td {
+  background: var(--tint) !important; color: var(--navy); font-weight: 800;
+  border-top: 1.5px solid var(--navy); border-bottom: 0;
+}
+.tbl tr.ok td {
+  background: #E4F3EA !important; color: #14532D; font-weight: 800;
+  border-top: 1.5px solid #15803D; border-bottom: 0;
+}
+.tbl tr.ok td.v { font-size: 9.5pt; }
+.tbl tr.note td { font-size: 6.9pt; color: var(--muted); font-weight: 600; }
+
+/* Inventario */
+.tbl tr.band td {
+  background: var(--tint) !important; color: var(--navy);
+  font-size: 7pt; font-weight: 800; letter-spacing: .25px; text-transform: uppercase;
+  border-bottom: 1px solid var(--line);
+}
+.tbl tr.band + tr td { border-top: 0; }
+.tbl tr.band td.bk { background: var(--navy) !important; color: #fff; text-align: center; }
+.tbl tr.band td.bv { text-align: center; font-size: 9pt; letter-spacing: 0; }
+.tbl tr.band.entrada td { border-top: 1.5px solid var(--navy); }
+.tbl.inv td { height: .20in; padding-top: 0; padding-bottom: 0; }
+.qty {
+  display: block; width: .36in; margin: 0 auto; padding: 2px 0;
+  text-align: center; font-weight: 700;
+  border: 1px solid var(--line); border-radius: 3px; background: #fff;
+}
+.tbl.inv .qty { padding-top: 0; padding-bottom: 0; }
+
+/* Banners de total */
+.banner {
+  display: flex; align-items: center; justify-content: space-between;
+  min-height: .36in; padding: 0 12px; border-radius: 6px;
+  font-size: 8pt; font-weight: 800; letter-spacing: .5px; text-transform: uppercase;
+}
+.banner .amt { font-size: 12pt; letter-spacing: 0; }
+.banner.in  { background: linear-gradient(105deg, var(--navy), var(--navy-2)); color: #fff; }
+.banner.in .amt { color: var(--gold-soft); }
+.banner.out { background: #FDF1F1; color: #7F1D1D; border: 1.5px solid #B91C1C; }
+.banner.out .amt { color: #B91C1C; }
+
+/* ---------- Pie ---------- */
+.footer {
+  margin-top: auto;
+  display: grid; grid-template-columns: 1fr 1.35fr 1fr; gap: 12px; align-items: center;
+  padding: .1in var(--px); min-height: .6in;
+  background: var(--navy); color: #fff; border-top: 3px solid var(--gold);
+  font-size: 6.8pt; line-height: 1.25;
+}
+.footer strong { display: block; margin-bottom: 1px; color: var(--gold-soft); font-size: 6.6pt; letter-spacing: .4px; }
+.footer-item { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.footer-item span { overflow-wrap: anywhere; }
+.footer-icon {
+  width: 25px; height: 25px; min-width: 25px; border: 1px solid rgba(255,255,255,.45);
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+}
+.footer-icon svg { width: 13px; height: 13px; fill: none; stroke: #fff; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.footer-center { border-left: 1px solid rgba(255,255,255,.25); border-right: 1px solid rgba(255,255,255,.25); padding: 0 12px; }
+
+/* ---------- Impresión: hoja carta exacta ---------- */
+@media print {
+  html, body { width: 8.5in; height: 11in; margin: 0; padding: 0; background: #fff; overflow: hidden; }
+  .no-print, .screen-bar { display: none !important; }
+  .page {
+    width: 8.5in; max-width: none; height: 11in; min-height: 0; margin: 0;
+    box-shadow: none; overflow: hidden;
+    break-inside: avoid; page-break-after: avoid;
+  }
+  .header { grid-template-columns: 1.55in 1fr; }
+  .heading h1 { white-space: nowrap; font-size: 18pt; }
+  .meta-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .cols, .summary { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .footer { grid-template-columns: 1fr 1.35fr 1fr; }
+  input::placeholder { color: transparent; }
+  .blk, .tbl, .banner { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+
+<!-- Barra de acciones (no se imprime) -->
+<div class="screen-bar no-print">
+  <button type="button" class="btn-print" onclick="window.print()">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+    Generar reporte
+  </button>
+</div>
+
+<main class="page" id="areaImpresion">
+
+  <!-- Encabezado corporativo -->
+  <header class="header">
+    <div class="header-deco" aria-hidden="true"></div>
+    <div class="brand">
+      <img class="logo" src="https://sistemacontableva.github.io/demo/assets/images/logomenu.png" data-empresa-logo="assets/images/logomenu.png" alt="Óptica Angelus Visión S.A.S." />
+    </div>
+    <div class="heading">
+      <h1>Reporte contable <span>de jornada</span></h1>
+      <div class="subtitle">Información de atención</div>
+    </div>
+  </header>
+
+  <div class="body">
+
+    <!-- Datos de la jornada -->
+    <section class="meta-grid" aria-label="Datos de la jornada">
+      <div class="field"><div class="label">Municipio</div><input type="text" id="inputMunicipio" value="VALENCIA"></div>
+      <div class="field"><div class="label">Fecha</div><input type="text" id="inputFecha" value="12/11/2026"></div>
+      <div class="field"><div class="label">Coordinador</div><input type="text" id="inputCoordinador" placeholder="Nombre coordinador"></div>
+      <div class="field"><div class="label">Teléfono</div><input type="text" id="inputTelefono" placeholder="Teléfono de contacto"></div>
+      <div class="field"><div class="label">Hotel</div><input type="text" id="inputHotel" placeholder="Nombre del hotel"></div>
+      <div class="field"><div class="label">Dirección</div><input type="text" id="inputDireccion" placeholder="Dirección atención"></div>
+    </section>
+
+    <!-- Contenido principal: dos columnas -->
+    <div class="cols">
+
+      <!-- ============ COLUMNA IZQUIERDA: INGRESOS + INVENTARIO ============ -->
+      <div class="col">
+        <div class="grp">Ingresos en jornada</div>
+
+        <!-- Detalle consulta -->
+        <div class="blk">
+          <table class="tbl">
+            <colgroup><col style="width:36%"><col style="width:20%"><col style="width:24%"><col style="width:20%"></colgroup>
+            <thead>
+              <tr><th>Detalle consulta</th><th class="c">Asistencia</th><th class="r">Recaudo</th><th class="r">Descuento</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="b">Consulta General</td>
+                <td class="i"><input type="number" value="18"></td>
+                <td class="i"><input type="text" value="$ 535.000"></td>
+                <td class="i"><input type="text" value="$ 5.000"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Venta de gotas -->
+        <div class="blk">
+          <div class="sec">Venta de gotas</div>
+          <table class="tbl">
+            <colgroup><col style="width:36%"><col style="width:14%"><col style="width:25%"><col style="width:25%"></colgroup>
+            <thead>
+              <tr><th>Descripción</th><th class="c">Cant.</th><th class="r">Desc.</th><th class="r">Valor</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>EXPO FRESH</td>
+                <td class="i"><input type="number" value="1"></td>
+                <td class="i"><input type="text" value="$ 2.000"></td>
+                <td class="i"><input type="text" value="$ 38.000"></td>
+              </tr>
+              <tr>
+                <td>TOTAL CONFORD</td>
+                <td class="i"><input type="number" value="0"></td>
+                <td class="i"><input type="text" value="$ 0"></td>
+                <td class="i"><input type="text" value="$ 0"></td>
+              </tr>
+              <tr class="tot">
+                <td>TOTAL GOTAS</td>
+                <td class="c">1</td>
+                <td class="r">-</td>
+                <td class="r">$ 38.000</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Lentes vendidos -->
+        <div class="blk">
+          <div class="sec">Lentes vendidos (Total: 18)</div>
+          <table class="tbl">
+            <colgroup><col style="width:46%"><col style="width:16%"><col style="width:38%"></colgroup>
+            <thead>
+              <tr><th>Descripción</th><th class="c">Cant.</th><th class="r">Recaudo</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Normales</td>
+                <td class="i"><input type="number" value="3"></td>
+                <td class="i"><input type="text" value="$ 300.000"></td>
+              </tr>
+              <tr>
+                <td>Especiales</td>
+                <td class="i"><input type="number" value="15"></td>
+                <td class="i"><input type="text" value="$ 2.200.000"></td>
+              </tr>
+              <tr>
+                <td>Consignación</td>
+                <td class="i"><input type="number" value="0"></td>
+                <td class="i"><input type="text" value="$ 0"></td>
+              </tr>
+              <tr>
+                <td>Montura</td>
+                <td class="i"><input type="number" value="0"></td>
+                <td class="i"><input type="text" value="$ 0"></td>
+              </tr>
+              <tr class="tot">
+                <td>TOTAL RECAUDO LENTES</td>
+                <td class="c">18</td>
+                <td class="r">$ 2.500.000</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Otros ingresos -->
+        <div class="blk">
+          <div class="sec">Otros ingresos</div>
+          <table class="tbl">
+            <colgroup><col style="width:60%"><col style="width:40%"></colgroup>
+            <tbody>
+              <tr>
+                <td class="b">Otros conceptos</td>
+                <td class="i"><input type="text" value="$ 52.000"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Total ingresos -->
+        <div class="banner in">
+          <span>Total ingresos general</span>
+          <span class="amt">$ 3.125.000</span>
+        </div>
+
+        <!-- Inventario monturas (absorbe el espacio sobrante de la columna) -->
+        <div class="blk grow">
+          <div class="sec">Inventario monturas</div>
+          <table class="tbl grow inv">
+            <colgroup><col style="width:38%"><col style="width:12%"><col style="width:38%"><col style="width:12%"></colgroup>
+            <tbody>
+              <tr class="band">
+                <td colspan="2">Salida</td>
+                <td class="bk">Total</td>
+                <td class="bv">18</td>
+              </tr>
+              <tr>
+                <td>Réplica</td>
+                <td class="i"><span class="qty">0</span></td>
+                <td class="sep">Montura Fashion</td>
+                <td class="i"><span class="qty">7</span></td>
+              </tr>
+              <tr>
+                <td>Gama Alta</td>
+                <td class="i"><span class="qty">0</span></td>
+                <td class="sep">Polarizada</td>
+                <td class="i"><span class="qty">0</span></td>
+              </tr>
+              <tr>
+                <td>Gama Media Dama</td>
+                <td class="i"><span class="qty">4</span></td>
+                <td class="sep">Seguridad</td>
+                <td class="i"><span class="qty">0</span></td>
+              </tr>
+              <tr>
+                <td>Gama Media Caballero</td>
+                <td class="i"><span class="qty">4</span></td>
+                <td class="sep">Niños Gama Media</td>
+                <td class="i"><span class="qty">0</span></td>
+              </tr>
+              <tr>
+                <td>Convencional</td>
+                <td class="i"><span class="qty">1</span></td>
+                <td class="sep">Montura Niños</td>
+                <td class="i"><span class="qty">2</span></td>
+              </tr>
+              <tr class="band entrada">
+                <td colspan="2">Entrada</td>
+                <td class="bk">Total</td>
+                <td class="bv">0</td>
+              </tr>
+              <tr>
+                <td>Garantía</td>
+                <td class="i"><span class="qty">0</span></td>
+                <td class="sep">Propia</td>
+                <td class="i"><span class="qty">0</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ============ COLUMNA DERECHA: EGRESOS, SALARIOS Y GASTOS ============ -->
+      <div class="col">
+        <div class="grp">Egresos y gastos</div>
+
+        <!-- Transferencias -->
+        <div class="blk">
+          <table class="tbl">
+            <colgroup><col style="width:62%"><col style="width:38%"></colgroup>
+            <thead>
+              <tr><th>Concepto transferencia</th><th class="r">Valor</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Transf. Lentes</td>
+                <td class="i"><input type="text" value="$ 340.000"></td>
+              </tr>
+              <tr>
+                <td>Transf. Consulta</td>
+                <td class="i"><input type="text" value="$ 4.800"></td>
+              </tr>
+              <tr class="tot">
+                <td>TOTAL TRANSFERENCIAS</td>
+                <td class="r">$ 344.800</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Salarios -->
+        <div class="blk">
+          <div class="sec">Salarios personal atención</div>
+          <table class="tbl dense">
+            <colgroup><col style="width:27%"><col style="width:20%"><col style="width:20%"><col style="width:13%"><col style="width:20%"></colgroup>
+            <thead>
+              <tr><th>Cargo / Persona</th><th class="r">V. Día</th><th class="r">Adic.</th><th class="r">Gotas</th><th class="r">Total</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>RICARDO ROD.</td>
+                <td class="r">$ 300.000</td>
+                <td class="r">$ 110.000</td>
+                <td class="r">$ 1.000</td>
+                <td class="r b">$ 397.800</td>
+              </tr>
+              <tr>
+                <td>COORD.</td>
+                <td class="r">$ 35</td>
+                <td class="r">$ 0</td>
+                <td class="r">$ 0</td>
+                <td class="r b">$ 35</td>
+              </tr>
+              <tr>
+                <td>ASESOR 1 (10%)</td>
+                <td class="r">$ 250.000</td>
+                <td class="r">$ 0</td>
+                <td class="r">$ 1.000</td>
+                <td class="r b">$ 251.000</td>
+              </tr>
+              <tr>
+                <td>ASESOR 2 (10%)</td>
+                <td class="r">$ 0</td>
+                <td class="r">$ 0</td>
+                <td class="r">$ 0</td>
+                <td class="r b">$ 0</td>
+              </tr>
+              <tr class="tot">
+                <td colspan="4" class="r" style="font-size:9pt">Ret. V. 0.5% / Doc. 1% ($12.500 + $13.200)</td>
+                <td class="r">$ 648.835</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Gastos operativos -->
+        <div class="blk">
+          <div class="sec">Gastos operativos</div>
+          <table class="tbl">
+            <colgroup><col style="width:20%"><col style="width:26%"><col style="width:32%"><col style="width:22%"></colgroup>
+            <tbody>
+              <tr>
+                <td>Convenio</td>
+                <td class="i"><input type="text" value="$ 0"></td>
+                <td class="sep">Gasolina</td>
+                <td class="i"><input type="text" value="$ 0"></td>
+              </tr>
+              <tr>
+                <td>Hotel</td>
+                <td class="i"><input type="text" value="$ 0"></td>
+                <td class="sep">Comida + Refrig.</td>
+                <td class="i"><input type="text" value="$ 0"></td>
+              </tr>
+              <tr>
+                <td>Peajes</td>
+                <td class="i"><input type="text" value="$ 0"></td>
+                <td class="sep"></td>
+                <td></td>
+              </tr>
+              <tr class="tot">
+                <td colspan="3">TOTAL GASTOS OPERATIVOS</td>
+                <td class="r">$ 0</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Otros gastos -->
+        <div class="blk">
+          <div class="sec">Otros gastos</div>
+          <table class="tbl">
+            <colgroup><col style="width:64%"><col style="width:36%"></colgroup>
+            <thead>
+              <tr><th>Descripción</th><th>Valor</th></tr>
+            </thead>
+            <tbody>
+              <tr><td class="i"><input type="text" class="txt" placeholder="Descripción gasto 1"></td><td class="i"><input type="text" class="txt" value="$ 0"></td></tr>
+              <tr><td class="i"><input type="text" class="txt" placeholder="Descripción gasto 2"></td><td class="i"><input type="text" class="txt" value="$ 0"></td></tr>
+              <tr><td class="i"><input type="text" class="txt" placeholder="Descripción gasto 3"></td><td class="i"><input type="text" class="txt" value="$ 0"></td></tr>
+              <tr><td class="i"><input type="text" class="txt" placeholder="Descripción gasto 4"></td><td class="i"><input type="text" class="txt" value="$ 0"></td></tr>
+              <tr class="tot">
+                <td>TOTAL OTROS GASTOS</td>
+                <td class="r">$ 0</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Total egresos -->
+        <div class="banner out">
+          <span>Egresos + gastos + salarios</span>
+          <span class="amt">$ 993.635</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Resumen inferior, a todo el ancho -->
+    <div class="summary">
+      <div class="blk">
+        <div class="sec">Resumen de jornada</div>
+        <table class="tbl">
+          <colgroup><col style="width:62%"><col style="width:38%"></colgroup>
+          <tbody>
+            <tr>
+              <td class="b">Ingresos - Abono Proveedor</td>
+              <td class="r b">$ 2.500.000</td>
+            </tr>
+            <tr>
+              <td class="b">Saldo Anterior</td>
+              <td class="r b">$ 2.000.000</td>
+            </tr>
+            <tr class="ok">
+              <td>EFECTIVO ACUMULADO</td>
+              <td class="r v">$ 3.506.365</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="blk">
+        <div class="sec">Proveedores</div>
+        <table class="tbl">
+          <colgroup><col style="width:62%"><col style="width:38%"></colgroup>
+          <tbody>
+            <tr>
+              <td class="b">Laboratorio</td>
+              <td class="r b">$ 375.000</td>
+            </tr>
+            <tr>
+              <td class="b">Monturas</td>
+              <td class="r b">$ 250.000</td>
+            </tr>
+            <tr class="tot">
+              <td>TOTAL PROVEEDORES</td>
+              <td class="r">$ 625.000</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Pie corporativo -->
+  <footer class="footer">
+    <div class="footer-item">
+      <div class="footer-icon">
+        <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="m4 7 8 6 8-6"></path></svg>
+      </div>
+      <div>
+        <strong>CONTACTO</strong>
+        <span data-empresa-email>contacto@angelusvision.com</span>
+      </div>
+    </div>
+    <div class="footer-item footer-center">
+      <div class="footer-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 21s7-6.4 7-12a7 7 0 1 0-14 0c0 5.6 7 12 7 12Z"></path><circle cx="12" cy="9" r="2.2"></circle></svg>
+      </div>
+      <div>
+        <strong>DIRECCIÓN</strong>
+        <span data-empresa-direccion>Sede Principal Óptica Angelus</span>
+      </div>
+    </div>
+    <div class="footer-item">
+      <div class="footer-icon">
+        <svg viewBox="0 0 24 24"><path d="M6.5 3.5h3l1.5 4-2 1.7a15 15 0 0 0 5.8 5.8l1.7-2 4 1.5v3c0 1.1-.9 2-2 2C10.5 19.5 4.5 13.5 4.5 5.5c0-1.1.9-2 2-2Z"></path></svg>
+      </div>
+      <div>
+        <strong>TELÉFONOS DE CONTACTO</strong>
+        <span data-empresa-telefonos>+57 300 000 0000</span>
+      </div>
+    </div>
+  </footer>
+</main>
+
+<script>
+/* Validación de campos monetarios: solo dígitos, $, punto, coma y espacio */
+(function () {
+  // Patrón permitido: dígitos, $ . , espacio, y teclas de control
+  const MONEY_RE = /^[\d$.,\s]*$/;
+
+  function esTeclaControl(e) {
+    return e.ctrlKey || e.metaKey ||           // Ctrl/Cmd shortcuts
+           ['Backspace','Delete','Tab','Enter',
+            'ArrowLeft','ArrowRight','Home','End'].includes(e.key);
+  }
+
+  function aplicarValidacion(input) {
+    // Bloquear teclas no permitidas
+    input.addEventListener('keydown', function (e) {
+      if (esTeclaControl(e)) return;
+      if (!MONEY_RE.test(e.key)) e.preventDefault();
+    });
+
+    // Limpiar cualquier carácter inválido en paste o autocompletar
+    input.addEventListener('input', function () {
+      const pos = this.selectionStart;
+      const limpio = this.value.replace(/[^\d$.,\s]/g, '');
+      if (limpio !== this.value) {
+        this.value = limpio;
+        this.setSelectionRange(pos - 1, pos - 1);
+      }
+    });
+  }
+
+  // Aplicar a todos los inputs monetarios (type="text" dentro de .tbl,
+  // excluyendo los que tienen class="txt" que son descripciones libres)
+  document.querySelectorAll('.tbl input[type="text"]:not(.txt)').forEach(aplicarValidacion);
+
+  // También los campos de totales que son solo lectura visual no necesitan validación,
+  // pero los de gastos operativos, transferencias y demás sí
+})();
+</script>
+</body>
+</html>

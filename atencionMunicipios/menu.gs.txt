@@ -1,0 +1,278 @@
+/**
+ * Despliega la ventana flotante con la plantilla HTML
+ */
+function abrirReporteContable() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const plantilla = HtmlService.createTemplateFromFile('reporte_coordinacion_atencion 2');
+  plantilla.reporteSpreadsheetId = '';
+  plantilla.reporteMunicipioId = '';
+  plantilla.reporteDatosJson = JSON.stringify(leerDatosReporteCoordinacion_(ss));
+  plantilla.reporteTitulo = 'Reporte Contable de Jornada de Atención';
+  const htmlOutput = plantilla.evaluate()
+    .setWidth(960)
+    .setHeight(800);
+
+  SpreadsheetApp.getUi().showModalDialog(htmlOutput, 'Reporte Contable de Jornada de Atención');
+}
+
+/**
+ * Abre el reporte operativo solicitado desde Atención Municipios.
+ * La plantilla obtiene los datos después de validar la sesión de plataforma.
+ */
+function doGet(e) {
+  const parametros = e && e.parameter ? e.parameter : {};
+  const spreadsheetId = String(parametros.spreadsheetId || '').trim();
+  const municipioId = String(parametros.municipioId || '').trim();
+  if (parametros.action !== 'generar_reporte' ||
+      !/^[A-Za-z0-9_-]+$/.test(spreadsheetId) ||
+      !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(municipioId)) {
+    return HtmlService.createHtmlOutput('No se pudo abrir el reporte. Regresa a Atención Municipios e inténtalo nuevamente.')
+      .setTitle('Reporte no disponible');
+  }
+
+  const plantilla = HtmlService.createTemplateFromFile('reporte_coordinacion_atencion 2');
+  plantilla.reporteSpreadsheetId = spreadsheetId;
+  plantilla.reporteMunicipioId = municipioId;
+  plantilla.reporteDatosJson = '';
+  plantilla.reporteTitulo = 'Reporte Contable de Jornada de Atención';
+  return plantilla.evaluate().setTitle('Reporte Contable de Jornada de Atención');
+}
+
+/**
+ * Valida la sesión Supabase y confirma que la hoja pertenece al municipio
+ * visible para el usuario según las políticas RLS de su empresa.
+ */
+function autorizarHojaReporte_(spreadsheetId, municipioId, credenciales) {
+  const baseUrl = 'https://cifevururqrlajkhveno.supabase.co';
+  const clavePublica = 'sb_publishable_AScKVt33ih6geDdoLJopgQ_7hqH5E6h';
+  const token = String(credenciales && credenciales.token || '').trim();
+  const tenantId = String(credenciales && credenciales.tenantId || '').trim();
+  if (!token || token.length > 4096 ||
+      !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(tenantId)) {
+    throw new Error('La sesión de plataforma no es válida. Inicia sesión nuevamente.');
+  }
+
+  const opciones = {
+    method: 'get',
+    headers: {
+      apikey: clavePublica,
+      Authorization: 'Bearer ' + token
+    },
+    muteHttpExceptions: true
+  };
+  const respuestaUsuario = UrlFetchApp.fetch(baseUrl + '/auth/v1/user', opciones);
+  if (respuestaUsuario.getResponseCode() !== 200) {
+    throw new Error('La sesión de plataforma venció. Inicia sesión nuevamente.');
+  }
+
+  let usuario;
+  try {
+    usuario = JSON.parse(respuestaUsuario.getContentText());
+  } catch (error) {
+    throw new Error('No se pudo validar la sesión de plataforma.');
+  }
+  if (!usuario || !usuario.id) {
+    throw new Error('No se pudo validar la sesión de plataforma.');
+  }
+
+  const consulta = [
+    'select=id,link_hoja',
+    'id=eq.' + encodeURIComponent(municipioId),
+    'tenant_id=eq.' + encodeURIComponent(tenantId),
+    'limit=1'
+  ].join('&');
+  const respuestaMunicipio = UrlFetchApp.fetch(
+    baseUrl + '/rest/v1/atencion_municipios?' + consulta,
+    opciones
+  );
+  if (respuestaMunicipio.getResponseCode() !== 200) {
+    throw new Error('No se pudo verificar el acceso al municipio.');
+  }
+
+  let municipios;
+  try {
+    municipios = JSON.parse(respuestaMunicipio.getContentText());
+  } catch (error) {
+    throw new Error('No se pudo verificar el acceso al municipio.');
+  }
+  if (!Array.isArray(municipios) || municipios.length !== 1 ||
+      String(municipios[0].id) !== municipioId ||
+      extraerIdHojaReporte_(municipios[0].link_hoja) !== spreadsheetId) {
+    throw new Error('No tienes acceso a la hoja de este municipio.');
+  }
+  return SpreadsheetApp.openById(spreadsheetId);
+}
+
+function extraerIdHojaReporte_(linkHoja) {
+  const coincidencia = String(linkHoja || '').match(
+    /^https:\/\/docs\.google\.com\/spreadsheets\/d\/([A-Za-z0-9_-]+)(?:\/|$)/
+  );
+  return coincidencia ? coincidencia[1] : '';
+}
+
+/**
+ * Mapeo exacto basado en la reestructuración completa de la pestaña "Reporte Coordinacion"
+ */
+function obtenerDatosReporteCoordinacion(spreadsheetId, municipioId, credenciales) {
+  if (!spreadsheetId || !municipioId || !credenciales) {
+    throw new Error('Debes abrir el reporte desde Atención Municipios con una sesión válida.');
+  }
+  const ss = autorizarHojaReporte_(spreadsheetId, municipioId, credenciales);
+  return leerDatosReporteCoordinacion_(ss);
+}
+
+function leerDatosReporteCoordinacion_(ss) {
+  const sheet = ss.getSheetByName("Reporte Coordinacion");
+
+  if (!sheet) {
+    throw new Error("No se encontró la pestaña 'Reporte Coordinacion'. Por favor verifica el nombre.");
+  }
+
+  // Obtener texto formateado exacto por coordenada (Fila, Columna)
+  const getV = (r, c) => sheet.getRange(r, c).getDisplayValue().trim();
+
+  // 1. Lectura dinámica de OTROS GASTOS (Filas 17 a 21, Rango H17:L21)
+  const rangoOtrosGastos = sheet.getRange("H17:L21").getDisplayValues();
+  const otrosGastos = rangoOtrosGastos
+    .map(fila => ({
+      descripcion: fila[0] ? fila[0].trim() : "", // Columna H
+      valor: fila[4] ? fila[4].trim() : "$ 0"      // Columna L
+    }))
+    .filter(g => g.descripcion !== "" || (g.valor !== "$ 0" && g.valor !== "$0" && g.valor !== ""));
+
+  // 2. Lectura dinámica de OTROS INGRESOS (Filas 25 a 28, Rango B25:F28)
+  const rangoOtrosIngresos = sheet.getRange("B25:F28").getDisplayValues();
+  const otrosIngresos = rangoOtrosIngresos
+    .map(fila => ({
+      descripcion: fila[0] ? fila[0].trim() : "", // Columna B
+      valor: fila[4] ? fila[4].trim() : "$ 0"      // Columna F
+    }))
+    .filter(i => i.descripcion !== "" || (i.valor !== "$ 0" && i.valor !== "$0" && i.valor !== ""));
+
+  return {
+    // Cabecera (Filas 3, 4, 5)
+    municipio: getV(3, 6),         // F3 (VALENCIA)
+    fecha: getV(3, 10),           // J3 (12/11/2026)
+    coordinador: getV(4, 6),       // F4 (FRANCISCO GRANADOS)
+    telefono: getV(4, 10),         // J4 (345646465)
+    hotel: getV(5, 6),            // F5 (ROMELIO BELTRAN)
+    direccion: getV(5, 10),        // J5 (CARRERA 12 CON CALLE PRINCIPAL)
+
+    // Detalle Consulta (Fila 8)
+    asistenciaConsulta: getV(8, 4), // D8 (18)
+    recaudoConsulta: getV(8, 5),    // E8 ($ 535.000)
+    descuentoConsulta: getV(8, 6),  // F8 ($ 5.000)
+
+    // Egresos / Transferencias (Filas 8 y 9)
+    transfLentes: getV(8, 10),      // J8 ($ 340.000)
+    transfConsulta: getV(9, 10),    // J9 ($ 4.800)
+    totalTransf: getV(8, 12),       // L8 ($ 344.800)
+
+    // Lentes Vendidos (Filas 11 a 15)
+    lentesNormCant: getV(11, 5),    // E11 (3)
+    lentesNormRecaudo: getV(11, 6), // F11 ($ 300.000)
+    lentesEspCant: getV(12, 5),     // E12 (15)
+    lentesEspRecaudo: getV(12, 6),  // F12 ($ 2.200.000)
+    lentesConsigCant: getV(13, 5),  // E13
+    lentesConsigRecaudo: getV(13, 6),// F13
+    lentesMontCant: getV(14, 5),    // E14 (0)
+    lentesMontRecaudo: getV(14, 6), // F14 ($ 0)
+    lentesTotalCant: getV(15, 5),   // E15 (18)
+    lentesTotalRecaudo: getV(15, 6),// F15 ($ 2.500.000)
+
+    // Gastos Operativos (Filas 11 a 15)
+    gastoConvenio: getV(11, 10),    // J11 ($ 1.000)
+    gastoGasolina: getV(12, 10),    // J12 ($ 2.000)
+    gastoHotel: getV(13, 10),       // J13 ($ 5.000)
+    gastoComida: getV(14, 10),      // J14 ($ 3.000)
+    gastoPeajes: getV(15, 10),      // J15 ($ 4.000)
+    totalGastosOperativos: getV(11, 12), // L11 ($ 15.000)
+
+    // Venta de Gotas (Filas 19 a 22)
+    expoFreshDescripcion: getV(19, 2), // B19 (celda combinada B19:C19)
+    expoFreshCant: getV(19, 4),     // D19 (1)
+    expoFreshDesc: getV(19, 5),     // E19 ($ 2.000)
+    expoFreshValor: getV(19, 6),    // F19 ($ 38.000)
+    totalConfordDescripcion: getV(20, 2), // B20 (celda combinada B20:C20)
+    totalConfordCant: getV(20, 4),  // D20
+    totalConfordDesc: getV(20, 5),  // E20
+    totalConfordValor: getV(20, 6), // F20
+    eucaliptoDescripcion: getV(21, 2), // B21 (EUCALIPTO)
+    eucaliptoCant: getV(21, 4),     // D21
+    eucaliptoDesc: getV(21, 5),     // E21
+    eucaliptoValor: getV(21, 6),    // F21
+    totalGotasCant: getV(22, 4),    // D22 (1)
+    totalGotasValor: getV(22, 6),   // F22 ($ 38.000)
+
+    // Otros Gastos (Rango H17:L21)
+    otrosGastosLista: otrosGastos,
+    totalEgresosGastos: getV(22, 12), // L22 ($ 684.800)
+
+    // Otros Ingresos (Rango B25:F28) y Totales
+    otrosIngresosLista: otrosIngresos,
+    totalOtrosIngresos: getV(29, 6),   // F29 ($ 747.249)
+    totalIngresosGeneral: getV(31, 5), // E31, celda combinada E31:F32
+
+    // Salarios Personal Atención (Filas 26 a 31)
+    salarioRicardoVDia: getV(26, 9),  // I26 ($ 300.000)
+    salarioRicardoAdic: getV(26, 10), // J26 ($ 110.000)
+    salarioRicardoGotas: getV(26, 11),// K26 ($ 1.000)
+    salarioRicardoTotal: getV(26, 12),// L26 ($ 397.800)
+
+    salarioCoordVDia: getV(27, 9),   // I27 ($ 150.000)
+    salarioCoordAdic: getV(27, 10),  // J27 ($ 0)
+    salarioCoordGotas: getV(27, 11), // K27 ($ 1.000)
+    salarioCoordTotal: getV(27, 12), // L27 ($ 151.000)
+
+    salarioCoord2VDia: getV(28, 9),  // I28
+    salarioCoord2Adic: getV(28, 10), // J28 ($ 0)
+    salarioCoord2Gotas: getV(28, 11),// K28 ($ 0)
+    salarioCoord2Total: getV(28, 12),// L28 ($ 0)
+
+    salarioAsesorVDia: getV(29, 9),  // I29 ($ 250.000)
+    salarioAsesorGotas: getV(29, 11),// K29 ($ 1.000)
+    salarioAsesorTotal: getV(29, 12),// L29 ($ 251.000)
+
+    salarioAsesor2VDia: getV(30, 9), // I30 ($ 250.000)
+    salarioAsesor2Gotas: getV(30, 11),// K30 ($ 1.000)
+    salarioAsesor2Total: getV(30, 12),// L30 ($ 251.000)
+
+    retV: getV(31, 9),               // I31 ($ 12.500)
+    retDoc: getV(31, 10),            // J31 ($ 13.200)
+    totalSalarios: getV(31, 12),     // L31 ($ 1.050.800)
+
+    // Totales Generales de Egresos
+    egresosMasSalarios: getV(33, 11), // K33 ($ 1.735.600)
+
+    // Resumen de Jornada (Filas 38, 40, 42 y 44)
+    ingresosAbonoProv: getV(38, 11),  // K38 ($ 3.195.249)
+    saldoAnterior: getV(40, 11),      // K40 ($ 2.000.000)
+    resumenEgresosSalariosLabel: getV(42, 8), // H42 (celda combinada H42:J43)
+    resumenEgresosSalarios: getV(42, 11),    // K42 (celda combinada K42:L43)
+    resumenEfectivoLabel: getV(44, 8),       // H44
+    efectivoAcumulado: getV(44, 11),         // K44
+
+    // Inventario Monturas (Filas 35 a 42)
+    invTotalSalida: getV(35, 5),      // E35 (18)
+    invReplica: getV(36, 3),          // C36 (0)
+    invFashion: getV(36, 5),          // E36 (7)
+    invGamaAlta: getV(37, 3),         // C37 (0)
+    invPolarizada: getV(37, 5),       // E37 (0)
+    invGamaMediaDama: getV(38, 3),    // C38 (4)
+    invSeguridad: getV(38, 5),        // E38 (0)
+    invGamaMediaCab: getV(39, 3),     // C39 (4)
+    invNinosGamaMedia: getV(39, 5),   // E39 (0)
+    invConvencional: getV(40, 3),     // C40 (1)
+    invMonturaNinos: getV(40, 5),     // E40 (2)
+    invTotalEntrada: getV(41, 5),     // E41 (0)
+    invGarantia: getV(42, 3),         // C42 (0)
+    invPropia: getV(42, 5),           // E42 (0)
+
+    // Nota (Fila 44)
+    notaJornada: getV(44, 3),         // C44
+
+    // Proveedores (Fila 45)
+    provLaboratorio: getV(45, 10),    // J45 ($ 375.000)
+    provMonturas: getV(45, 12)        // L45 ($ 250.000)
+  };
+}

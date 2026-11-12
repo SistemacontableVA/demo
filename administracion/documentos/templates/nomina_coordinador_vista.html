@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <base href="../../../">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Gestión de nómina del coordinador</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: "Segoe UI", Arial, sans-serif;
+      color: #17242a;
+      background: #eaf0f1;
+      font-synthesis: none;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 10px; }
+    .hoja { width: 100%; margin: 0 auto; }
+    .encabezado, .tabla-panel {
+      border: 1px solid #c8d7da;
+      border-radius: 12px;
+      box-shadow: 0 4px 14px rgba(8, 44, 74, .08);
+    }
+    .encabezado {
+      padding: 9px 14px 8px;
+      color: #fff;
+      background: linear-gradient(110deg, #082c4a, #24535c);
+      border-bottom: 3px solid #d9a62e;
+    }
+    .encabezado-superior { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .encabezado-identidad { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; }
+    .encabezado p { margin: 0 0 2px; color: #dce9ec; font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+    .encabezado h1 { margin: 0; font-size: 19px; line-height: 1.1; }
+    .encabezado .nombre { color: #fff; font-size: 12px; font-weight: 500; text-align: right; white-space: nowrap; }
+    .ver-nomina {
+      padding: 6px 13px;
+      border: 1px solid #059669;
+      border-radius: 7px;
+      color: #fff;
+      background: #059669;
+      font: 700 12px "Segoe UI", Arial, sans-serif;
+      cursor: pointer;
+    }
+    .ver-nomina:hover { border-color: #047857; background: #047857; }
+    .ver-nomina:disabled { opacity: .55; cursor: not-allowed; }
+    .resumen-linea { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 25px; margin-top: 8px; }
+    .dato-resumen { display: inline-flex; align-items: baseline; gap: 10px; white-space: nowrap; }
+    .dato-resumen span { color: #dce9ec; font-size: 14px; font-weight: 400; }
+    .dato-resumen strong { color: #fff; font-size: 21px; font-weight: 500; letter-spacing: .04em; }
+    .dato-resumen.finanzas strong { color: #99f0c7; }
+    .dato-resumen.deducciones strong { color: #ffb2b8; }
+    .dato-resumen.pago strong { color: #ffe39a; font-size: 22px; }
+    .tabla-panel { margin-top: 7px; overflow: hidden; }
+    .tabla-titulo { padding: 7px 11px; color: #fff; background: #082c4a; border-bottom: 3px solid #d9a62e; font-size: 10px; font-weight: 800; letter-spacing: .05em; }
+    .tabla-scroll { height: calc(100vh - 165px); min-height: 300px; overflow: auto; }
+    table { width: 100%; min-width: 1060px; border-collapse: collapse; table-layout: fixed; font-size: 12px; }
+    th { position: sticky; top: 0; z-index: 2; padding: 5px 4px; color: #fff; background: #24535c; line-height: 1.1; font-size: 12px; text-align: center; }
+    td { padding: 3px 4px; border-bottom: 1px solid #dce5e7; text-align: center; overflow-wrap: anywhere; }
+    tbody tr:nth-child(even) { background: #f1f5f6; }
+    tbody tr:last-child td { border-bottom: 0; }
+    th:first-child, td:first-child, th:last-child, td:last-child { text-align: left; }
+    th:first-child, td:first-child { padding-left: 9px; }
+    th:nth-child(1) { width: 11%; }
+    th:nth-child(2) { width: 9%; }
+    th:nth-child(3), th:nth-child(4), th:nth-child(5), th:nth-child(6), th:nth-child(7) { width: 7%; }
+    th:nth-child(8) { width: 9%; }
+    th:nth-child(9), th:nth-child(10) { width: 10%; }
+    th:nth-child(11) { width: 11%; }
+    th:nth-child(12) { width: 12%; }
+    .formula { color: #526a70; font-style: italic; }
+    .accion {
+      margin: 2px;
+      padding: 5px 8px;
+      border: 0;
+      border-radius: 5px;
+      color: #fff;
+      background: #08795e;
+      font: 700 11px "Segoe UI", Arial, sans-serif;
+      cursor: pointer;
+    }
+    .accion.secundaria { border: 1px solid #cbd5e1; color: #334155; background: #fff; }
+    .accion.eliminar { background: #b42318; }
+    .accion.eliminar:hover { background: #912018; }
+    .campo {
+      width: 100%;
+      min-width: 48px;
+      padding: 4px;
+      border: 1px solid #b9cbd0;
+      border-radius: 4px;
+      color: #17242a;
+      background: #fff;
+      font: inherit;
+    }
+    .vacio { padding: 18px; color: #526a70; text-align: center; }
+    @media (max-width: 740px) {
+      body { padding: 5px; }
+      .encabezado-superior { align-items: flex-start; }
+      .encabezado .nombre { max-width: 55vw; font-size: 10px; white-space: normal; }
+      .encabezado-identidad { max-width: 55%; }
+      .ver-nomina { padding: 5px 10px; font-size: 11px; }
+      .resumen-linea { gap: 6px 16px; }
+      .dato-resumen { gap: 7px; }
+      .dato-resumen span { font-size: 12px; }
+      .dato-resumen strong { font-size: 18px; }
+      .dato-resumen.pago strong { font-size: 19px; }
+      .tabla-scroll { height: calc(100vh - 145px); min-height: 250px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="hoja">
+    <header class="encabezado">
+      <div class="encabezado-superior">
+        <div><p>Nómina · Gestión administrativa</p><h1>Resumen del coordinador</h1></div>
+        <div class="encabezado-identidad">
+          <div class="nombre" id="nombreCoordinador"></div>
+          <button class="ver-nomina" id="nomina-coordinador-ver-oficial" type="button" disabled>Ver Nómina</button>
+        </div>
+      </div>
+      <div class="resumen-linea" aria-label="Indicadores y totales">
+        <span class="dato-resumen"><span>Brigadas campo</span><strong id="kpiBrigCampo"></strong></span>
+        <span class="dato-resumen"><span>Atendidas</span><strong id="kpiBrigAtend"></strong></span>
+        <span class="dato-resumen"><span>Restantes</span><strong id="kpiBrigRestantes"></strong></span>
+        <span class="dato-resumen"><span>Valor lentes</span><strong id="kpiVLentesInd"></strong></span>
+        <span class="dato-resumen"><span>Asistencia</span><strong id="kpiTotalAsist"></strong></span>
+        <span class="dato-resumen finanzas"><span>Ingresos</span><strong id="ingTotalIngresos"></strong></span>
+        <span class="dato-resumen deducciones"><span>Deducciones</span><strong id="dedTotalDeducciones"></strong></span>
+        <span class="dato-resumen pago"><span>Total a pagar</span><strong id="resumenGeneral"></strong></span>
+      </div>
+    </header>
+    <p class="vacio" id="estadoVista" role="status">Selecciona un coordinador y consulta su nómina para ver los datos.</p>
+    <div id="contenidoNomina" hidden>
+    <section class="tabla-panel">
+      <div class="tabla-titulo">DETALLE DE JORNADAS · LOS VALORES DE CÁLCULO SE MUESTRAN SIN EDITARSE</div>
+      <div class="tabla-scroll">
+        <table class="tabla-jornadas">
+          <thead><tr>
+            <th>Municipio</th><th>Fecha</th><th>N° Aff Grupo</th><th>N° Brigadas</th><th>Asistidos</th>
+            <th>Lentes</th><th>Prest / Abon.</th><th>Valor por Día</th><th>Comisión por Venta</th>
+            <th>Descuento / Comida</th><th>Detalle</th><th>Acción</th>
+          </tr></thead>
+          <tbody id="tablaJornadas"></tbody>
+        </table>
+      </div>
+    </section>
+    </div>
+  </main>
+  <script>
+    (function () {
+      "use strict";
+      function mostrar(id, valor) {
+        var elemento = document.getElementById(id);
+        if (elemento) elemento.textContent = valor === null || valor === undefined ? "" : String(valor);
+      }
+      function moneda(valor) {
+        var numero = Number(valor);
+        if (!Number.isFinite(numero)) return "";
+        return new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 2 }).format(numero);
+      }
+      function celda(fila, valor, clase) {
+        var td = document.createElement("td"); 
+        if (clase) td.className = clase;
+        td.textContent = valor === null || valor === undefined ? "" : String(valor);
+        fila.appendChild(td);
+        return td;
+      }
+      var datos = window.__nominaData;
+      if (!datos || !datos.resumen || !Array.isArray(datos.jornadas)) return;
+      var resumen = datos.resumen;
+      document.getElementById("estadoVista").hidden = true;
+      document.getElementById("contenidoNomina").hidden = false;
+      mostrar("nombreCoordinador", datos.nombreCoordinador);
+      mostrar("kpiBrigCampo", resumen.brigadasCampo);
+      mostrar("kpiBrigAtend", resumen.brigadasAtendidas);
+      mostrar("kpiBrigRestantes", resumen.brigadasRestantes);
+      mostrar("kpiVLentesInd", moneda(resumen.valorLentesIndividual));
+      mostrar("kpiTotalAsist", resumen.totalAsistencia);
+      mostrar("ingTotalIngresos", moneda(resumen.totalIngresos));
+      mostrar("dedTotalDeducciones", moneda(resumen.totalDeducciones));
+      mostrar("resumenGeneral", moneda(resumen.totalAPagar));
+      var cuerpo = document.getElementById("tablaJornadas");
+      datos.jornadas.forEach(function (jornada) {
+        var fila = document.createElement("tr");
+        fila.dataset.fila = String(jornada.fila);
+        fila.dataset.fechaOriginal = String(jornada.fecha || "");
+        celda(fila, jornada.municipio);
+        celda(fila, jornada.fecha);
+        celda(fila, jornada.cantidadAfiliacionesGrupales);
+        celda(fila, jornada.cantidadBrigadas);
+        celda(fila, jornada.asistidos);
+        celda(fila, jornada.lentes);
+        celda(fila, jornada.prestamoAbono);
+        celda(fila, moneda(jornada.valorDia), "formula");
+        celda(fila, moneda(jornada.comisionVenta), "formula");
+        celda(fila, moneda(jornada.descuentoComida));
+        celda(fila, jornada.detalle);
+        var acciones = celda(fila, "");
+        var boton = document.createElement("button");
+        boton.type = "button";
+        boton.className = "accion";
+        boton.textContent = "Editar fila";
+        boton.dataset.accionNomina = "editar-fila";
+        acciones.appendChild(boton);
+        cuerpo.appendChild(fila);
+      });
+      if (!datos.jornadas.length) {
+        var vacio = document.createElement("tr");
+        vacio.className = "nomina-coordinador-fila-vacia";
+        var mensaje = celda(vacio, "No hay jornadas registradas. Usa «Ingreso manual» o precarga un cierre para agregar la primera.", "vacio");
+        mensaje.colSpan = 12;
+        cuerpo.appendChild(vacio);
+      }
+    })();
+  </script>
+</body>
+</html>
